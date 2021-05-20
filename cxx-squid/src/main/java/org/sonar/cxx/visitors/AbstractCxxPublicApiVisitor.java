@@ -243,8 +243,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
         next = next.getNextAstNode();
       }
 
-      comments = getInlineDocumentation(next.getToken(),
-        declarator.getTokenLine());
+      comments = getInlineDocumentation(next.getToken());
     } else {
       // could happen on parse error ?
       comments = new ArrayList<>();
@@ -313,18 +312,15 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
    * Check if inline Doxygen documentation is attached to the given token at specified line
    *
    * @param token the token to inspect
-   * @param line line of the inlined documentation
    * @return true if documentation is found for specified line, false otherwise
    */
-  private static List<Token> getInlineDocumentation(Token token, int line) {
+  private static List<Token> getInlineDocumentation(Token token) {
     List<Token> comments = new ArrayList<>();
 
     for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
         Token triviaToken = trivia.getToken();
-        if ((triviaToken != null)
-          && (triviaToken.getLine() == line)
-          && (isDoxygenInlineComment(triviaToken.getValue()))) {
+        if ((triviaToken != null) && (isDoxygenInlineComment(triviaToken.getValue()))) {
           comments.add(triviaToken);
           if (LOG.isTraceEnabled()) {
             LOG.trace("Inline doc: " + triviaToken.getValue());
@@ -882,8 +878,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
               next = next.getNextAstNode();
             }
 
-            comments = getInlineDocumentation(next.getToken(),
-              definition.getTokenLine());
+            comments = getInlineDocumentation(next.getToken());
           }
         }
 

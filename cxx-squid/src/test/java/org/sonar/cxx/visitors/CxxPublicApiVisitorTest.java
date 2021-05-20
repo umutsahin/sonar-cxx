@@ -105,6 +105,11 @@ public class CxxPublicApiVisitorTest {
   }
 
   @Test
+  public void multiline() throws IOException {
+    assertThat(testFile("src/test/resources/metrics/multiline.h", false)).isEqualTo(tuple(9, 0));
+  }
+
+  @Test
   public void public_api() throws UnsupportedEncodingException, IOException {
     TestPublicApiVisitor visitor = new TestPublicApiVisitor(true);
     visitor.withHeaderFileSuffixes(Arrays.asList(".h"));
