@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -34,10 +35,10 @@ public class FileHeaderCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test() throws UnsupportedEncodingException, IOException {
-    var check = new FileHeaderCheck();
+    FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
 
-    var tester = CxxFileTesterHelper
+    CxxFileTester tester = CxxFileTesterHelper
       .create("src/test/resources/checks/FileHeaderCheck/Class1.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     assertThat(file.getCheckMessages()).isNullOrEmpty();
@@ -105,11 +106,11 @@ public class FileHeaderCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void regex() throws UnsupportedEncodingException, IOException {
-    var check = new FileHeaderCheck();
+    FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright \\d\\d\\d";
     check.isRegularExpression = true;
 
-    var tester = CxxFileTesterHelper
+    CxxFileTester tester = CxxFileTesterHelper
       .create("src/test/resources/checks/FileHeaderCheck/Regex1.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages()).next().atLine(null).withMessage(
@@ -176,7 +177,7 @@ public class FileHeaderCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void should_fail_with_bad_regular_expression() {
-    var check = new FileHeaderCheck();
+    FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "[";
     check.isRegularExpression = true;
 

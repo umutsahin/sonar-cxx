@@ -40,8 +40,8 @@ public class KeywordChannel extends Channel<Lexer> {
 
   public KeywordChannel(String regexp, TokenType[]
     ... keywordSets) {
-    for (var keywords : keywordSets) {
-      for (var keyword : keywords) {
+    for (TokenType[] keywords : keywordSets) {
+      for (TokenType keyword : keywords) {
         keywordsMap.put(keyword.getValue(), keyword);
       }
     }
@@ -51,16 +51,16 @@ public class KeywordChannel extends Channel<Lexer> {
   @Override
   public boolean consume(CodeReader code, Lexer lexer) {
     if (code.popTo(matcher, tmpBuilder) > 0) {
-      var word = tmpBuilder.toString();
+      String word = tmpBuilder.toString();
       tmpBuilder.delete(0, tmpBuilder.length());
 
       // do this work to strip potential whitespace between the hash and the directive
-      var identifier = word.substring(1, word.length()).trim();
+      String identifier = word.substring(1, word.length()).trim();
       String potentialKeyword = HASH.getValue() + identifier;
 
       TokenType keywordType = keywordsMap.get(potentialKeyword);
       if (keywordType != null) {
-        var token = tokenBuilder
+        Token token = tokenBuilder
           .setType(keywordType)
           .setValueAndOriginalValue(potentialKeyword)
           .setURI(lexer.getURI())

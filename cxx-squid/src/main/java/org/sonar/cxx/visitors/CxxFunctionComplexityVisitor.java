@@ -64,17 +64,17 @@ public class CxxFunctionComplexityVisitor<G extends Grammar> extends SquidAstVis
   public void leaveFile(AstNode astNode) {
     super.leaveFile(astNode);
 
-    var sourceFile = (SourceFile) getContext().peekSourceCode();
+    SourceFile sourceFile = (SourceFile) getContext().peekSourceCode();
     sourceFile.setMeasure(CxxMetric.COMPLEX_FUNCTIONS, complexFunctions);
     sourceFile.setMeasure(CxxMetric.COMPLEX_FUNCTIONS_LOC, complexFunctionsLoc);
   }
 
   @Override
   public void leaveNode(AstNode node) {
-    var sourceFunction = (SourceFunction) getContext().peekSourceCode();
+    SourceFunction sourceFunction = (SourceFunction) getContext().peekSourceCode();
 
-    var complexity = ChecksHelper.getRecursiveMeasureInt(sourceFunction, CxxMetric.COMPLEXITY);
-    var lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
+    int complexity = ChecksHelper.getRecursiveMeasureInt(sourceFunction, CxxMetric.COMPLEXITY);
+    int lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
 
     if (complexity > this.cyclomaticComplexityThreshold) {
       complexFunctions++;

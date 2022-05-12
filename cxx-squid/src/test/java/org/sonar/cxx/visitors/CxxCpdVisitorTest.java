@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.CxxFileTester;
 import org.sonar.cxx.CxxFileTesterHelper;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.config.CxxSquidConfiguration;
@@ -37,8 +38,8 @@ public class CxxCpdVisitorTest {
 
   @Before
   public void scanFile() throws UnsupportedEncodingException, IOException {
-    var tester = CxxFileTesterHelper.create("src/test/resources/visitors/cpd.cc", ".", "");
-    var squidConfig = new CxxSquidConfiguration();
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/visitors/cpd.cc", ".", "");
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     squidConfig
       .add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.CPD_IGNORE_LITERALS, "true");
     squidConfig

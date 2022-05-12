@@ -56,8 +56,8 @@ public class TooManyLinesOfCodeInFunctionCheck extends SquidCheck<Grammar> {
 
   @Override
   public void leaveNode(AstNode node) {
-    var sourceFunction = (SourceFunction) getContext().peekSourceCode();
-    var lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
+    SourceFunction sourceFunction = (SourceFunction) getContext().peekSourceCode();
+    int lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
     if (lineCount > max) {
       getContext().createLineViolation(this,
                                        "The number of code lines in this function is {0,number,integer} which is greater than "

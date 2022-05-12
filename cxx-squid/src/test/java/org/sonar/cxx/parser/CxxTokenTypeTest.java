@@ -26,10 +26,10 @@ public class CxxTokenTypeTest {
 
   @Test
   public void test() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(CxxTokenType.values()).hasSize(5);
 
-    for (var tokenType : CxxTokenType.values()) {
+    for (CxxTokenType tokenType : CxxTokenType.values()) {
       softly.assertThat(tokenType.getName()).isEqualTo(tokenType.name());
       softly.assertThat(tokenType.getValue()).isEqualTo(tokenType.name());
     }

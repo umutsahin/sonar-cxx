@@ -37,15 +37,15 @@ public final class IncludeLexer {
   }
 
   public static Lexer create(CxxSquidConfiguration squidConfig, Preprocessor... preprocessors) {
-    var builder = Lexer.builder()
-      .withCharset(squidConfig.getCharset())
-      .withFailIfNoChannelToConsumeOneCharacter(true)
-      .withChannel(new BlackHoleChannel("\\s"))
-      .withChannel(new PreprocessorChannel())
-      .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
-      .withChannel(new BlackHoleChannel(".*"));
+    Lexer.Builder builder = Lexer.builder()
+                                 .withCharset(squidConfig.getCharset())
+                                 .withFailIfNoChannelToConsumeOneCharacter(true)
+                                 .withChannel(new BlackHoleChannel("\\s"))
+                                 .withChannel(new PreprocessorChannel())
+                                 .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
+                                 .withChannel(new BlackHoleChannel(".*"));
 
-    for (var preprocessor : preprocessors) {
+    for (Preprocessor preprocessor : preprocessors) {
       builder.withPreprocessor(preprocessor);
     }
 

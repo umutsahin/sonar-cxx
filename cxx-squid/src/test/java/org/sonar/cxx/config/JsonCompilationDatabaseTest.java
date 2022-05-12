@@ -22,6 +22,7 @@ package org.sonar.cxx.config;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,11 +32,11 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testGlobalSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
     List<String> defines = squidConfig.getValues(CxxSquidConfiguration.GLOBAL,
@@ -53,14 +54,14 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testExtensionSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("test-extension.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("test-extension.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -77,16 +78,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testCommandSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("test-with-command.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("test-with-command.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -106,16 +107,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testArgumentParser() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("test-argument-parser.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("test-argument-parser.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -143,16 +144,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testArgumentSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("test-with-arguments.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("test-with-arguments.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -172,16 +173,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testRelativeDirectorySettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get("src");
-    var absPath = cwd.resolve("test-with-relative-directory.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get("src");
+    Path absPath = cwd.resolve("test-with-relative-directory.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
 
@@ -195,16 +196,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testArgumentAsListSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("test-with-arguments-as-list.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("test-with-arguments-as-list.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -224,16 +225,16 @@ public class JsonCompilationDatabaseTest {
 
   @Test
   public void testUnknownUnitSettings() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/compile_commands.json");
+    File file = new File("src/test/resources/jsondb/compile_commands.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
 
-    var cwd = Paths.get(".");
-    var absPath = cwd.resolve("unknown.cpp");
-    var filename = absPath.toAbsolutePath().normalize().toString();
+    Path cwd = Paths.get(".");
+    Path absPath = cwd.resolve("unknown.cpp");
+    String filename = absPath.toAbsolutePath().normalize().toString();
 
     List<String> defines = squidConfig.getValues(filename, CxxSquidConfiguration.DEFINES);
     List<String> includes = squidConfig.getValues(filename, CxxSquidConfiguration.INCLUDE_DIRECTORIES);
@@ -248,21 +249,21 @@ public class JsonCompilationDatabaseTest {
 
   @Test(expected = JsonMappingException.class)
   public void testInvalidJson() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/invalid.json");
+    File file = new File("src/test/resources/jsondb/invalid.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
   }
 
   @Test(expected = FileNotFoundException.class)
   public void testFileNotFound() throws Exception {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
 
-    var file = new File("src/test/resources/jsondb/not-found.json");
+    File file = new File("src/test/resources/jsondb/not-found.json");
 
-    var jsonDb = new JsonCompilationDatabase(squidConfig);
+    JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(squidConfig);
     jsonDb.parse(file);
   }
 

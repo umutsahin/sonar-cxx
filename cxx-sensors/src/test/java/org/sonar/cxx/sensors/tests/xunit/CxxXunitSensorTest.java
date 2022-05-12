@@ -44,11 +44,11 @@ public class CxxXunitSensorTest {
 
   @Test
   public void shouldReportNothingWhenNoReportFound() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxXunitSensor.REPORT_PATH_KEY, "notexistingpath");
     context.setSettings(settings);
 
-    var sensor = new CxxXunitSensor();
+    CxxXunitSensor sensor = new CxxXunitSensor();
     sensor.execute(context);
 
     assertThat(context.measures(context.project().key())).isEmpty();
@@ -56,11 +56,11 @@ public class CxxXunitSensorTest {
 
   @Test
   public void shouldReadXunitReport() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxXunitSensor.REPORT_PATH_KEY, "xunit-reports/xunit-result-SAMPLE_with_fileName.xml");
     context.setSettings(settings);
 
-    var sensor = new CxxXunitSensor();
+    CxxXunitSensor sensor = new CxxXunitSensor();
     sensor.execute(context);
 
     assertThat(context.measures(context.project().key())).hasSize(5);
@@ -76,18 +76,18 @@ public class CxxXunitSensorTest {
 
   @Test(expected = IllegalStateException.class)
   public void shouldThrowWhenGivenInvalidTime() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxXunitSensor.REPORT_PATH_KEY, "xunit-reports/invalid-time-xunit-report.xml");
     context.setSettings(settings);
 
-    var sensor = new CxxXunitSensor();
+    CxxXunitSensor sensor = new CxxXunitSensor();
     sensor.execute(context);
   }
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxXunitSensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxXunitSensor sensor = new CxxXunitSensor();
     sensor.describe(descriptor);
 
     assertThat(descriptor.name()).isEqualTo("CXX xUnit Test report import");

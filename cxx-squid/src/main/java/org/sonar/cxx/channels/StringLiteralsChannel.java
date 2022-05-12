@@ -71,7 +71,7 @@ public class StringLiteralsChannel extends Channel<Lexer> {
       }
     }
     readUdSuffix(code);
-    for (var i = 0; i < index; i++) {
+    for (int i = 0; i < index; i++) {
       sb.append((char) code.pop());
     }
     return true;
@@ -108,7 +108,7 @@ public class StringLiteralsChannel extends Channel<Lexer> {
       sb.append(charAt);
       index++;
     }
-    var delimiter = sb.toString();
+    String delimiter = sb.toString();
     sb.delete(0, sb.length());
     do {
       index -= sb.length();
@@ -156,7 +156,7 @@ public class StringLiteralsChannel extends Channel<Lexer> {
 
   private void readUdSuffix(CodeReader code) {
     for (int start_index = index, len = 0;; index++) {
-      var charAt = code.charAt(index);
+      char charAt = code.charAt(index);
       if (charAt == EOF) {
         return;
       }

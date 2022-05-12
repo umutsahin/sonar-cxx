@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.sonar.sslr.impl.Lexer;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -145,7 +147,7 @@ public class CxxLexerIncludeTest {
   }
 
   private List<String> absolute(String... path) {
-    var result = new ArrayList<String>();
+    ArrayList<String> result = new ArrayList<String>();
     for (String item : path) {
       if (!item.isBlank()) {
         result.add(new File(root(), item).getAbsolutePath());
@@ -169,7 +171,7 @@ public class CxxLexerIncludeTest {
   private String tryCmd(String cmd, String include, String macro,
                         @Nullable List<String> includeDirectories,
                         @Nullable List<String> defines) {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     if (includeDirectories != null) {
       squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.INCLUDE_DIRECTORIES,
                       includeDirectories);
@@ -179,12 +181,12 @@ public class CxxLexerIncludeTest {
                       defines);
     }
 
-    var file = new File(root(), "root.cpp");
+    File file = new File(root(), "root.cpp");
     SquidAstVisitorContext<Grammar> context = mock(SquidAstVisitorContext.class);
     when(context.getFile()).thenReturn(file);
 
-    var pp = new CxxPreprocessor(context, squidConfig);
-    var lexer = CxxLexer.create(squidConfig.getCharset(), pp, new JoinStringsPreprocessor());
+    CxxPreprocessor pp = new CxxPreprocessor(context, squidConfig);
+    Lexer lexer = CxxLexer.create(squidConfig.getCharset(), pp, new JoinStringsPreprocessor());
 
     String fileContent = cmd + " " + include + "\n" + macro;
     List<Token> tokens = lexer.lex(fileContent);

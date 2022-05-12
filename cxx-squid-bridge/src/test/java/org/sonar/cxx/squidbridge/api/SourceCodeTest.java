@@ -80,7 +80,7 @@ public class SourceCodeTest {
 
   @Test
   public void testIsType() {
-    var pacFrom = new SourcePackage("org.from");
+    SourcePackage pacFrom = new SourcePackage("org.from");
     assertFalse(pacFrom.isType(SourceCode.class));
     assertFalse(pacFrom.isType(SourceClass.class));
     assertTrue(pacFrom.isType(SourcePackage.class));
@@ -88,9 +88,9 @@ public class SourceCodeTest {
 
   @Test
   public void testGetParentByType() {
-    var pacFrom = new SourcePackage("org.from");
-    var fileFrom = new SourceFile("org.from.From.java", "From.java");
-    var classFrom = new SourceClass("org.from.From", "From");
+    SourcePackage pacFrom = new SourcePackage("org.from");
+    SourceFile fileFrom = new SourceFile("org.from.From.java", "From.java");
+    SourceClass classFrom = new SourceClass("org.from.From", "From");
     pacFrom.addChild(fileFrom);
     fileFrom.addChild(classFrom);
     assertEquals(pacFrom, classFrom.getParent(SourcePackage.class));
@@ -98,10 +98,10 @@ public class SourceCodeTest {
 
   @Test
   public void testGetAncestorByType() {
-    var file = new SourceFile("org.from.From.java", "From.java");
-    var class1 = new SourceClass("org.from.From", "From");
-    var class2 = new SourceClass("org.from.From$Foo", "From$Foo");
-    var method = new SourceMethod(class2, "foo()", 10);
+    SourceFile file = new SourceFile("org.from.From.java", "From.java");
+    SourceClass class1 = new SourceClass("org.from.From", "From");
+    SourceClass class2 = new SourceClass("org.from.From$Foo", "From$Foo");
+    SourceMethod method = new SourceMethod(class2, "foo()", 10);
     file.addChild(class1);
     class1.addChild(class2);
     class2.addChild(method);

@@ -27,6 +27,7 @@ import com.sonar.sslr.api.Trivia;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.cxx.parser.CxxKeyword;
@@ -65,13 +66,13 @@ public class CxxHighlighterVisitor extends SquidAstVisitor<Grammar> implements A
         if (!triviaWithConcatenatedLiterals.isPresent()) {
           last = highlight(last, new StringLocation(token), "s");
         } else {
-          for (var concatenatedLiterals : triviaWithConcatenatedLiterals.get().getTokens()) {
+          for (Token concatenatedLiterals : triviaWithConcatenatedLiterals.get().getTokens()) {
             last = highlight(last, new StringLocation(concatenatedLiterals), "s");
           }
         }
       }
 
-      for (var trivia : token.getTrivia()) {
+      for (Trivia trivia : token.getTrivia()) {
         if (trivia.isComment()) {
           highlight(last, new CommentLocation(trivia.getToken()), "cd");
         } else if (trivia.isSkippedText() && trivia.getToken().getType().equals(CxxTokenType.PREPROCESSOR)) {
@@ -190,7 +191,7 @@ public class CxxHighlighterVisitor extends SquidAstVisitor<Grammar> implements A
 
     PreprocessorDirectiveLocation(Token token) {
       super(token);
-      var m = PREPROCESSOR_PATTERN.matcher(token.getValue());
+      Matcher m = PREPROCESSOR_PATTERN.matcher(token.getValue());
       if (m.find()) {
         endLineOffset = startLineOffset + (m.end() - m.start());
       } else {

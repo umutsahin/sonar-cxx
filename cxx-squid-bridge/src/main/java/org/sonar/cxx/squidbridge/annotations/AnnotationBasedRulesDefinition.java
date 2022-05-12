@@ -80,7 +80,7 @@ public class AnnotationBasedRulesDefinition {
   public AnnotationBasedRulesDefinition(NewRepository repository, String languageKey) {
     this.repository = repository;
     this.languageKey = languageKey;
-    var externalDescriptionBasePath = String.format("/org/sonar/l10n/%s/rules/%s", languageKey, repository.key());
+    String externalDescriptionBasePath = String.format("/org/sonar/l10n/%s/rules/%s", languageKey, repository.key());
     this.externalDescriptionLoader = new ExternalDescriptionLoader(repository, externalDescriptionBasePath);
   }
 
@@ -91,8 +91,8 @@ public class AnnotationBasedRulesDefinition {
   public void addRuleClasses(boolean failIfSqaleNotFound, boolean failIfNoExplicitKey, Iterable<Class> ruleClasses) {
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(ruleClasses, Class.class));
     List<NewRule> newRules = Lists.newArrayList();
-    for (var ruleClass : ruleClasses) {
-      var rule = newRule(ruleClass, failIfNoExplicitKey);
+    for (Class ruleClass : ruleClasses) {
+      NewRule rule = newRule(ruleClass, failIfNoExplicitKey);
       externalDescriptionLoader.addHtmlDescription(rule);
       rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
       if (!isSqaleAnnotated(ruleClass) && failIfSqaleNotFound) {
@@ -114,7 +114,7 @@ public class AnnotationBasedRulesDefinition {
 
   @VisibleForTesting
   NewRule newRule(Class<?> ruleClass, boolean failIfNoExplicitKey) {
-    var ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
+    Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
     if (ruleAnnotation == null) {
       throw new IllegalArgumentException("No Rule annotation was found on " + ruleClass);
     }
@@ -140,14 +140,14 @@ public class AnnotationBasedRulesDefinition {
     if (resource == null) {
       return;
     }
-    var bundle = ResourceBundle.getBundle("org.sonar.l10n." + languageKey, Locale.ENGLISH);
-    for (var rule : rules) {
-      var baseKey = "rule." + repository.key() + "." + rule.key();
-      var nameKey = baseKey + ".name";
+    ResourceBundle bundle = ResourceBundle.getBundle("org.sonar.l10n." + languageKey, Locale.ENGLISH);
+    for (NewRule rule : rules) {
+      String baseKey = "rule." + repository.key() + "." + rule.key();
+      String nameKey = baseKey + ".name";
       if (bundle.containsKey(nameKey)) {
         rule.setName(bundle.getString(nameKey));
       }
-      for (var param : rule.params()) {
+      for (RulesDefinition.NewParam param : rule.params()) {
         String paramDescriptionKey = baseKey + ".param." + param.key();
         if (bundle.containsKey(paramDescriptionKey)) {
           param.setDescription(bundle.getString(paramDescriptionKey));
@@ -162,9 +162,10 @@ public class AnnotationBasedRulesDefinition {
       rule.setDebtSubCharacteristic(subChar.value());
     }
 
-    var constant = AnnotationUtils.getAnnotation(ruleClass, SqaleConstantRemediation.class);
-    var linear = AnnotationUtils.getAnnotation(ruleClass, SqaleLinearRemediation.class);
-    var linearWithOffset = AnnotationUtils.getAnnotation(ruleClass, SqaleLinearWithOffsetRemediation.class);
+    SqaleConstantRemediation constant = AnnotationUtils.getAnnotation(ruleClass, SqaleConstantRemediation.class);
+    SqaleLinearRemediation linear = AnnotationUtils.getAnnotation(ruleClass, SqaleLinearRemediation.class);
+    SqaleLinearWithOffsetRemediation
+            linearWithOffset = AnnotationUtils.getAnnotation(ruleClass, SqaleLinearWithOffsetRemediation.class);
 
     Set<Annotation> remediations = Sets.newHashSet(constant, linear, linearWithOffset);
     if (Iterables.size(Iterables.filter(remediations, Predicates.notNull())) > 1) {

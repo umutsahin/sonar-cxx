@@ -47,7 +47,7 @@ public class CxxHighlighterTest {
   @Before
   public void scanFile() throws IOException {
     ActiveRules rules = mock(ActiveRules.class);
-    var checkFactory = new CheckFactory(rules);
+    CheckFactory checkFactory = new CheckFactory(rules);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(Mockito.any(InputFile.class))).thenReturn(fileLinesContext);
@@ -203,7 +203,7 @@ public class CxxHighlighterTest {
    */
   private void checkOnRange(int line, int firstColumn, int length, TypeOfText expectedTypeOfText) {
     // check that every column of the token is highlighted (and with the expected type)
-    for (var column = firstColumn; column < firstColumn + length; column++) {
+    for (int column = firstColumn; column < firstColumn + length; column++) {
       checkInternal(line, column, "", expectedTypeOfText);
     }
 
@@ -228,7 +228,7 @@ public class CxxHighlighterTest {
       "ProjectKey:" + inputFile.file().getName(), line, column);
 
     int expectedNumberOfTypeOfText = expectedTypeOfText == null ? 0 : 1;
-    var message = "number of TypeOfTexts at line " + line + " and column " + column + messageComplement;
+    String message = "number of TypeOfTexts at line " + line + " and column " + column + messageComplement;
     assertThat(foundTypeOfTexts).as(message).hasSize(expectedNumberOfTypeOfText);
     if (expectedNumberOfTypeOfText > 0) {
       message = "found TypeOfTexts at line " + line + " and column " + column + messageComplement;

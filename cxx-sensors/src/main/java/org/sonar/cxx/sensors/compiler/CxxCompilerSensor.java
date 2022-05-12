@@ -57,13 +57,13 @@ public abstract class CxxCompilerSensor extends CxxIssuesReportSensor {
       return;
     }
 
-    try ( var scanner = new TextScanner(report, reportEncoding)) {
-      var pattern = Pattern.compile(reportRegEx);
+    try (TextScanner scanner = new TextScanner(report, reportEncoding)) {
+      Pattern pattern = Pattern.compile(reportRegEx);
       LOG.debug("Processing '{}' report '{}', Encoding='{}', Pattern='{}'",
                 getCompilerKey(), report, scanner.encoding(), pattern);
 
       while (scanner.hasNextLine()) {
-        var matcher = pattern.matcher(scanner.nextLine());
+        Matcher matcher = pattern.matcher(scanner.nextLine());
         if (matcher.find()) {
           String filename = alignFilename(getSubSequence(matcher, "file"));
           String line = alignLine(getSubSequence(matcher, "line"));
@@ -71,7 +71,7 @@ public abstract class CxxCompilerSensor extends CxxIssuesReportSensor {
           String id = alignId(getSubSequence(matcher, "id"));
           String msg = alignMessage(getSubSequence(matcher, "message"));
           if (isInputValid(filename, line, column, id, msg)) {
-            var issue = new CxxReportIssue(id, filename, line, column, msg);
+            CxxReportIssue issue = new CxxReportIssue(id, filename, line, column, msg);
             saveUniqueViolation(issue);
           } else {
             LOG.debug("Invalid compiler warning: '{}''{}', skipping", id, msg);

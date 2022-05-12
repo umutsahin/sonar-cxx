@@ -111,7 +111,7 @@ public enum CppGrammarImpl implements GrammarRuleKey {
   ppModule;
 
   public static Grammar create() {
-    var b = LexerfulGrammarBuilder.create();
+    LexerfulGrammarBuilder b = LexerfulGrammarBuilder.create();
 
     toplevelDefinitionGrammar(b);
     defineLineGrammar(b);

@@ -96,7 +96,7 @@ public class AnnotationBasedRulesDefinitionTest {
   public void rule_without_explicit_key_can_be_acceptable() throws Exception {
     Repository repository = buildRepository(LANGUAGE_KEY_WITH_RESOURCE_BUNDLE, false, false,
                                             RuleClassWithoutAnnotationDefinedKey.class);
-    var rule = repository.rules().get(0);
+    RulesDefinition.Rule rule = repository.rules().get(0);
     assertThat(rule.key()).isEqualTo(RuleClassWithoutAnnotationDefinedKey.class.getCanonicalName());
     assertThat(rule.name()).isEqualTo("name1");
   }
@@ -257,8 +257,8 @@ public class AnnotationBasedRulesDefinitionTest {
     @Rule
     class RuleClass {
     }
-    var newRepository = context.createRepository(REPO_KEY, "language1");
-    var rulesDef = new AnnotationBasedRulesDefinition(newRepository, "language1");
+    NewRepository newRepository = context.createRepository(REPO_KEY, "language1");
+    AnnotationBasedRulesDefinition rulesDef = new AnnotationBasedRulesDefinition(newRepository, "language1");
     thrown.expect(IllegalStateException.class);
     rulesDef.newRule(RuleClass.class, false);
   }

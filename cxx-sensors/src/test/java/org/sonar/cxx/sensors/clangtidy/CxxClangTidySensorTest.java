@@ -48,14 +48,14 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldIgnoreIssuesIfResourceNotFound() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.error.txt"
     );
     context.setSettings(settings);
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).isEmpty();
@@ -63,7 +63,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportDefaultRuleId() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-default-rule-id.txt"
@@ -77,11 +77,11 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(4);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("clang-diagnostic-error");
     assertThat(issuesList.get(1).ruleKey().rule()).isEqualTo("clang-diagnostic-error");
     assertThat(issuesList.get(2).ruleKey().rule()).isEqualTo("clang-diagnostic-warning");
@@ -90,7 +90,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportSameIssueInSameLineWithDifferentColumn() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-cols.txt"
@@ -107,11 +107,11 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(4);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("hicpp-signed-bitwise");
     assertThat(issuesList.get(0).primaryLocation().textRange().start().lineOffset()).isEqualTo(32);
     assertThat(issuesList.get(1).ruleKey().rule()).isEqualTo("hicpp-signed-bitwise");
@@ -124,7 +124,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldRemoveDuplicateIssues() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-duplicates.txt"
@@ -142,18 +142,18 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(2);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("clang-diagnostic-uninitialized");
     assertThat(issuesList.get(1).ruleKey().rule()).isEqualTo("clang-diagnostic-uninitialized");
   }
 
   @Test
   public void shouldReportLineIfColumnIsInvalid() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-warning.txt"
@@ -170,17 +170,17 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("readability-inconsistent-declaration-parameter-name");
   }
 
   @Test
   public void shouldReportIssuesInFirstAndLastColumn() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-min-max-cols.txt"
@@ -194,11 +194,11 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(2);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("first-column");
     assertThat(issuesList.get(0).primaryLocation().textRange().start().lineOffset()).isEqualTo(0);
     assertThat(issuesList.get(1).ruleKey().rule()).isEqualTo("last-column");
@@ -207,7 +207,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportAliasRuleIds() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-alias-rule-ids.txt"
@@ -224,11 +224,11 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(3);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("cppcoreguidelines-avoid-magic-numbers");
     assertThat(issuesList.get(1).ruleKey().rule()).isEqualTo("readability-magic-numbers");
     assertThat(issuesList.get(2).ruleKey().rule()).isEqualTo("test");
@@ -236,7 +236,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportErrors() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-error.txt"
@@ -250,7 +250,7 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
@@ -258,7 +258,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportFatalErrors() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-fatal-error.txt"
@@ -272,7 +272,7 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
@@ -280,7 +280,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportWarnings() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-warning.txt"
@@ -294,7 +294,7 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
@@ -302,7 +302,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportNodiscard() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-nodiscard.txt"
@@ -316,7 +316,7 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
@@ -324,7 +324,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void shouldReportFlow() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-note.txt"
@@ -338,10 +338,10 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.allIssues()).hasSize(1); // one issue
     softly.assertThat(context.allIssues().iterator().next().flows()).hasSize(1); // with one flow
     softly.assertThat(context.allIssues().iterator().next().flows().get(0).locations()).hasSize(4); // with four items
@@ -350,7 +350,7 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void invalidReportReportsNoIssues() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(
       CxxClangTidySensor.REPORT_PATH_KEY,
       "clang-tidy-reports/cpd.report-empty.txt"
@@ -364,7 +364,7 @@ public class CxxClangTidySensorTest {
       .build()
     );
 
-    var sensor = new CxxClangTidySensor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).isEmpty();
@@ -372,11 +372,11 @@ public class CxxClangTidySensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxClangTidySensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxClangTidySensor sensor = new CxxClangTidySensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Clang-Tidy report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxClangTidyRuleRepository.KEY);

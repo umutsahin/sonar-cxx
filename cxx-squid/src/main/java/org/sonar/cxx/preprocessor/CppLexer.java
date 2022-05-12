@@ -66,17 +66,17 @@ public final class CppLexer {
     //
     // changes here must be always aligned: CxxLexer.java <=> CppLexer.java
     //
-    var builder = Lexer.builder()
-      .withCharset(charset)
-      .withFailIfNoChannelToConsumeOneCharacter(true)
-      .withChannel(new WhitespaceChannel())
-      .withChannel(commentRegexp("//[^\\n\\r]*+"))
-      .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
-      .withChannel(new CharacterLiteralsChannel())
-      .withChannel(new StringLiteralsChannel())
-      // C++ Standard, Section 2.14.2 "Integer literals"
-      // C++ Standard, Section 2.14.4 "Floating literals"
-      .withChannel(
+    Lexer.Builder builder = Lexer.builder()
+                                 .withCharset(charset)
+                                 .withFailIfNoChannelToConsumeOneCharacter(true)
+                                 .withChannel(new WhitespaceChannel())
+                                 .withChannel(commentRegexp("//[^\\n\\r]*+"))
+                                 .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
+                                 .withChannel(new CharacterLiteralsChannel())
+                                 .withChannel(new StringLiteralsChannel())
+                                 // C++ Standard, Section 2.14.2 "Integer literals"
+                                 // C++ Standard, Section 2.14.4 "Floating literals"
+                                 .withChannel(
         regexp(CxxTokenType.NUMBER,
                and(
                  or(
@@ -90,12 +90,12 @@ public final class CppLexer {
                )
         )
       )
-      .withChannel(new KeywordChannel(and("#", o2n("\\s"), "[a-z]", o2n("\\w")), CppKeyword.values()))
-      //###.withChannel(new SpecialIdentifiers("import"))
-      .withChannel(new IdentifierAndKeywordChannel(and("[a-zA-Z_]", o2n("\\w")), true))
-      .withChannel(new PunctuatorChannel(CppPunctuator.values()))
-      .withChannel(new BomCharacterChannel())
-      .withChannel(new UnknownCharacterChannel());
+                                 .withChannel(new KeywordChannel(and("#", o2n("\\s"), "[a-z]", o2n("\\w")), CppKeyword.values()))
+                                 //###.withChannel(new SpecialIdentifiers("import"))
+                                 .withChannel(new IdentifierAndKeywordChannel(and("[a-zA-Z_]", o2n("\\w")), true))
+                                 .withChannel(new PunctuatorChannel(CppPunctuator.values()))
+                                 .withChannel(new BomCharacterChannel())
+                                 .withChannel(new UnknownCharacterChannel());
 
     return builder.build();
   }

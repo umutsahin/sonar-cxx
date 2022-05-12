@@ -54,7 +54,7 @@ public final class ComplexityVisitor<G extends Grammar> extends SquidAstVisitor<
     }
 
     public Builder<G> subscribeTo(AstNodeType... astNodeTypes) {
-      for (var astNodeType : astNodeTypes) {
+      for (AstNodeType astNodeType : astNodeTypes) {
         this.astNodeTypes.add(astNodeType);
       }
       return this;
@@ -71,7 +71,7 @@ public final class ComplexityVisitor<G extends Grammar> extends SquidAstVisitor<
     }
 
     public Builder<G> addExclusions(AstNodeType... exclusionAstNodeTypes) {
-      for (var exclusionAstNodeType : exclusionAstNodeTypes) {
+      for (AstNodeType exclusionAstNodeType : exclusionAstNodeTypes) {
         this.exclusionAstNodeTypes.add(exclusionAstNodeType);
       }
       return this;
@@ -95,14 +95,14 @@ public final class ComplexityVisitor<G extends Grammar> extends SquidAstVisitor<
 
   @Override
   public void init() {
-    for (var astNodeType : astNodeTypes) {
+    for (AstNodeType astNodeType : astNodeTypes) {
       subscribeTo(astNodeType);
     }
   }
 
   @Override
   public void visitNode(AstNode astNode) {
-    for (var exclusionAstNodeType : exclusionAstNodeTypes) {
+    for (AstNodeType exclusionAstNodeType : exclusionAstNodeTypes) {
       if (astNode.hasAncestor(exclusionAstNodeType)) {
         return;
       }

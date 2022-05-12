@@ -23,6 +23,8 @@ import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
 import java.util.regex.Pattern;
+
+import com.sonar.sslr.api.Trivia;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.cxx.squidbridge.annotations.ActivatedByDefault;
@@ -44,13 +46,13 @@ public class NoSonarCheck extends SquidCheck<Grammar> implements AstAndTokenVisi
 
   @Override
   public void visitToken(Token token) {
-    for (var trivia : token.getTrivia()) {
+    for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
         String[] commentLines = EOL_PATTERN
           .split(getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue()), -1);
         int line = trivia.getToken().getLine();
 
-        for (var commentLine : commentLines) {
+        for (String commentLine : commentLines) {
           if (commentLine.contains("NOSONAR")) {
             getContext().createLineViolation(
               this,

@@ -45,11 +45,11 @@ public class CxxLinesOfCodeInFunctionBodyVisitor<GRAMMAR extends Grammar> extend
   public void visitNode(AstNode node) {
     List<AstNode> allChilds = node.getDescendants(CxxGrammarImpl.statement, CppPunctuator.CURLBR_LEFT,
                                                   CppPunctuator.CURLBR_RIGHT);
-    var lines = 1;
+    int lines = 1;
     int firstLine = node.getTokenLine();
     if (allChilds != null && !allChilds.isEmpty()) {
       int previousLine = firstLine;
-      for (var child : allChilds) {
+      for (AstNode child : allChilds) {
         int currentLine = child.getTokenLine();
         if (currentLine != previousLine) {
           lines++;

@@ -88,7 +88,7 @@ public abstract class SourceCode implements Measurable, Comparable<SourceCode> {
       return false;
     }
 
-    var other = (SourceCode) obj;
+    SourceCode other = (SourceCode) obj;
     return key.equals(other.key);
   }
 
@@ -208,9 +208,9 @@ public abstract class SourceCode implements Measurable, Comparable<SourceCode> {
   }
 
   public <S extends SourceCode> S getAncestor(Class<S> withClass) {
-    var ancestor = getParent(withClass);
+    S ancestor = getParent(withClass);
     if (ancestor != null) {
-      var parentAncestor = ancestor.getAncestor(withClass);
+      S parentAncestor = ancestor.getAncestor(withClass);
       if (parentAncestor != null) {
         ancestor = parentAncestor;
       }
@@ -261,7 +261,7 @@ public abstract class SourceCode implements Measurable, Comparable<SourceCode> {
     if (children.contains(squidUnit)) {
       return true;
     }
-    for (var child : children) {
+    for (SourceCode child : children) {
       if (child.hasChild(squidUnit)) {
         return true;
       }

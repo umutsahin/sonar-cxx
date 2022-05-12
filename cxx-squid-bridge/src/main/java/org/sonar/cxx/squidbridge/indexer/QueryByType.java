@@ -55,7 +55,7 @@ public class QueryByType implements Query {
       return false;
     }
 
-    var other = (QueryByType) obj;
+    QueryByType other = (QueryByType) obj;
 
     if (resourceType != null ? !resourceType.equals(other.resourceType) : other.resourceType != null) {
       return false;

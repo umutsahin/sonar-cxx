@@ -30,11 +30,11 @@ public class CxxCompilerVcRuleRepositoryTest {
 
   @Test
   public void createVcRulesTest() {
-    var def = new CxxCompilerVcRuleRepository(
+    CxxCompilerVcRuleRepository def = new CxxCompilerVcRuleRepository(
       mock(ServerFileSystem.class),
       new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxCompilerVcRuleRepository.KEY);

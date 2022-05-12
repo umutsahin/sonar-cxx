@@ -35,9 +35,9 @@ public class ValgrindStackTest {
 
   @Before
   public void setUp() {
-    var frame = new ValgrindFrame("", "", "lala", "", "lala", "111");
-    var equalFrame = new ValgrindFrame("", "", "lala", "", "lala", "111");
-    var otherFrame = new ValgrindFrame("", "", "haha", "", "haha", "111");
+    ValgrindFrame frame = new ValgrindFrame("", "", "lala", "", "lala", "111");
+    ValgrindFrame equalFrame = new ValgrindFrame("", "", "lala", "", "lala", "111");
+    ValgrindFrame otherFrame = new ValgrindFrame("", "", "haha", "", "haha", "111");
 
     stack.addFrame(frame);
     stack.addFrame(otherFrame);
@@ -80,16 +80,16 @@ public class ValgrindStackTest {
 
   @Test
   public void stringRepresentationShouldResembleValgrindsStandard() {
-    var frame0 = new ValgrindFrame("0xDEADBEAF", "libX.so", "main()", null, "main.cc", "1");
-    var stack0 = new ValgrindStack();
+    ValgrindFrame frame0 = new ValgrindFrame("0xDEADBEAF", "libX.so", "main()", null, "main.cc", "1");
+    ValgrindStack stack0 = new ValgrindStack();
     stack0.addFrame(frame0);
 
-    var frame1 = new ValgrindFrame("0xBADC0FFE", "libc.so", "abort()", null, "main.cc", "2");
-    var stack1 = new ValgrindStack();
+    ValgrindFrame frame1 = new ValgrindFrame("0xBADC0FFE", "libc.so", "abort()", null, "main.cc", "2");
+    ValgrindStack stack1 = new ValgrindStack();
     stack1.addFrame(frame1);
     stack1.addFrame(frame0);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(new ValgrindStack().toString()).isEmpty();
     softly.assertThat(stack0.toString()).isEqualTo(frame0.toString());
     softly.assertThat(stack1.toString()).isEqualTo(frame1.toString() + "\n" + frame0.toString());
@@ -103,8 +103,8 @@ public class ValgrindStackTest {
 
   @Test
   public void getLastOwnFrame_returnsNullIfNoOwnFrameThere() {
-    var frame = new ValgrindFrame(null, null, null, null, null, "1");
-    var stack = new ValgrindStack();
+    ValgrindFrame frame = new ValgrindFrame(null, null, null, null, null, "1");
+    ValgrindStack stack = new ValgrindStack();
     stack.addFrame(frame);
 
     assertNull(new ValgrindStack().getLastOwnFrame("somepath"));
@@ -112,12 +112,12 @@ public class ValgrindStackTest {
 
   @Test
   public void getLastOwnFrame_returnsTheOwnFrame1() {
-    var BASE_DIR = new File("our", "path");
-    var OWN_PATH = new File(BASE_DIR, "subdir");
+    File BASE_DIR = new File("our", "path");
+    File OWN_PATH = new File(BASE_DIR, "subdir");
 
-    var otherFrame = new ValgrindFrame(null, null, null, "someotherpath", null, "1");
-    var ownFrame = new ValgrindFrame(null, null, null, OWN_PATH.getPath(), null, "1");
-    var stack = new ValgrindStack();
+    ValgrindFrame otherFrame = new ValgrindFrame(null, null, null, "someotherpath", null, "1");
+    ValgrindFrame ownFrame = new ValgrindFrame(null, null, null, OWN_PATH.getPath(), null, "1");
+    ValgrindStack stack = new ValgrindStack();
     stack.addFrame(otherFrame);
     stack.addFrame(ownFrame);
 
@@ -126,12 +126,12 @@ public class ValgrindStackTest {
 
   @Test
   public void getLastOwnFrame_returnsTheOwnFrame2() {
-    var BASE_DIR = new File("our/path/.");
-    var OWN_PATH = new File("our/../our/./path/subdir");
+    File BASE_DIR = new File("our/path/.");
+    File OWN_PATH = new File("our/../our/./path/subdir");
 
-    var otherFrame = new ValgrindFrame(null, null, null, "someotherpath", null, "1");
-    var ownFrame = new ValgrindFrame(null, null, null, OWN_PATH.getPath(), null, "1");
-    var stack = new ValgrindStack();
+    ValgrindFrame otherFrame = new ValgrindFrame(null, null, null, "someotherpath", null, "1");
+    ValgrindFrame ownFrame = new ValgrindFrame(null, null, null, OWN_PATH.getPath(), null, "1");
+    ValgrindStack stack = new ValgrindStack();
     stack.addFrame(otherFrame);
     stack.addFrame(ownFrame);
 

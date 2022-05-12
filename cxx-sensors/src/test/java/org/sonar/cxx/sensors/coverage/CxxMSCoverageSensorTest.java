@@ -57,16 +57,16 @@ public class CxxMSCoverageSensorTest {
       .initMetadata("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
       .build());
 
-    var sensor = new CxxCoverageVisualStudioSensor();
+    CxxCoverageVisualStudioSensor sensor = new CxxCoverageVisualStudioSensor();
     sensor.execute(context);
 
-    var oneHitlinesA = new int[]{12, 14, 16, 19, 20, 21, 23, 25, 26, 27, 28};
-    for (var oneHitline : oneHitlinesA) {
+    int[] oneHitlinesA = new int[]{12, 14, 16, 19, 20, 21, 23, 25, 26, 27, 28};
+    for (int oneHitline : oneHitlinesA) {
       assertThat(context.lineHits("ProjectKey:source/rootfinder/rootfinder.cpp", oneHitline)).isEqualTo(1);
     }
 
-    var oneHitlinesB = new int[]{9, 10, 11, 14, 15, 16, 19, 20, 21, 24, 25, 26, 29, 30, 31};
-    for (var oneHitline : oneHitlinesB) {
+    int[] oneHitlinesB = new int[]{9, 10, 11, 14, 15, 16, 19, 20, 21, 24, 25, 26, 29, 30, 31};
+    for (int oneHitline : oneHitlinesB) {
       assertThat(context.lineHits("ProjectKey:source/motorcontroller/motorcontroller.cpp", oneHitline)).isEqualTo(1);
     }
   }
@@ -85,24 +85,24 @@ public class CxxMSCoverageSensorTest {
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
       .build());
 
-    var sensor = new CxxCoverageVisualStudioSensor();
+    CxxCoverageVisualStudioSensor sensor = new CxxCoverageVisualStudioSensor();
     sensor.execute(context);
 
-    var oneHitlinesA = new int[]{4, 5, 6, 8, 13, 15, 16, 25};
-    var zeroHitlinesA = new int[]{9, 10, 22, 23};
-    for (var zeroHitline : zeroHitlinesA) {
+    int[] oneHitlinesA = new int[]{4, 5, 6, 8, 13, 15, 16, 25};
+    int[] zeroHitlinesA = new int[]{9, 10, 22, 23};
+    for (int zeroHitline : zeroHitlinesA) {
       assertThat(context.lineHits("ProjectKey:project2/source1.cpp", zeroHitline)).isZero();
     }
-    for (var oneHitline : oneHitlinesA) {
+    for (int oneHitline : oneHitlinesA) {
       assertThat(context.lineHits("ProjectKey:project2/source1.cpp", oneHitline)).isEqualTo(1);
     }
 
-    var oneHitlinesB = new int[]{4, 5, 6, 8, 9, 10, 13, 21, 25};
-    var zeroHitlinesB = new int[]{15, 16, 22, 23};
-    for (var zeroHitline : zeroHitlinesB) {
+    int[] oneHitlinesB = new int[]{4, 5, 6, 8, 9, 10, 13, 21, 25};
+    int[] zeroHitlinesB = new int[]{15, 16, 22, 23};
+    for (int zeroHitline : zeroHitlinesB) {
       assertThat(context.lineHits("ProjectKey:project2/source2.cpp", zeroHitline)).isZero();
     }
-    for (var oneHitline : oneHitlinesB) {
+    for (int oneHitline : oneHitlinesB) {
       assertThat(context.lineHits("ProjectKey:project2/source2.cpp", oneHitline)).isEqualTo(1);
     }
 
@@ -123,7 +123,7 @@ public class CxxMSCoverageSensorTest {
       .initMetadata("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
       .build());
 
-    var sensor = new CxxCoverageVisualStudioSensor();
+    CxxCoverageVisualStudioSensor sensor = new CxxCoverageVisualStudioSensor();
     sensor.execute(context);
   }
 
@@ -138,7 +138,7 @@ public class CxxMSCoverageSensorTest {
       .initMetadata("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
       .build());
 
-    var sensor = new CxxCoverageVisualStudioSensor();
+    CxxCoverageVisualStudioSensor sensor = new CxxCoverageVisualStudioSensor();
     sensor.execute(context);
 
     assertThat(context.lineHits("ProjectKey:source/motorcontroller/motorcontroller.cpp", 1)).isNull();
@@ -147,11 +147,11 @@ public class CxxMSCoverageSensorTest {
   @Test
   public void sensorDescriptor() {
     context = SensorContextTester.create(fs.baseDir());
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxCoverageVisualStudioSensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxCoverageVisualStudioSensor sensor = new CxxCoverageVisualStudioSensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Visual Studio XML coverage report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertAll();

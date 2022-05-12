@@ -29,7 +29,7 @@ public class WhitespaceChannel extends Channel<Lexer> {
 
   @Override
   public boolean consume(CodeReader code, Lexer output) {
-    var isWhitespace = false;
+    boolean isWhitespace = false;
     while (Character.isWhitespace(code.peek())) {
       if (!isWhitespace) {
         int line = code.getLinePosition();

@@ -42,8 +42,8 @@ public class ExternalDescriptionLoader {
   }
 
   public static void loadHtmlDescriptions(NewRepository repository, String languageKey) {
-    var loader = new ExternalDescriptionLoader(repository, languageKey);
-    for (var newRule : repository.rules()) {
+    ExternalDescriptionLoader loader = new ExternalDescriptionLoader(repository, languageKey);
+    for (NewRule newRule : repository.rules()) {
       loader.addHtmlDescription(newRule);
     }
   }

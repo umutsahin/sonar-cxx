@@ -41,8 +41,8 @@ public class CustomCxxRulesDefinitionTest {
 
   @Test
   public void test() {
-    var rulesDefinition = new MyCustomPlSqlRulesDefinition();
-    var context = new RulesDefinition.Context();
+    MyCustomPlSqlRulesDefinition rulesDefinition = new MyCustomPlSqlRulesDefinition();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     rulesDefinition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
@@ -54,8 +54,8 @@ public class CustomCxxRulesDefinitionTest {
     assertThat(alertUseRule).isNotNull();
     assertThat(alertUseRule.name()).isEqualTo(RULE_NAME);
 
-    for (var rule : repository.rules()) {
-      for (var param : rule.params()) {
+    for (RulesDefinition.Rule rule : repository.rules()) {
+      for (RulesDefinition.Param param : rule.params()) {
         assertThat(param.description()).as("description for " + param.key()).isNotEmpty();
       }
     }

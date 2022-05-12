@@ -44,7 +44,7 @@ public class CxxRatsSensorTest {
 
   @Test
   public void shouldReportCorrectViolations() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxReportSensor.ERROR_RECOVERY_KEY, true);
     settings.setProperty(CxxRatsSensor.REPORT_PATH_KEY, "rats-reports/rats-result-*.xml");
     context.setSettings(settings);
@@ -62,11 +62,11 @@ public class CxxRatsSensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor = new CxxRatsSensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX RATS report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxRatsRuleRepository.KEY);

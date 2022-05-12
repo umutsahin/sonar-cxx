@@ -30,9 +30,9 @@ public class CxxRatsRuleRepositoryTest {
 
   @Test
   public void createRulesTest() {
-    var def = new CxxRatsRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
+    CxxRatsRuleRepository def = new CxxRatsRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxRatsRuleRepository.KEY);

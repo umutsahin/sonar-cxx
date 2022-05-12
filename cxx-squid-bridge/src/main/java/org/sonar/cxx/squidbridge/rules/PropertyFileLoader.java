@@ -27,6 +27,8 @@ import com.google.common.annotations.Beta;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinition.NewRepository;
 
 @Beta
@@ -37,7 +39,7 @@ public class PropertyFileLoader {
   }
 
   public static void loadNames(NewRepository repository, String resourceAbsolutePath) {
-    var stream = PropertyFileLoader.class.getResourceAsStream(resourceAbsolutePath);
+    InputStream stream = PropertyFileLoader.class.getResourceAsStream(resourceAbsolutePath);
     if (stream == null) {
       throw new IllegalArgumentException("Cound not find resource: " + resourceAbsolutePath);
     }
@@ -45,20 +47,20 @@ public class PropertyFileLoader {
   }
 
   public static void loadNames(NewRepository repository, InputStream stream) {
-    var properties = new Properties();
+    Properties properties = new Properties();
     try {
       properties.load(stream);
     } catch (IOException e) {
       throw new IllegalArgumentException("Could not read names from properties", e);
     }
-    for (var rule : repository.rules()) {
-      var baseKey = "rule." + repository.key() + "." + rule.key();
-      var nameKey = baseKey + ".name";
-      var ruleName = properties.getProperty(nameKey);
+    for (RulesDefinition.NewRule rule : repository.rules()) {
+      String baseKey = "rule." + repository.key() + "." + rule.key();
+      String nameKey = baseKey + ".name";
+      String ruleName = properties.getProperty(nameKey);
       if (ruleName != null) {
         rule.setName(ruleName);
       }
-      for (var param : rule.params()) {
+      for (RulesDefinition.NewParam param : rule.params()) {
         String paramDescriptionKey = baseKey + ".param." + param.key();
         String paramDescription = properties.getProperty(paramDescriptionKey);
         if (paramDescription != null) {

@@ -34,6 +34,7 @@ import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.CxxFileTester;
 import org.sonar.cxx.CxxFileTesterHelper;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.config.CxxSquidConfiguration;
@@ -53,9 +54,9 @@ public class CxxPublicApiVisitorTest {
 
   @Test
   public void test_no_matching_suffix() throws IOException {
-    var tester = CxxFileTesterHelper.create("src/test/resources/metrics/doxygen_example.h", ".",
-                                        "");
-    var squidConfig = new CxxSquidConfiguration();
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/metrics/doxygen_example.h", ".",
+                                                      "");
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.API_FILE_SUFFIXES,
                     new String[]{".hpp"});
 
@@ -108,13 +109,13 @@ public class CxxPublicApiVisitorTest {
 
   @Test
   public void public_api() throws UnsupportedEncodingException, IOException {
-    var fileNme = "src/test/resources/metrics/public_api.h";
-    var visitor = new TestPublicApiVisitor(fileNme, true);
+    String fileNme = "src/test/resources/metrics/public_api.h";
+    TestPublicApiVisitor visitor = new TestPublicApiVisitor(fileNme, true);
 
-    var tester = CxxFileTesterHelper.create(fileNme, ".", "");
+    CxxFileTester tester = CxxFileTesterHelper.create(fileNme, ".", "");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), visitor);
 
-    var expectedIdCommentMap = new HashMap<String, String>();
+    HashMap<String, String> expectedIdCommentMap = new HashMap<String, String>();
 
     expectedIdCommentMap.put("publicDefinedMethod", "publicDefinedMethod");
     expectedIdCommentMap.put("publicDeclaredMethod", "publicDeclaredMethod");
@@ -172,7 +173,7 @@ public class CxxPublicApiVisitorTest {
     expectedIdCommentMap.put("linkageSpecification4", "linkageSpecification4");
 
     // check completeness
-    for (var id : expectedIdCommentMap.keySet()) {
+    for (String id : expectedIdCommentMap.keySet()) {
       LOG.debug("id: {}", id);
 
       List<Token> comments = visitor.idCommentMap.get(id);
@@ -189,7 +190,7 @@ public class CxxPublicApiVisitorTest {
     }
 
     // check correction
-    for (var id : visitor.idCommentMap.keySet()) {
+    for (String id : visitor.idCommentMap.keySet()) {
       LOG.debug("id: {}", id);
 
       List<Token> comments = visitor.idCommentMap.get(id);
@@ -212,11 +213,11 @@ public class CxxPublicApiVisitorTest {
   private Tuple verifyPublicApiOfFile(String fileName)
     throws UnsupportedEncodingException, IOException {
 
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.API_FILE_SUFFIXES,
                     new String[]{getFileExtension(fileName)});
 
-    var tester = CxxFileTesterHelper.create(fileName, ".", "");
+    CxxFileTester tester = CxxFileTesterHelper.create(fileName, ".", "");
     SourceFile file = CxxAstScanner.scanSingleInputFileConfig(tester.asInputFile(), squidConfig);
 
     LOG.debug("#API: {} UNDOC: {}",

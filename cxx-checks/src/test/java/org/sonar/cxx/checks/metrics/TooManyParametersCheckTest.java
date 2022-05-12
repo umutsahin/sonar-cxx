@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -32,10 +33,10 @@ public class TooManyParametersCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test() throws UnsupportedEncodingException, IOException {
-    var check = new TooManyParametersCheck();
+    TooManyParametersCheck check = new TooManyParametersCheck();
     check.setMax(3);
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyParameters.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyParameters.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(11)

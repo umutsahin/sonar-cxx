@@ -40,11 +40,11 @@ public class CxxReportSensor_getReports_Test {
 
   @Test
   public void testAbsoluteInsideBasedir() throws IOException {
-    var absReportFile = new File(base.getRoot(), "path/to/report.xml").getAbsoluteFile();
+    File absReportFile = new File(base.getRoot(), "path/to/report.xml").getAbsoluteFile();
     FileUtils.touch(absReportFile);
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString());
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -54,10 +54,10 @@ public class CxxReportSensor_getReports_Test {
   @Test
   public void testAbsoluteOutsideBasedir() {
     File absReportsProject = TestUtils.loadResource("/org/sonar/cxx/sensors/reports-project").getAbsoluteFile();
-    var absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-V2.xml");
+    File absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-V2.xml");
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString());
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -67,10 +67,10 @@ public class CxxReportSensor_getReports_Test {
   @Test
   public void testAbsoluteOutsideBasedirWithGlobbing() {
     File absReportsProject = TestUtils.loadResource("/org/sonar/cxx/sensors/reports-project").getAbsoluteFile();
-    var absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
+    File absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString());
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -80,13 +80,13 @@ public class CxxReportSensor_getReports_Test {
   @Test
   public void testAbsoluteOutsideBasedirAndRelative() throws IOException {
     File absReportsProject = TestUtils.loadResource("/org/sonar/cxx/sensors/reports-project").getAbsoluteFile();
-    var absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-V2.xml");
+    File absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-V2.xml");
 
-    var relativeReport = "path/to/report.xml";
+    String relativeReport = "path/to/report.xml";
     FileUtils.touch(new File(base.getRoot(), relativeReport));
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString() + "," + relativeReport);
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -96,7 +96,7 @@ public class CxxReportSensor_getReports_Test {
   @Test
   public void testAbsoluteOutsideBasedirWithGlobbingAndRelativeWithGlobbing() throws IOException {
     File absReportsProject = TestUtils.loadResource("/org/sonar/cxx/sensors/reports-project").getAbsoluteFile();
-    var absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
+    File absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
 
     FileUtils.touch(new File(base.getRoot(), "report.xml"));
     FileUtils.touch(new File(base.getRoot(), "path/to/supercoolreport.xml"));
@@ -107,7 +107,7 @@ public class CxxReportSensor_getReports_Test {
     FileUtils.touch(new File(base.getRoot(), "some/reports/b"));
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString() + ",**/*.xml");
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -117,7 +117,7 @@ public class CxxReportSensor_getReports_Test {
   @Test
   public void testAbsoluteOutsideBasedirWithGlobbingAndNestedRelativeWithGlobbing() throws IOException {
     File absReportsProject = TestUtils.loadResource("/org/sonar/cxx/sensors/reports-project").getAbsoluteFile();
-    var absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
+    File absReportFile = new File(absReportsProject, "cppcheck-reports/cppcheck-result-SAMPLE-*.xml");
 
     FileUtils.touch(new File(base.getRoot(), "path/to/supercoolreport.xml"));
     FileUtils.touch(new File(base.getRoot(), "path/to/a/report.xml"));
@@ -127,7 +127,7 @@ public class CxxReportSensor_getReports_Test {
     FileUtils.touch(new File(base.getRoot(), "some/reports/b.xml"));
 
     settings.setProperty(REPORT_PATH_KEY, absReportFile.toString() + ",path/**/*.xml");
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -142,7 +142,7 @@ public class CxxReportSensor_getReports_Test {
     FileUtils.touch(new File(base.getRoot(), "path/to/some/reports/2.xml"));
 
     settings.setProperty(REPORT_PATH_KEY, "../" + base.getRoot().getName() + "/path/**/*.xml");
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
@@ -158,7 +158,7 @@ public class CxxReportSensor_getReports_Test {
                                             + "../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../"
                                           + "../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../"
                                           + "../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../*.xml");
-    var context = SensorContextTester.create(base.getRoot());
+    SensorContextTester context = SensorContextTester.create(base.getRoot());
     context.setSettings(settings);
 
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);

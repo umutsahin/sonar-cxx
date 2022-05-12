@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -49,17 +50,17 @@ public class CxxFileLinesContextTest {
   @Before
   public void setUp() throws IOException {
     ActiveRules rules = mock(ActiveRules.class);
-    var checkFactory = new CheckFactory(rules);
+    CheckFactory checkFactory = new CheckFactory(rules);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     fileLinesContext = new FileLinesContextForTesting();
     when(fileLinesContextFactory.createFor(Mockito.any(InputFile.class))).thenReturn(fileLinesContext);
 
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx");
-    var context = SensorContextTester.create(baseDir);
-    var inputFile = TestUtils.buildInputFile(baseDir, "ncloc.cc");
+    SensorContextTester context = SensorContextTester.create(baseDir);
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "ncloc.cc");
     context.fileSystem().add(inputFile);
 
-    var sensor = new CxxSquidSensor(fileLinesContextFactory, checkFactory, new NoSonarFilter(), null);
+    CxxSquidSensor sensor = new CxxSquidSensor(fileLinesContextFactory, checkFactory, new NoSonarFilter(), null);
     sensor.execute(context);
   }
 

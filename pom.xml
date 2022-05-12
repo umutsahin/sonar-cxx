@@ -260,7 +260,7 @@
     <aggregate.report.dir>integration-tests/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
     <!-- versions -->
     <sonar.version>7.9</sonar.version>
-    <java.version>11</java.version>
+    <java.version>8</java.version>
     <maven.compiler.version>3.8.1</maven.compiler.version>
     <sslr.version>1.24.0.633</sslr.version>
     <!-- we depend on API ${sonar.version} but we keep backward compatibility with LTS -->
@@ -402,7 +402,8 @@
           <configuration>
             <encoding>UTF-8</encoding>
             <showDeprecation>true</showDeprecation>
-            <release>${java.version}</release>
+              <source>1.8</source>
+              <target>1.8</target>
             <debug>true</debug>
           </configuration>
         </plugin>
@@ -432,6 +433,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>

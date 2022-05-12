@@ -54,8 +54,8 @@ public class CxxFunctionSizeVisitor<G extends Grammar> extends SquidAstVisitor<G
 
   @Override
   public void leaveNode(AstNode node) {
-    var sourceFunction = (SourceFunction) getContext().peekSourceCode();
-    var lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
+    SourceFunction sourceFunction = (SourceFunction) getContext().peekSourceCode();
+    int lineCount = sourceFunction.getInt(CxxMetric.LINES_OF_CODE_IN_FUNCTION_BODY);
 
     if (lineCount > this.sizeThreshold) {
       bigFunctions++;
@@ -77,7 +77,7 @@ public class CxxFunctionSizeVisitor<G extends Grammar> extends SquidAstVisitor<G
   public void leaveFile(AstNode astNode) {
     super.leaveFile(astNode);
 
-    var sourceFile = (SourceFile) getContext().peekSourceCode();
+    SourceFile sourceFile = (SourceFile) getContext().peekSourceCode();
     sourceFile.setMeasure(CxxMetric.BIG_FUNCTIONS, bigFunctions);
     sourceFile.setMeasure(CxxMetric.BIG_FUNCTIONS_LOC, bigFunctionsLoc);
     sourceFile.setMeasure(CxxMetric.LOC_IN_FUNCTIONS, totalLoc);

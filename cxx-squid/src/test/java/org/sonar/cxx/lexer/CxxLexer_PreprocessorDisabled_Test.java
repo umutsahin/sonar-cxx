@@ -39,7 +39,7 @@ public class CxxLexer_PreprocessorDisabled_Test {
 
   @Test
   public void preprocessor_directives() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(lexer.lex("#include <iostream>")).anySatisfy(token -> assertThat(token).isValue(
       "#include <iostream>").hasType(CxxTokenType.PREPROCESSOR));
     softly.assertThat(lexer.lex("# include <iostream>")).anySatisfy(token -> assertThat(token).isValue(
@@ -69,7 +69,7 @@ public class CxxLexer_PreprocessorDisabled_Test {
 
   @Test
   public void preprocessor_directive_with_comment() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(lexer.lex("#define A B*/\n")).anySatisfy(token -> assertThat(token)
       .isValue("#define A B*/")
       .hasType(CxxTokenType.PREPROCESSOR));

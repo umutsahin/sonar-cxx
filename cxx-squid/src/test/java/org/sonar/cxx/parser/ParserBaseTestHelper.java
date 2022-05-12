@@ -48,7 +48,7 @@ public class ParserBaseTestHelper {
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.ERROR_RECOVERY_ENABLED,
                     "false");
 
-    var file = new File("snippet.cpp").getAbsoluteFile();
+    File file = new File("snippet.cpp").getAbsoluteFile();
     SquidAstVisitorContextImpl<Grammar> context = mock(SquidAstVisitorContextImpl.class);
     when(context.getFile()).thenReturn(file);
 
@@ -74,9 +74,9 @@ public class ParserBaseTestHelper {
   }
 
   private String serialize(AstNode root) {
-    var values = new LinkedList<String>();
+    LinkedList<String> values = new LinkedList<String>();
     iterate(root, values);
-    var s = String.join(" ", values);
+    String s = String.join(" ", values);
     return s;
   }
 

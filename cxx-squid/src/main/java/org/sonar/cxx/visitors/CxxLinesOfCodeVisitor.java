@@ -69,7 +69,7 @@ public class CxxLinesOfCodeVisitor<GRAMMAR extends Grammar>
     lastTokenLine = token.getLine() + tokenLines.length - 1;
 
     // handle comments
-    for (var trivia : token.getTrivia()) {
+    for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
         visitComment(trivia);
       }
@@ -84,7 +84,7 @@ public class CxxLinesOfCodeVisitor<GRAMMAR extends Grammar>
       .split(getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue()), -1);
     int line = trivia.getToken().getLine();
 
-    for (var commentLine : commentLines) {
+    for (String commentLine : commentLines) {
       if (commentLine.contains("NOSONAR")) {
         SourceCode sourceCode = getContext().peekSourceCode();
         if (sourceCode instanceof SourceFile) {

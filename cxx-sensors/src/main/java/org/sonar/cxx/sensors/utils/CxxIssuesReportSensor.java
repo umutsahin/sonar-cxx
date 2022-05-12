@@ -58,13 +58,13 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
   @Override
   public void executeImpl() {
     List<File> reports = getReports(getReportPathsKey());
-    for (var report : reports) {
+    for (File report : reports) {
       executeReport(report);
     }
   }
 
   private void saveIssue(String ruleId, CxxReportIssue issue) {
-    var newIssue = context.newIssue();
+    NewIssue newIssue = context.newIssue();
     if (addLocations(newIssue, ruleId, issue)) {
       addFlow(newIssue, issue);
       newIssue.save();
@@ -87,12 +87,12 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
         saveIssue(issue.getRuleId(), issue);
         if (issue.hasAliasRuleIds()) {
           // in case of alias rule ids save the issues also with these ids
-          for (var aliasRuleId : issue.getAliasRuleIds()) {
+          for (String aliasRuleId : issue.getAliasRuleIds()) {
             saveIssue(aliasRuleId, issue);
           }
         }
       } catch (RuntimeException e) {
-        var msg = "Cannot save the issue '" + issue + "'";
+        String msg = "Cannot save the issue '" + issue + "'";
         CxxUtils.validateRecovery(msg, e, context.config());
       }
     }
@@ -108,14 +108,14 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
       processReport(report);
       LOG.info("Processing successful, saved new issues={}", savedNewIssues);
     } catch (ReportException e) {
-      var msg = e.getMessage() + ", report='" + report + "'";
+      String msg = e.getMessage() + ", report='" + report + "'";
       CxxUtils.validateRecovery(msg, e, context.config());
     }
   }
 
   private TextRange getRange(CxxReportLocation location, InputFile inputFile) {
-    var line = 1;
-    var column = -1;
+    int line = 1;
+    int column = -1;
     try {
       if (location.getLine() != null) {
         // https://jira.sonarsource.com/browse/SONAR-6792
@@ -143,7 +143,7 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
 
   @CheckForNull
   private NewIssueLocation createNewIssueLocation(NewIssue newIssue, CxxReportLocation location) {
-    var inputFile = getInputFileIfInProject(location.getFile());
+    InputFile inputFile = getInputFileIfInProject(location.getFile());
     if (inputFile != null) {
       TextRange range = getRange(location, inputFile);
       return newIssue.newLocation()
@@ -155,8 +155,8 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
   }
 
   private boolean addLocations(NewIssue newIssue, String ruleId, CxxReportIssue issue) {
-    var first = true;
-    for (var location : issue.getLocations()) {
+    boolean first = true;
+    for (CxxReportLocation location : issue.getLocations()) {
       NewIssueLocation newLocation = null;
       if (location.getFile() != null && !location.getFile().isEmpty()) {
         newLocation = createNewIssueLocation(newIssue, location);
@@ -182,9 +182,9 @@ public abstract class CxxIssuesReportSensor extends CxxReportSensor {
   }
 
   private void addFlow(NewIssue newIssue, CxxReportIssue issue) {
-    var newIssueFlow = new ArrayList<NewIssueLocation>();
-    for (var location : issue.getFlow()) {
-      var newIssueLocation = createNewIssueLocation(newIssue, location);
+    ArrayList<NewIssueLocation> newIssueFlow = new ArrayList<NewIssueLocation>();
+    for (CxxReportLocation location : issue.getFlow()) {
+      NewIssueLocation newIssueLocation = createNewIssueLocation(newIssue, location);
       if (newIssueLocation != null) {
         newIssueFlow.add(newIssueLocation);
       } else {

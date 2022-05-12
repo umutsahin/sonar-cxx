@@ -63,9 +63,9 @@ public class StaxParser {
    */
   public StaxParser(XmlStreamHandler streamHandler, boolean isoControlCharsAwareParser) {
     this.streamHandler = streamHandler;
-    var xmlFactory = XMLInputFactory.newInstance();
+    XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
     if (xmlFactory instanceof WstxInputFactory) {
-      var wstxInputfactory = (WstxInputFactory) xmlFactory;
+      WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlFactory;
       wstxInputfactory.configureForLowMemUsage();
       wstxInputfactory.getConfig().setUndeclaredEntityResolver(new UndeclaredEntitiesXMLResolver());
     }
@@ -83,7 +83,7 @@ public class StaxParser {
    * @exception XMLStreamException javax.xml.stream.XMLStreamException
    */
   public void parse(File xmlFile) throws XMLStreamException {
-    try ( var input = java.nio.file.Files.newInputStream(xmlFile.toPath())) {
+    try (InputStream input = java.nio.file.Files.newInputStream(xmlFile.toPath())) {
       parse(input);
     } catch (IOException e) {
       LOG.error("Cannot access file: " + e.getMessage());
@@ -122,7 +122,7 @@ public class StaxParser {
    */
   public void parse(URL xmlUrl) throws XMLStreamException {
     try {
-      try ( var xml = xmlUrl.openStream()) {
+      try (InputStream xml = xmlUrl.openStream()) {
         parse(xml);
       }
     } catch (IOException e) {
@@ -147,7 +147,7 @@ public class StaxParser {
       // return the entity under its raw form if not an unicode expression
       String undeclared = undeclaredEntity;
       if (StringUtils.startsWithIgnoreCase(undeclared, "u") && undeclared.length() == 5) {
-        var unicodeCharHexValue = Integer.parseInt(undeclared.substring(1), 16);
+        int unicodeCharHexValue = Integer.parseInt(undeclared.substring(1), 16);
         if (Character.isDefined(unicodeCharHexValue)) {
           undeclared = new String(new char[]{(char) unicodeCharHexValue});
         }
@@ -166,8 +166,8 @@ public class StaxParser {
     }
 
     private static void checkBufferForISOControlChars(byte[] buffer, int off, int len) {
-      for (var i = off; i < len; i++) {
-        var streamChar = (char) buffer[i];
+      for (int i = off; i < len; i++) {
+        char streamChar = (char) buffer[i];
         if (Character.isISOControl(streamChar) && streamChar != '\n') {
           // replace control chars by a simple space
           buffer[i] = ' ';

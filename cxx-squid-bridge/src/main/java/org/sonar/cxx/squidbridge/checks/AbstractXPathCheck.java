@@ -58,9 +58,9 @@ public abstract class AbstractXPathCheck<G extends Grammar> extends SquidCheck<G
     if (query != null && fileNode != null) {
       List<Object> objects = query.selectNodes(fileNode);
 
-      for (var object : objects) {
+      for (Object object : objects) {
         if (object instanceof AstNode) {
-          var astNode = (AstNode) object;
+          AstNode astNode = (AstNode) object;
           getContext().createLineViolation(this, getMessage(), astNode.getTokenLine());
         } else if (object instanceof Boolean && (Boolean) object) {
           getContext().createFileViolation(this, getMessage());

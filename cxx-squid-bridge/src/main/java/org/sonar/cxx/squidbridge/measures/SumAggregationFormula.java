@@ -29,8 +29,8 @@ public class SumAggregationFormula implements AggregationFormula {
 
   @Override
   public double aggregate(MetricDef metric, Collection<Measurable> measurables) {
-    var aggregation = 0.0;
-    for (var measurable : measurables) {
+    double aggregation = 0.0;
+    for (Measurable measurable : measurables) {
       aggregation += measurable.getDouble(metric);
     }
     return aggregation;

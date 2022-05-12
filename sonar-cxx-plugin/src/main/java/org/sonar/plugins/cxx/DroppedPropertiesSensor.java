@@ -46,7 +46,7 @@ public class DroppedPropertiesSensor implements ProjectSensor {
   }
 
   private static Map<String, String> initRemovedProperties() {
-    var map = new HashMap<String, String>();
+    HashMap<String, String> map = new HashMap<String, String>();
     map.put("sonar.cxx.include_directories", "Use 'sonar.cxx.includeDirectories' instead."); // V0.9.1
     map.put("sonar.cxx.externalrules.reportPaths", "Use 'sonar.cxx.other.reportPaths' instead."); // V0.9.1
     map.put("sonar.cxx.cppncss.reportPaths", ""); // V0.9.1
@@ -116,7 +116,7 @@ public class DroppedPropertiesSensor implements ProjectSensor {
   public void execute(SensorContext context) {
     ALL_REMOVED_PROPERTIES.forEach((key, info) -> {
       if (context.config().hasKey(key)) {
-        var msg = "CXX property '" + key + "' is no longer supported.";
+        String msg = "CXX property '" + key + "' is no longer supported.";
         if (!info.isEmpty()) {
           msg += " " + info;
         }

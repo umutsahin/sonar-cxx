@@ -27,6 +27,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -50,11 +51,11 @@ public class CxxClangSASensorTest {
 
   @Test
   public void shouldIgnoreIssuesIfResourceNotFound() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxClangSASensor.REPORT_PATH_KEY, "clangsa-reports/clangsa-empty.plist");
     context.setSettings(settings);
 
-    var sensor = new CxxClangSASensor();
+    CxxClangSASensor sensor = new CxxClangSASensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).isEmpty();
@@ -62,25 +63,25 @@ public class CxxClangSASensorTest {
 
   @Test
   public void shouldReportCorrectViolations() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxClangSASensor.REPORT_PATH_KEY, "clangsa-reports/clangsa-report.plist");
     context.setSettings(settings);
 
     /*
      * 2 issues
      */
-    var testFile0 = TestInputFileBuilder.create("ProjectKey", "src/lib/component0.cc").setLanguage("cxx")
-      .initMetadata("asd\nasdghzui\nasd\nasd\nasdghtlout\nasdghtkouilh\nasd\nasdkhgkjgkjhgjg\nasd\n").build();
+    DefaultInputFile testFile0 = TestInputFileBuilder.create("ProjectKey", "src/lib/component0.cc").setLanguage("cxx")
+                                                     .initMetadata("asd\nasdghzui\nasd\nasd\nasdghtlout\nasdghtkouilh\nasd\nasdkhgkjgkjhgjg\nasd\n").build();
     /*
      * 1 issue
      */
-    var testFile1 = TestInputFileBuilder.create("ProjectKey", "src/lib/component1.cc").setLanguage("cxx")
-      .initMetadata("asd\nasdas\nasdaghtzutiojklmg\n").build();
+    DefaultInputFile testFile1 = TestInputFileBuilder.create("ProjectKey", "src/lib/component1.cc").setLanguage("cxx")
+                                                     .initMetadata("asd\nasdas\nasdaghtzutiojklmg\n").build();
 
     context.fileSystem().add(testFile0);
     context.fileSystem().add(testFile1);
 
-    var sensor = new CxxClangSASensor();
+    CxxClangSASensor sensor = new CxxClangSASensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(3);
@@ -88,7 +89,7 @@ public class CxxClangSASensorTest {
 
   @Test
   public void shouldReportCorrectFlows() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxClangSASensor.REPORT_PATH_KEY,
                          "clangsa-reports/clangsa-report.plist");
     context.setSettings(settings);
@@ -96,18 +97,18 @@ public class CxxClangSASensorTest {
     /*
      * 2 issues
      */
-    var testFile0 = TestInputFileBuilder.create("ProjectKey", "src/lib/component0.cc").setLanguage("cxx")
-      .setContents(generateTestFileContents(100, 80)).build();
+    DefaultInputFile testFile0 = TestInputFileBuilder.create("ProjectKey", "src/lib/component0.cc").setLanguage("cxx")
+                                                     .setContents(generateTestFileContents(100, 80)).build();
     /*
      * 1 issue
      */
-    var testFile1 = TestInputFileBuilder.create("ProjectKey", "src/lib/component1.cc").setLanguage("cxx")
-      .setContents(generateTestFileContents(100, 80)).build();
+    DefaultInputFile testFile1 = TestInputFileBuilder.create("ProjectKey", "src/lib/component1.cc").setLanguage("cxx")
+                                                     .setContents(generateTestFileContents(100, 80)).build();
 
     context.fileSystem().add(testFile0);
     context.fileSystem().add(testFile1);
 
-    var sensor = new CxxClangSASensor();
+    CxxClangSASensor sensor = new CxxClangSASensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(3);
@@ -151,14 +152,14 @@ public class CxxClangSASensorTest {
 
   @Test
   public void invalidReportReportsNoIssues() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxClangSASensor.REPORT_PATH_KEY, "clangsa-reports/clangsa-reportXYZ.plist");
     context.setSettings(settings);
 
     context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", "src/lib/component1.cc")
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n").build());
 
-    var sensor = new CxxClangSASensor();
+    CxxClangSASensor sensor = new CxxClangSASensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).isEmpty();
@@ -166,11 +167,11 @@ public class CxxClangSASensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxClangSASensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxClangSASensor sensor = new CxxClangSASensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Clang Static Analyzer report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxClangSARuleRepository.KEY);

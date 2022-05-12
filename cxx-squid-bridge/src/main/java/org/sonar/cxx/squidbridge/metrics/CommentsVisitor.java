@@ -29,6 +29,8 @@ import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.sonar.sslr.api.Trivia;
 import org.sonar.cxx.squidbridge.SquidAstVisitor;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.measures.MetricDef;
@@ -73,13 +75,13 @@ public final class CommentsVisitor<G extends Grammar> extends SquidAstVisitor<G>
   @Override
   public void visitToken(Token token) {
     if (!ignoreHeaderComments || seenFirstToken) {
-      for (var trivia : token.getTrivia()) {
+      for (Trivia trivia : token.getTrivia()) {
         if (trivia.isComment()) {
           String[] commentLines = getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue())
             .split("(\r)?\n|\r", -1);
           int line = trivia.getToken().getLine();
 
-          for (var commentLine : commentLines) {
+          for (String commentLine : commentLines) {
             if (enableNoSonar && commentLine.contains("NOSONAR")) {
               addNoSonar(line);
             } else if (commentMetric != null && !getContext().getCommentAnalyser().isBlank(commentLine)) {

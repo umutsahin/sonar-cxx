@@ -21,6 +21,8 @@ package org.sonar.cxx.checks.regex;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
+
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.api.utils.WildcardPattern;
@@ -108,9 +110,9 @@ public class LineRegularExpressionCheck extends SquidCheck<Grammar> {
   @Override
   public void visitFile(AstNode fileNode) {
     if (compare(invertFilePattern, matchFile())) {
-      var nr = 0;
-      for (var line : getContext().getInputFileLines()) {
-        var matcher = pattern.matcher(line);
+      int nr = 0;
+      for (String line : getContext().getInputFileLines()) {
+        Matcher matcher = pattern.matcher(line);
         ++nr;
         if (compare(invertRegularExpression, matcher.find())) {
           getContext().createLineViolation(this, message, nr);
@@ -121,7 +123,7 @@ public class LineRegularExpressionCheck extends SquidCheck<Grammar> {
 
   private boolean matchFile() {
     if (!matchFilePattern.isEmpty()) {
-      var filePattern = WildcardPattern.create(matchFilePattern);
+      WildcardPattern filePattern = WildcardPattern.create(matchFilePattern);
       String path = PathUtils.sanitize(getContext().getInputFile().file().getPath());
       return path != null ? filePattern.match(path) : false;
     }

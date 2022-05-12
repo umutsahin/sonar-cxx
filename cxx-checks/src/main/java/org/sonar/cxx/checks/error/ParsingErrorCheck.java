@@ -42,7 +42,7 @@ public class ParsingErrorCheck extends SquidCheck<Grammar> implements AstScanner
 
   @Override
   public void processException(Exception e) {
-    var exception = new StringWriter();
+    StringWriter exception = new StringWriter();
     e.printStackTrace(new PrintWriter(exception));
     getContext().createFileViolation(this, exception.toString());
   }

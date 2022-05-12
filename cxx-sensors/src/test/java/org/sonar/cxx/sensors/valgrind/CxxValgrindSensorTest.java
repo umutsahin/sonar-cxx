@@ -47,7 +47,7 @@ public class CxxValgrindSensorTest {
 
   @Test
   public void shouldNotThrowWhenGivenValidData() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     sensor.execute(context);
 
     assertThat(context.allAnalysisErrors()).isEmpty();
@@ -55,14 +55,14 @@ public class CxxValgrindSensorTest {
 
   @Test
   public void shouldSaveViolationIfErrorIsInside() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     context.fileSystem().add(
       TestInputFileBuilder.create("myProjectKey", "dir/file")
         .setLanguage("cxx")
         .initMetadata("asd\nasdas\nasda\n")
         .build());
     sensor.execute(context); // set context
-    var valgrindErrors = new HashSet<ValgrindError>();
+    HashSet<ValgrindError> valgrindErrors = new HashSet<ValgrindError>();
     valgrindErrors.add(mockValgrindError(true));
     sensor.saveErrors(valgrindErrors);
 
@@ -71,9 +71,9 @@ public class CxxValgrindSensorTest {
 
   @Test
   public void shouldNotSaveViolationIfErrorIsOutside() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     sensor.execute(context); // set context
-    var valgrindErrors = new HashSet<ValgrindError>();
+    HashSet<ValgrindError> valgrindErrors = new HashSet<ValgrindError>();
     valgrindErrors.add(mockValgrindError(false));
     sensor.saveErrors(valgrindErrors);
 
@@ -82,10 +82,10 @@ public class CxxValgrindSensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Valgrind report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxValgrindRuleRepository.KEY);

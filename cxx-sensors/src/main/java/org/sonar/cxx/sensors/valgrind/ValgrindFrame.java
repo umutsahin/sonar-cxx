@@ -54,7 +54,7 @@ class ValgrindFrame {
 
   @Override
   public String toString() {
-    var builder = new StringBuilder(256).append(ip).append(": ").append(fn);
+    StringBuilder builder = new StringBuilder(256).append(ip).append(": ").append(fn);
     if (isLocationKnown()) {
       builder.append(" (")
         .append("".equals(file) ? ("in " + obj) : (file + getLineStr()))
@@ -75,7 +75,7 @@ class ValgrindFrame {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    var other = (ValgrindFrame) obj;
+    ValgrindFrame other = (ValgrindFrame) obj;
     return new EqualsBuilder()
       .append(ip, other.ip)
       .append(this.obj, other.obj)

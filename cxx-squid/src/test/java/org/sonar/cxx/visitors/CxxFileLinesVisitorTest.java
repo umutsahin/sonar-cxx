@@ -31,6 +31,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.CxxFileTester;
 import org.sonar.cxx.CxxFileTesterHelper;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.squidbridge.api.SourceFile;
@@ -41,7 +42,7 @@ public class CxxFileLinesVisitorTest {
 
   @Before
   public void setUp() throws IOException {
-    var tester = CxxFileTesterHelper.create("src/test/resources/visitors/ncloc.cc", ".", "");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/visitors/ncloc.cc", ".", "");
     sourceFile = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), new CxxFileLinesVisitor());
   }
 
@@ -53,7 +54,7 @@ public class CxxFileLinesVisitorTest {
       90, 95, 98, 99, 100, 102, 107, 108, 109, 110, 111, 113, 115, 118, 119, 124, 126)
       .collect(Collectors.toCollection(HashSet::new));
     List<Integer> linesOfCode = (List<Integer>) sourceFile.getData(CxxMetric.NCLOC_DATA);
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(linesOfCode).containsExactlyInAnyOrderElementsOf(testLines);
     softly.assertAll();
   }

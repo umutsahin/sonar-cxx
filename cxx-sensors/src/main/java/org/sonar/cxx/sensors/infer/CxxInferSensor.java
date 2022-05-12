@@ -63,7 +63,7 @@ public class CxxInferSensor extends CxxIssuesReportSensor {
 
   @Override
   protected void processReport(File report) {
-    var parser = new InferParser(this);
+    InferParser parser = new InferParser(this);
     parser.parse(report);
   }
 

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.Severity;
+import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RulePriority;
 import org.sonar.api.utils.ValidationMessages;
@@ -65,7 +66,7 @@ public class AnnotationBasedProfileBuilderTest {
 
     RulesProfile profile = build(RuleActivatedByDefault.class);
     assertThat(profile.getActiveRules()).hasSize(1);
-    var activeRule = profile.getActiveRules().get(0);
+    ActiveRule activeRule = profile.getActiveRules().get(0);
     assertThat(activeRule.getRule()).isEqualTo(rule);
     assertThat(activeRule.getSeverity().toString()).isEqualTo(Severity.MINOR);
     assertThat(messages.getWarnings()).isEmpty();

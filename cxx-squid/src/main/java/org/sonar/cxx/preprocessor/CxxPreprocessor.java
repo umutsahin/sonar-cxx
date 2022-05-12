@@ -26,6 +26,7 @@ import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Preprocessor;
 import com.sonar.sslr.api.PreprocessorAction;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.impl.Parser;
 import java.io.File;
@@ -215,8 +216,8 @@ public class CxxPreprocessor extends Preprocessor {
    */
   @Override
   public PreprocessorAction process(List<Token> tokens) { //TODO: deprecated PreprocessorAction
-    var token = tokens.get(0);
-    var type = token.getType();
+    Token token = tokens.get(0);
+    TokenType type = token.getType();
 
     if (type.equals(PREPROCESSOR)) {
       String rootFilePath = unitCodeProvider.getFileUnderAnalysisPath();
@@ -247,7 +248,7 @@ public class CxxPreprocessor extends Preprocessor {
       return oneConsumedToken(token);
     }
 
-    var type = (CppGrammarImpl) lineAst.getType();
+    CppGrammarImpl type = (CppGrammarImpl) lineAst.getType();
     switch (type) {
       case ifLine:
         return handleIfLine(lineAst, token, rootFilePath);
@@ -352,13 +353,13 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private static List<Token> matchArgument(List<Token> tokens, List<Token> arguments) throws MismatchException {
-    var nestingLevel = 0;
-    var tokensConsumed = 0;
-    var noTokens = tokens.size();
-    var firstToken = tokens.get(0);
-    var currToken = firstToken;
+    int nestingLevel = 0;
+    int tokensConsumed = 0;
+    int noTokens = tokens.size();
+    Token firstToken = tokens.get(0);
+    Token currToken = firstToken;
     String curr = currToken.getValue();
-    var matchedTokens = new LinkedList<Token>();
+    LinkedList<Token> matchedTokens = new LinkedList<Token>();
 
     while (true) {
       if (nestingLevel == 0 && (",".equals(curr) || ")".equals(curr))) {
@@ -392,14 +393,14 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private static List<Token> evaluateHashhashOperators(List<Token> tokens) {
-    var newTokens = new ArrayList<Token>();
+    ArrayList<Token> newTokens = new ArrayList<Token>();
 
     Iterator<Token> it = tokens.iterator();
     while (it.hasNext()) {
-      var curr = it.next();
+      Token curr = it.next();
       if ("##".equals(curr.getValue())) {
-        var pred = predConcatToken(newTokens);
-        var succ = succConcatToken(it);
+        Token pred = predConcatToken(newTokens);
+        Token succ = succConcatToken(it);
         if (pred != null && succ != null) {
           newTokens.add(Token.builder()
             .setLine(pred.getLine())
@@ -423,10 +424,10 @@ public class CxxPreprocessor extends Preprocessor {
   @CheckForNull
   private static Token predConcatToken(List<Token> tokens) {
     while (!tokens.isEmpty()) {
-      var last = tokens.remove(tokens.size() - 1);
+      Token last = tokens.remove(tokens.size() - 1);
       if (!last.getType().equals(WS)) {
         if (!tokens.isEmpty()) {
-          var pred = tokens.get(tokens.size() - 1);
+          Token pred = tokens.get(tokens.size() - 1);
           if (!pred.getType().equals(WS) && !pred.hasTrivia()) {
             // Needed to paste tokens 0 and x back together after #define N(hex) 0x ## hex
             tokens.remove(tokens.size() - 1);
@@ -460,11 +461,11 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private static String quote(String str) {
-    var result = new StringBuilder(2 * str.length());
-    var addBlank = false;
-    var ignoreNextBlank = false;
-    for (var i = 0; i < str.length(); i++) {
-      var c = str.charAt(i);
+    StringBuilder result = new StringBuilder(2 * str.length());
+    boolean addBlank = false;
+    boolean ignoreNextBlank = false;
+    for (int i = 0; i < str.length(); i++) {
+      char c = str.charAt(i);
       if (Character.isLowerCase(c) || Character.isUpperCase(c) || Character.isDigit(c) || c == '_') { // token
         if (addBlank) {
           result.append(' ');
@@ -508,9 +509,9 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private static List<Token> reallocate(List<Token> tokens, Token token) {
-    var reallocated = new LinkedList<Token>();
+    LinkedList<Token> reallocated = new LinkedList<Token>();
     int currColumn = token.getColumn();
-    for (var t : tokens) {
+    for (Token t : tokens) {
       reallocated.add(Token.builder()
         .setLine(token.getLine())
         .setColumn(currColumn)
@@ -526,18 +527,18 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private static Macro parseMacroDefinition(AstNode defineLineAst) {
-    var ast = defineLineAst.getFirstChild();
-    var nameNode = ast.getFirstDescendant(CppGrammarImpl.ppToken);
+    AstNode ast = defineLineAst.getFirstChild();
+    AstNode nameNode = ast.getFirstDescendant(CppGrammarImpl.ppToken);
     String macroName = nameNode.getTokenValue();
 
-    var paramList = ast.getFirstDescendant(CppGrammarImpl.parameterList);
+    AstNode paramList = ast.getFirstDescendant(CppGrammarImpl.parameterList);
     List<Token> macroParams = paramList == null
                                 ? "objectlikeMacroDefinition".equals(ast.getName()) ? null : new LinkedList<>()
                                 : getParams(paramList);
 
-    var vaargs = ast.getFirstDescendant(CppGrammarImpl.variadicparameter);
+    AstNode vaargs = ast.getFirstDescendant(CppGrammarImpl.variadicparameter);
     if ((vaargs != null) && (macroParams != null)) {
-      var identifier = vaargs.getFirstChild(IDENTIFIER);
+      AstNode identifier = vaargs.getFirstChild(IDENTIFIER);
       macroParams.add(identifier == null
                         ? Token.builder()
           .setLine(vaargs.getToken().getLine())
@@ -550,7 +551,7 @@ public class CxxPreprocessor extends Preprocessor {
                         : identifier.getToken());
     }
 
-    var replList = ast.getFirstDescendant(CppGrammarImpl.replacementList);
+    AstNode replList = ast.getFirstDescendant(CppGrammarImpl.replacementList);
     List<Token> macroBody = replList == null
                               ? new LinkedList<>()
                               : replList.getTokens().subList(0, replList.getTokens().size() - 1);
@@ -599,7 +600,7 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   public String expandFunctionLikeMacro(String macroName, List<Token> restTokens) {
-    var expansion = new LinkedList<Token>();
+    LinkedList<Token> expansion = new LinkedList<Token>();
     expandFunctionLikeMacro(macroName, restTokens, expansion);
     return serialize(expansion);
   }
@@ -628,16 +629,16 @@ public class CxxPreprocessor extends Preprocessor {
       "__has_include 1"
     };
 
-    for (var macro : predefinedMacros) {
+    for (String macro : predefinedMacros) {
       squidConfig.add(CxxSquidConfiguration.PREDEFINED_MACROS, CxxSquidConfiguration.DEFINES, macro);
     }
   }
 
   private void addGlobalMacros() {
-    var defines = squidConfig.getValues(CxxSquidConfiguration.GLOBAL, CxxSquidConfiguration.DEFINES);
+    List<String> defines = squidConfig.getValues(CxxSquidConfiguration.GLOBAL, CxxSquidConfiguration.DEFINES);
     if (!defines.isEmpty()) {
       Collections.reverse(defines);
-      var macros = parseMacroDefinitions(defines);
+      Map<String, Macro> macros = parseMacroDefinitions(defines);
       if (!macros.isEmpty()) {
         unitMacros.putAll(macros);
       }
@@ -645,10 +646,10 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private boolean addUnitMacros(String level) {
-    var defines = squidConfig.getLevelValues(level, CxxSquidConfiguration.DEFINES);
+    List<String> defines = squidConfig.getLevelValues(level, CxxSquidConfiguration.DEFINES);
     if (!defines.isEmpty()) {
       Collections.reverse(defines);
-      var macros = parseMacroDefinitions(defines);
+      Map<String, Macro> macros = parseMacroDefinitions(defines);
       if (!macros.isEmpty()) {
         unitMacros.putAll(macros);
         return true;
@@ -672,7 +673,7 @@ public class CxxPreprocessor extends Preprocessor {
   }
 
   private void addGlobalForcedIncludes() {
-    for (var include : squidConfig.getValues(CxxSquidConfiguration.GLOBAL, CxxSquidConfiguration.FORCE_INCLUDES)) {
+    for (String include : squidConfig.getValues(CxxSquidConfiguration.GLOBAL, CxxSquidConfiguration.FORCE_INCLUDES)) {
       if (!include.isEmpty()) {
         LOG.debug("parsing force include: '{}'", include);
         parseIncludeLine("#include \"" + include + "\"", "sonar.cxx.forceIncludes",
@@ -686,7 +687,7 @@ public class CxxPreprocessor extends Preprocessor {
    */
   private boolean addUnitForcedIncludes(String level) {
     int oldHash = unitMacros.hashCode();
-    for (var include : squidConfig.getLevelValues(level, CxxSquidConfiguration.FORCE_INCLUDES)) {
+    for (String include : squidConfig.getLevelValues(level, CxxSquidConfiguration.FORCE_INCLUDES)) {
       if (!include.isEmpty()) {
         LOG.debug("parsing force include: '{}'", include);
         parseIncludeLine("#include \"" + include + "\"", "sonar.cxx.forceIncludes",
@@ -699,7 +700,7 @@ public class CxxPreprocessor extends Preprocessor {
   private PreprocessorAction handleIfdefLine(AstNode ast, Token token, String filename) {
     if (unitCodeProvider.doNotSkipBlock()) {
       Macro macro = getMacro(getMacroName(ast));
-      var tokType = ast.getToken().getType();
+      TokenType tokType = ast.getToken().getType();
       if ((tokType.equals(IFDEF) && macro == null) || (tokType.equals(IFNDEF) && macro != null)) {
         // evaluated to false
         unitCodeProvider.skipBlock(true);
@@ -729,7 +730,7 @@ public class CxxPreprocessor extends Preprocessor {
       if (arguments.size() > macro.params.size()) {
         // group all arguments into the last one (__VA_ARGS__)
         List<Token> vaargs = arguments.subList(macro.params.size() - 1, arguments.size());
-        var firstToken = vaargs.get(0);
+        Token firstToken = vaargs.get(0);
         arguments = arguments.subList(0, macro.params.size() - 1);
         arguments.add(Token.builder()
           .setLine(firstToken.getLine())
@@ -759,7 +760,7 @@ public class CxxPreprocessor extends Preprocessor {
 
     // make sure that all expanded Tokens are marked as generated it will prevent them from being involved into
     // NCLOC / complexity / highlighting
-    for (var token : tokens) {
+    for (Token token : tokens) {
       if (!token.isGeneratedCode()) {
         token = Token.builder(token).setGeneratedCode(true).build();
       }
@@ -772,11 +773,11 @@ public class CxxPreprocessor extends Preprocessor {
     // va-opt-replacement:
     //    __VA_OPT__ ( pp-tokensopt )
     //
-    var firstIndex = -1;
-    var lastIndex = -1;
-    var brackets = 0;
+    int firstIndex = -1;
+    int lastIndex = -1;
+    int brackets = 0;
 
-    for (var i = 0; i < tokens.size(); i++) {
+    for (int i = 0; i < tokens.size(); i++) {
       switch (tokens.get(i).getValue()) {
         case "(":
           brackets++;
@@ -796,7 +797,7 @@ public class CxxPreprocessor extends Preprocessor {
         }
       }
     }
-    var replTokens = new ArrayList<Token>();
+    ArrayList<Token> replTokens = new ArrayList<Token>();
     if (firstIndex > 0 && lastIndex < tokens.size()) {
       if (keep) {
         // keep pp-tokensopt, remove ) and __VA_OPT__ (
@@ -813,19 +814,19 @@ public class CxxPreprocessor extends Preprocessor {
     // replace all parameters by according arguments "Stringify" the argument if the according parameter is
     // preceded by an #
 
-    var newTokens = new ArrayList<Token>();
+    ArrayList<Token> newTokens = new ArrayList<Token>();
     if (!body.isEmpty()) {
-      var tokenPastingLeftOp = false;
-      var tokenPastingRightOp = false;
+      boolean tokenPastingLeftOp = false;
+      boolean tokenPastingRightOp = false;
 
       // container to search parameter by name
-      var paramterIndex = new HashMap<String, Integer>();
-      for (var index = 0; index < parameters.size(); index++) {
+      HashMap<String, Integer> paramterIndex = new HashMap<String, Integer>();
+      for (int index = 0; index < parameters.size(); index++) {
         paramterIndex.put(parameters.get(index).getValue(), index);
       }
 
-      for (var i = 0; i < body.size(); ++i) {
-        var curr = body.get(i);
+      for (int i = 0; i < body.size(); ++i) {
+        Token curr = body.get(i);
         int index = -1;
         if (curr.getType().equals(IDENTIFIER)) {
           index = paramterIndex.getOrDefault(curr.getValue(), -1);
@@ -870,7 +871,7 @@ public class CxxPreprocessor extends Preprocessor {
             tokenPastingLeftOp = true;
           }
           // in case of token pasting operator do not fully expand
-          var replacement = arguments.get(index);
+          Token replacement = arguments.get(index);
           String newValue;
           if (tokenPastingLeftOp) {
             newValue = replacement.getValue();
@@ -893,7 +894,7 @@ public class CxxPreprocessor extends Preprocessor {
 
           if (newValue.isEmpty() && "__VA_ARGS__".equals(curr.getValue())) {
             // the Visual C++ implementation will suppress a trailing comma if no arguments are passed to the ellipsis
-            for (var n = newTokens.size() - 1; n != 0; n = newTokens.size() - 1) {
+            for (int n = newTokens.size() - 1; n != 0; n = newTokens.size() - 1) {
               if (newTokens.get(n).getType().equals(WS)) {
                 newTokens.remove(n);
               } else if (newTokens.get(n).getType().equals(COMMA)) {
@@ -919,7 +920,7 @@ public class CxxPreprocessor extends Preprocessor {
     // replace # with "" if sequence HASH BR occurs for body HASH __VA_ARGS__
     if (newTokens.size() > 3 && newTokens.get(newTokens.size() - 2).getType().equals(HASH)
           && newTokens.get(newTokens.size() - 1).getType().equals(BR_RIGHT)) {
-      for (var n = newTokens.size() - 2; n != 0; n--) {
+      for (int n = newTokens.size() - 2; n != 0; n--) {
         if (newTokens.get(n).getType().equals(WS)) {
           newTokens.remove(n);
         } else if (newTokens.get(n).getType().equals(HASH)) {
@@ -949,14 +950,14 @@ public class CxxPreprocessor extends Preprocessor {
    * Parse defines, which are merged into one string
    */
   private Map<String, Macro> parseMacroDefinitions(List<String> defines) {
-    var result = new HashMap<String, Macro>();
+    HashMap<String, Macro> result = new HashMap<String, Macro>();
 
-    for (var define : defines) {
+    for (String define : defines) {
       if (define.isBlank()) {
         continue;
       }
 
-      var defineString = "#define " + define;
+      String defineString = "#define " + define;
       Macro macro = parseMacroDefinition(defineString);
 
       if (macro != null) {
@@ -969,15 +970,15 @@ public class CxxPreprocessor extends Preprocessor {
   @CheckForNull
   private File findIncludedFile(AstNode ast, Token token, String currFileName) {
     String includedFileName = null;
-    var quoted = false;
+    boolean quoted = false;
 
-    var node = ast.getFirstDescendant(CppGrammarImpl.includeBodyQuoted);
+    AstNode node = ast.getFirstDescendant(CppGrammarImpl.includeBodyQuoted);
     if (node != null) {
       includedFileName = stripQuotes(node.getFirstChild().getTokenValue());
       quoted = true;
     } else if ((node = ast.getFirstDescendant(CppGrammarImpl.includeBodyBracketed)) != null) {
       node = node.getFirstDescendant(LT).getNextSibling();
-      var sb = new StringBuilder(256);
+      StringBuilder sb = new StringBuilder(256);
       while (true) {
         String value = node.getTokenValue();
         if (">".equals(value)) {
@@ -992,7 +993,7 @@ public class CxxPreprocessor extends Preprocessor {
       // expand and recurse
       String includeBody = serialize(stripEOF(node.getTokens()), "");
       String expandedIncludeBody = serialize(stripEOF(CxxLexer.create(this).lex(includeBody)), "");
-      var parseError = false;
+      boolean parseError = false;
       AstNode includeBodyAst = null;
       try {
         includeBodyAst = pplineParser.parse("#include " + expandedIncludeBody);
@@ -1145,8 +1146,8 @@ public class CxxPreprocessor extends Preprocessor {
       if (!value.isBlank()) {
         // call CXX lexer to create a CXX token
         List<Token> cxxTokens = CxxLexer.create().lex(value);
-        var cxxToken = cxxTokens.get(0);
-        var cxxType = cxxToken.getType();
+        Token cxxToken = cxxTokens.get(0);
+        TokenType cxxType = cxxToken.getType();
 
         if (!cxxType.equals(EOF)) {
           cxxToken = Token.builder()
@@ -1180,7 +1181,7 @@ public class CxxPreprocessor extends Preprocessor {
     Macro macro = getMacro(curr.getValue());
     if (macro != null) {
       List<Token> replTokens = new LinkedList<>();
-      var tokensConsumed = 0;
+      int tokensConsumed = 0;
 
       if (macro.params == null) {
         tokensConsumed = 1;
@@ -1200,7 +1201,7 @@ public class CxxPreprocessor extends Preprocessor {
         List<Token> outTokens = new LinkedList<>();
         unitMacros.disable(macro.name);
         while (!replTokens.isEmpty()) {
-          var c = replTokens.get(0);
+          Token c = replTokens.get(0);
           PreprocessorAction action = PreprocessorAction.NO_OPERATION;
           if (c.getType().equals(IDENTIFIER)) {
             List<Token> rest = new ArrayList<>(replTokens);

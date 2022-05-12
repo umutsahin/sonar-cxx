@@ -258,7 +258,7 @@ public class ExpressionEvaluatorTest {
     CxxPreprocessor pp = mock(CxxPreprocessor.class);
     when(pp.valueOf("A")).thenReturn("A");
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(eval("A", pp)).isTrue();
     softly.assertThat(eval("A && A", pp)).isTrue();
     softly.assertThat(eval("A && !A", pp)).isFalse();
@@ -303,7 +303,7 @@ public class ExpressionEvaluatorTest {
     when(pp.valueOf("x")).thenReturn("(4 + y)");
     when(pp.valueOf("y")).thenReturn("(2 * x)");
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(eval("x", pp)).isTrue();
     softly.assertThat(eval("y", pp)).isTrue();
     softly.assertAll();
@@ -338,7 +338,7 @@ public class ExpressionEvaluatorTest {
   @Test
   public void defined_true_without_parantheses() {
     CxxPreprocessor pp = mock(CxxPreprocessor.class);
-    var macro = "LALA";
+    String macro = "LALA";
     when(pp.valueOf(macro)).thenReturn("1");
     assertTrue(eval("defined " + macro, pp));
   }
@@ -351,7 +351,7 @@ public class ExpressionEvaluatorTest {
   @Test
   public void defined_true_with_parantheses() {
     CxxPreprocessor pp = mock(CxxPreprocessor.class);
-    var macro = "LALA";
+    String macro = "LALA";
     when(pp.valueOf(macro)).thenReturn("1");
     assertTrue(eval("defined (" + macro + ")", pp));
     assertTrue(eval("defined(" + macro + ")", pp));
@@ -396,11 +396,11 @@ public class ExpressionEvaluatorTest {
 
   @Test
   public void std_macro_evaluated_as_expected() {
-    var file = new File("dummy.cpp");
+    File file = new File("dummy.cpp");
     SquidAstVisitorContext<Grammar> context = mock(SquidAstVisitorContext.class);
     when(context.getFile()).thenReturn(file);
 
-    var pp = new CxxPreprocessor(context);
+    CxxPreprocessor pp = new CxxPreprocessor(context);
     pp.init();
 
     assertTrue(eval("__LINE__", pp));

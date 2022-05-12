@@ -65,27 +65,27 @@ public class CxxReportPatternMatchingTest {
   public void getReports_patternMatching() throws java.io.IOException, java.lang.InterruptedException {
     String pattern, expected, allpaths;
     List<File> reports;
-    for (var example : examples) {
+    for (String[] example : examples) {
       pattern = example[0];
       expected = example[1];
       allpaths = String.join(",", Arrays.copyOfRange(example, 1, 3));
       setupExample(allpaths);
 
       settings.setProperty(REPORT_PATH_KEY, pattern);
-      var context = SensorContextTester.create(base.getRoot());
+      SensorContextTester context = SensorContextTester.create(base.getRoot());
       context.setSettings(settings);
       reports = CxxUtils.getFiles(context, REPORT_PATH_KEY);
       String[] parsedPaths = expected.split(",");
-      var expectedFiles = new LinkedList<File>();
-      for (var path : parsedPaths) {
+      LinkedList<File> expectedFiles = new LinkedList<File>();
+      for (String path : parsedPaths) {
         path = path.trim();
         if (!path.isEmpty()) {
           expectedFiles.add(new File(base.getRoot(), path));
         }
       }
 
-      var realSet = new TreeSet<File>(reports);
-      var expectedSet = new TreeSet<File>(expectedFiles);
+      TreeSet<File> realSet = new TreeSet<File>(reports);
+      TreeSet<File> expectedSet = new TreeSet<File>(expectedFiles);
       assertThat(realSet).describedAs("Failed for pattern: {}", pattern).isEqualTo(expectedSet);
       deleteExample(base.getRoot());
     }
@@ -94,7 +94,7 @@ public class CxxReportPatternMatchingTest {
 
   private void setupExample(String pathes) throws java.io.IOException {
     String[] parsedPaths = pathes.split(",");
-    for (var path : parsedPaths) {
+    for (String path : parsedPaths) {
       path = path.trim();
       if (!path.isEmpty()) {
         FileUtils.touch(new File(base.getRoot(), path));

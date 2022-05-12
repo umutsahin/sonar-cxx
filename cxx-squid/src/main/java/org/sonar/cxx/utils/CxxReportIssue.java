@@ -101,7 +101,7 @@ public class CxxReportIssue {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    var other = (CxxReportIssue) obj;
+    CxxReportIssue other = (CxxReportIssue) obj;
     return Objects.equals(ruleId, other.ruleId)
              && Objects.equals(aliasRuleIds, other.aliasRuleIds)
              && Objects.equals(locations, other.locations)

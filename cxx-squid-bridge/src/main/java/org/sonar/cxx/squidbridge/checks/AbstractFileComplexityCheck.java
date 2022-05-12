@@ -45,8 +45,8 @@ public abstract class AbstractFileComplexityCheck<G extends Grammar> extends Squ
 
   @Override
   public void leaveFile(AstNode astNode) {
-    var sourceFile = (SourceFile) getContext().peekSourceCode();
-    var fileComplexity = ChecksHelper.getRecursiveMeasureInt(sourceFile, getComplexityMetric());
+    SourceFile sourceFile = (SourceFile) getContext().peekSourceCode();
+    int fileComplexity = ChecksHelper.getRecursiveMeasureInt(sourceFile, getComplexityMetric());
     if (fileComplexity > getMaximumFileComplexity()) {
       getContext().createFileViolation(this, "The file is too complex ({0} while maximum allowed is set to {1}).",
                                        fileComplexity, getMaximumFileComplexity());

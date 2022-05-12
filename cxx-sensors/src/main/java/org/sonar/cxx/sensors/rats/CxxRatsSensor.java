@@ -85,26 +85,26 @@ public class CxxRatsSensor extends CxxIssuesReportSensor {
   @Override
   protected void processReport(File report) {
     try {
-      var builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+      SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
       builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-      var root = builder.build(report).getRootElement();
+      Element root = builder.build(report).getRootElement();
 
       List<Element> vulnerabilities = root.getChildren("vulnerability");
-      for (var vulnerability : vulnerabilities) {
+      for (Element vulnerability : vulnerabilities) {
         String type = getVulnerabilityType(vulnerability.getChild("type"));
         String message = vulnerability.getChild("message").getTextTrim();
 
         List<Element> files = vulnerability.getChildren("file");
 
-        for (var file : files) {
+        for (Element file : files) {
           String fileName = file.getChild("name").getTextTrim();
 
           List<Element> lines = file.getChildren("line");
-          for (var lineElem : lines) {
+          for (Element lineElem : lines) {
             String line = lineElem.getTextTrim();
 
-            var issue = new CxxReportIssue(type, fileName, line, null, message);
+            CxxReportIssue issue = new CxxReportIssue(type, fileName, line, null, message);
             saveUniqueViolation(issue);
           }
         }

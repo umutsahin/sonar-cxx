@@ -59,7 +59,7 @@ public class FunctionNameCheck extends SquidCheck<Grammar> {
   private Pattern pattern = null;
 
   private static boolean isGlobalFunctionDefinition(AstNode node) {
-    var isFunction = false;
+    boolean isFunction = false;
     // not method inside of class
     // not a nested name - not method outside of class
     if ((node.getFirstAncestor(CxxGrammarImpl.memberDeclaration) == null)
@@ -77,9 +77,9 @@ public class FunctionNameCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitNode(AstNode astNode) {
-    var declId = astNode.getFirstDescendant(CxxGrammarImpl.declaratorId);
+    AstNode declId = astNode.getFirstDescendant(CxxGrammarImpl.declaratorId);
     if (isGlobalFunctionDefinition(declId)) {
-      var idNode = declId.getLastChild(IDENTIFIER);
+      AstNode idNode = declId.getLastChild(IDENTIFIER);
       if (idNode != null) {
         String identifier = idNode.getTokenValue();
         if (!pattern.matcher(identifier).matches()) {

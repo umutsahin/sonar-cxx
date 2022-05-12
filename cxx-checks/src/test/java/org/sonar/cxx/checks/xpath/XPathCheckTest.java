@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -32,11 +33,11 @@ public class XPathCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void xpathWithoutFilePattern() throws UnsupportedEncodingException, IOException {
-    var check = new XPathCheck();
+    XPathCheck check = new XPathCheck();
     check.xpathQuery = "//declaration";
     check.message = "Avoid declarations!! ";
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage(check.message)
@@ -46,12 +47,12 @@ public class XPathCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void xpathWithFilePattern1() throws UnsupportedEncodingException, IOException {
-    var check = new XPathCheck();
+    XPathCheck check = new XPathCheck();
     check.matchFilePattern = "/**/*.cc"; // all files with .cc file extension
     check.xpathQuery = "//declaration";
     check.message = "Avoid declarations!! ";
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage(check.message)
@@ -61,12 +62,12 @@ public class XPathCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void xpathWithFilePattern2() throws UnsupportedEncodingException, IOException {
-    var check = new XPathCheck();
+    XPathCheck check = new XPathCheck();
     check.matchFilePattern = "/**/test/**/xpath.cc"; // all files with filename xpath.cc in a subdirectory with name test
     check.xpathQuery = "//declaration";
     check.message = "Avoid declarations!! ";
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage(check.message)
@@ -76,12 +77,12 @@ public class XPathCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void xpathWithFilePattern3() throws UnsupportedEncodingException, IOException {
-    var check = new XPathCheck();
+    XPathCheck check = new XPathCheck();
     check.matchFilePattern = "/**/*.xxx"; // all files with .xxx file extension
     check.xpathQuery = "//declaration";
     check.message = "Avoid declarations!! ";
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .noMore();
@@ -90,13 +91,13 @@ public class XPathCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void xpathWithFilePatternInvert() throws UnsupportedEncodingException, IOException {
-    var check = new XPathCheck();
+    XPathCheck check = new XPathCheck();
     check.matchFilePattern = "/**/*.xxx"; // all files with not .xxx file extension
     check.invertFilePattern = true;
     check.xpathQuery = "//declaration";
     check.message = "Avoid declarations!! ";
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/xpath.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(1).withMessage(check.message)

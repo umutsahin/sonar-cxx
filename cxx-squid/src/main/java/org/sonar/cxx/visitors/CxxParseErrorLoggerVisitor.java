@@ -23,6 +23,8 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Grammar;
 import java.util.List;
+
+import com.sonar.sslr.api.TokenType;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.cxx.parser.CxxGrammarImpl;
@@ -62,12 +64,12 @@ public class CxxParseErrorLoggerVisitor<GRAMMAR extends Grammar> extends SquidAs
     }
 
     List<AstNode> children = node.getChildren();
-    var sb = new StringBuilder(512);
+    StringBuilder sb = new StringBuilder(512);
     int identifierLine = -1;
 
-    for (var child : children) {
+    for (AstNode child : children) {
       sb.append(child.getTokenValue());
-      var type = child.getToken().getType();
+      TokenType type = child.getToken().getType();
 
       if (type.equals(GenericTokenType.IDENTIFIER)) {
         // save position of last identifier for message

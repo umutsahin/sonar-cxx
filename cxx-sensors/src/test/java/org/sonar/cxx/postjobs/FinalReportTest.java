@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.List;
+
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +56,8 @@ public class FinalReportTest {
 
   @Test
   public void finalReportTest() throws IOException {
-    var dir = "src/test/resources/org/sonar/cxx/postjobs";
-    var context = SensorContextTester.create(new File(dir));
+    String dir = "src/test/resources/org/sonar/cxx/postjobs";
+    SensorContextTester context = SensorContextTester.create(new File(dir));
     InputFile inputFile = createInputFile(dir + "/syntaxerror.cc", ".", Charset.defaultCharset());
     context.fileSystem().add(inputFile);
 
@@ -63,10 +65,10 @@ public class FinalReportTest {
     CxxPreprocessor.resetReport();
     CxxAstScanner.scanSingleInputFile(inputFile);
 
-    var postjob = new FinalReport();
+    FinalReport postjob = new FinalReport();
     postjob.execute(postJobContext);
 
-    var log = logTester.logs(LoggerLevel.WARN);
+    List<String> log = logTester.logs(LoggerLevel.WARN);
     assertThat(log).hasSize(2);
     assertThat(log.get(0)).contains("include directive error(s)");
     assertThat(log.get(1)).contains("syntax error(s) detected");
@@ -74,7 +76,7 @@ public class FinalReportTest {
 
   private static DefaultInputFile createInputFile(String fileName, String basePath, Charset charset)
     throws IOException {
-    var fb = TestInputFileBuilder.create("", fileName);
+    TestInputFileBuilder fb = TestInputFileBuilder.create("", fileName);
 
     fb.setCharset(charset);
     fb.setProjectBaseDir(Paths.get(basePath));
@@ -84,12 +86,12 @@ public class FinalReportTest {
   }
 
   private static String getSourceCode(File filename, Charset defaultCharset) throws IOException {
-    try ( var bomInputStream = new BOMInputStream(new FileInputStream(filename),
-                                              ByteOrderMark.UTF_8,
-                                              ByteOrderMark.UTF_16LE,
-                                              ByteOrderMark.UTF_16BE,
-                                              ByteOrderMark.UTF_32LE,
-                                              ByteOrderMark.UTF_32BE)) {
+    try (BOMInputStream bomInputStream = new BOMInputStream(new FileInputStream(filename),
+                                                            ByteOrderMark.UTF_8,
+                                                            ByteOrderMark.UTF_16LE,
+                                                            ByteOrderMark.UTF_16BE,
+                                                            ByteOrderMark.UTF_32LE,
+                                                            ByteOrderMark.UTF_32BE)) {
       ByteOrderMark bom = bomInputStream.getBOM();
       Charset charset = bom != null ? Charset.forName(bom.getCharsetName()) : defaultCharset;
       byte[] bytes = bomInputStream.readAllBytes();

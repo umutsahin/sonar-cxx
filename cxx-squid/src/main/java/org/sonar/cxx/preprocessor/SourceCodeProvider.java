@@ -61,8 +61,8 @@ public class SourceCodeProvider {
   }
 
   public void setIncludeRoots(List<String> roots, String baseDir) {
-    for (var root : roots) {
-      var path = Paths.get(root);
+    for (String root : roots) {
+      Path path = Paths.get(root);
       try {
         if (!path.isAbsolute()) {
           path = Paths.get(baseDir).resolve(path);
@@ -141,7 +141,7 @@ public class SourceCodeProvider {
   @CheckForNull
   public File getSourceCodeFile(String filename, boolean quoted) {
     File result = null;
-    var file = new File(filename);
+    File file = new File(filename);
 
     // If the file name is fully specified for an include file that has a path that includes a colon
     // (for example F:\MSVC\SPECIAL\INCL\TEST.H) the preprocessor follows the path.
@@ -156,7 +156,7 @@ public class SourceCodeProvider {
         if (cwd == null) {
           cwd = ".";
         }
-        var abspath = new File(new File(cwd), file.getPath());
+        File abspath = new File(new File(cwd), file.getPath());
         if (abspath.isFile()) {
           // 1) In the same directory as the file that contains the #include statement.
           result = abspath;
@@ -166,7 +166,7 @@ public class SourceCodeProvider {
           // 2) In the directories of the currently opened include files, in the reverse order in which they were opened.
           //    The search begins in the directory of the parent include file and continues upward through the
           //    directories of any grandparent include files.
-          for (var parent : ppState) {
+          for (State parent : ppState) {
             if (parent.fileUnderAnalysis != contextFile) {
               abspath = new File(parent.fileUnderAnalysis.getParentFile(), file.getPath());
               if (abspath.exists()) {
@@ -181,8 +181,8 @@ public class SourceCodeProvider {
       // Angle-bracket form: lookup relative to to the include roots.
       // The quoted case falls back to this, if its special handling wasn't successful.
       if (result == null) {
-        for (var path : includeRoots) {
-          var abspath = path.resolve(filename);
+        for (Path path : includeRoots) {
+          Path abspath = path.resolve(filename);
           if (Files.isRegularFile(abspath)) {
             result = abspath.toFile();
             break;
@@ -203,12 +203,12 @@ public class SourceCodeProvider {
   }
 
   public String getSourceCode(File file, Charset defaultCharset) throws IOException {
-    try ( var bomInputStream = new BOMInputStream(new FileInputStream(file),
-                                              ByteOrderMark.UTF_8,
-                                              ByteOrderMark.UTF_16LE,
-                                              ByteOrderMark.UTF_16BE,
-                                              ByteOrderMark.UTF_32LE,
-                                              ByteOrderMark.UTF_32BE)) {
+    try (BOMInputStream bomInputStream = new BOMInputStream(new FileInputStream(file),
+                                                            ByteOrderMark.UTF_8,
+                                                            ByteOrderMark.UTF_16LE,
+                                                            ByteOrderMark.UTF_16BE,
+                                                            ByteOrderMark.UTF_32LE,
+                                                            ByteOrderMark.UTF_32BE)) {
       ByteOrderMark bom = bomInputStream.getBOM();
       Charset charset = bom != null ? Charset.forName(bom.getCharsetName()) : defaultCharset;
       byte[] bytes = bomInputStream.readAllBytes();

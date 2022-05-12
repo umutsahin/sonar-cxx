@@ -44,7 +44,7 @@ public class CxxInferSensorTest {
 
   @Test
   public void shouldReportCorrectViolations() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxInferSensor.REPORT_PATH_KEY, "infer-reports/infer-result-sample.json");
     context.setSettings(settings);
 
@@ -81,7 +81,7 @@ public class CxxInferSensorTest {
     context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", "lib/valueflow.cpp")
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n").build());
 
-    var sensor = new CxxInferSensor();
+    CxxInferSensor sensor = new CxxInferSensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(34);
@@ -89,11 +89,11 @@ public class CxxInferSensorTest {
 
   @Test
   public void shouldIgnoreAViolationWhenTheResourceCouldntBeFound() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxInferSensor.REPORT_PATH_KEY, "infer-reports/infer-result-sample.json");
     context.setSettings(settings);
 
-    var sensor = new CxxInferSensor();
+    CxxInferSensor sensor = new CxxInferSensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).isEmpty();
@@ -101,22 +101,22 @@ public class CxxInferSensorTest {
 
   @Test(expected = IllegalStateException.class)
   public void shouldThrowExceptionWhenRecoveryIsDisabled() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxReportSensor.ERROR_RECOVERY_KEY, false);
     settings.setProperty(CxxInferSensor.REPORT_PATH_KEY, "infer-reports/infer-result-empty.json");
     context.setSettings(settings);
 
-    var sensor = new CxxInferSensor();
+    CxxInferSensor sensor = new CxxInferSensor();
     sensor.execute(context);
   }
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxInferSensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxInferSensor sensor = new CxxInferSensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Infer report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxInferRuleRepository.KEY);

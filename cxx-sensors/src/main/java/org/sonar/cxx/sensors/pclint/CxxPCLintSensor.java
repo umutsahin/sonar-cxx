@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +41,7 @@ import org.sonar.cxx.sensors.utils.EmptyReportException;
 import org.sonar.cxx.sensors.utils.InvalidReportException;
 import org.sonar.cxx.sensors.utils.StaxParser;
 import org.sonar.cxx.utils.CxxReportIssue;
+import org.sonar.cxx.utils.CxxReportLocation;
 
 /**
  * PC-lint is an equivalent to pmd but for C++ The first version of the tool was release 1985 and the tool analyzes
@@ -91,7 +93,7 @@ public class CxxPCLintSensor extends CxxIssuesReportSensor {
 
   @Override
   protected void processReport(File report) {
-    var parser = new StaxParser(new StaxParser.XmlStreamHandler() {
+    StaxParser parser = new StaxParser(new StaxParser.XmlStreamHandler() {
       /**
        * {@inheritDoc}
        */
@@ -168,7 +170,7 @@ public class CxxPCLintSensor extends CxxIssuesReportSensor {
         }
 
         if (file != null && file.isEmpty() && msg != null) {
-          var matcher = SUPPLEMENTAL_MSG_PATTERN.matcher(msg);
+          Matcher matcher = SUPPLEMENTAL_MSG_PATTERN.matcher(msg);
 
           if (matcher.matches()) {
             file = matcher.group(1);
@@ -182,7 +184,7 @@ public class CxxPCLintSensor extends CxxIssuesReportSensor {
 
         // Due to SONAR-9929, even the API supports the extra/flow in different file,
         // the UI is not ready. For this case, use the parent issue's file and line for now.
-        var primaryLocation = currentIssue.getLocations().get(0);
+        CxxReportLocation primaryLocation = currentIssue.getLocations().get(0);
         if (!primaryLocation.getFile().equals(file)) {
           if (msg != null && !msg.startsWith(PREFIX_DURING_SPECIFIC_WALK_MSG)) {
             msg = String.format("%s %s:%s %s", PREFIX_DURING_SPECIFIC_WALK_MSG, file, line, msg);
@@ -213,7 +215,7 @@ public class CxxPCLintSensor extends CxxIssuesReportSensor {
        * Concatenate M with the MISRA rule number to get the new rule id to save the violation to.
        */
       private String mapMisraRulesToUniqueSonarRules(String msg, boolean isMisra2012) {
-        var matcher = MISRA_RULE_PATTERN.matcher(msg);
+        Matcher matcher = MISRA_RULE_PATTERN.matcher(msg);
         if (matcher.find()) {
           String misraRule = matcher.group(1);
           String newKey;

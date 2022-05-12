@@ -34,6 +34,7 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import java.io.File;
 import java.io.InterruptedIOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -77,19 +78,19 @@ public class AstScanner<G extends Grammar> {
   }
 
   public void scanFile(File file) {
-    scanFiles(java.util.List.of(file));
+    scanFiles(Arrays.asList(file));
   }
 
   public void scanInputFile(InputFile inputFile) {
-    scanInputFiles(java.util.List.of(inputFile));
+    scanInputFiles(Arrays.asList(inputFile));
   }
 
   public void scanFiles(Collection<File> files) {
     initVisitors();
 
-    var astWalker = new AstWalker(visitors);
+    AstWalker astWalker = new AstWalker(visitors);
 
-    for (var file : files) {
+    for (File file : files) {
       checkCancel();
       context.setFile(file, filesMetric);
 
@@ -114,10 +115,10 @@ public class AstScanner<G extends Grammar> {
   public void scanInputFiles(Iterable<InputFile> inputFiles) {
     initVisitors();
 
-    var astWalker = new AstWalker(visitors);
+    AstWalker astWalker = new AstWalker(visitors);
 
-    for (var inputFile : inputFiles) {
-      var file = new File(inputFile.uri().getPath());
+    for (InputFile inputFile : inputFiles) {
+      File file = new File(inputFile.uri().getPath());
       checkCancel();
       context.setInputFile(inputFile, filesMetric);
 
@@ -155,10 +156,10 @@ public class AstScanner<G extends Grammar> {
       astWalker.walkAndVisit(ast);
     } else {
       // process parse error
-      for (var visitor : visitors) {
+      for (SquidAstVisitor<G> visitor : visitors) {
         visitor.visitFile(ast);
       }
-      for (var visitor : visitors) {
+      for (SquidAstVisitor<G> visitor : visitors) {
         if (visitor instanceof AstScannerExceptionHandler) {
           if (parseException instanceof RecognitionException) {
             ((AstScannerExceptionHandler) visitor)
@@ -168,7 +169,7 @@ public class AstScanner<G extends Grammar> {
           }
         }
       }
-      for (var visitor : visitors) {
+      for (SquidAstVisitor<G> visitor : visitors) {
         visitor.leaveFile(ast);
       }
     }
@@ -176,13 +177,13 @@ public class AstScanner<G extends Grammar> {
   }
 
   private void initVisitors() {
-    for (var visitor : visitors) {
+    for (SquidAstVisitor<G> visitor : visitors) {
       visitor.init();
     }
   }
 
   private void destroyVisitors() {
-    for (var visitor : visitors) {
+    for (SquidAstVisitor<G> visitor : visitors) {
       visitor.destroy();
     }
   }
@@ -207,7 +208,7 @@ public class AstScanner<G extends Grammar> {
   protected void decorateSquidTree() {
     if (metrics != null && metrics.length > 0) {
       SourceProject project = context.getProject();
-      var decorator = new SourceCodeTreeDecorator(project);
+      SourceCodeTreeDecorator decorator = new SourceCodeTreeDecorator(project);
       decorator.decorateWith(metrics);
     }
   }
@@ -250,7 +251,7 @@ public class AstScanner<G extends Grammar> {
     }
 
     public Builder<G> withMetrics(MetricDef... metrics) {
-      for (var metric : metrics) {
+      for (MetricDef metric : metrics) {
         checkNotNull(metric, "metrics cannot be null");
       }
       this.metrics = metrics.clone();

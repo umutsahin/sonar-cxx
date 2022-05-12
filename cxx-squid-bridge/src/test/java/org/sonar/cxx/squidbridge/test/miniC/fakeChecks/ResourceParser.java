@@ -27,6 +27,8 @@ import com.sonar.sslr.api.Grammar;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.sonar.cxx.squidbridge.AstScanner;
 import org.sonar.cxx.squidbridge.SquidAstVisitor;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.indexer.QueryByType;
@@ -35,7 +37,7 @@ import org.sonar.cxx.squidbridge.test.miniC.MiniCAstScanner;
 public class ResourceParser {
 
   public static SourceFile scanFile(String filePath, SquidAstVisitor<Grammar>... visitors) {
-    var scanner = MiniCAstScanner.create(visitors);
+    AstScanner<Grammar> scanner = MiniCAstScanner.create(visitors);
     File file = FileUtils.toFile(ResourceParser.class.getResource(filePath));
     if (file == null || !file.exists()) {
       throw new IllegalArgumentException("The file located under \"" + filePath + "\" was not found.");

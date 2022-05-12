@@ -50,7 +50,7 @@ public class CharacterLiteralsChannel extends Channel<Lexer> {
       return false;
     }
     readUdSuffix(code);
-    for (var i = 0; i < index; i++) {
+    for (int i = 0; i < index; i++) {
       sb.append((char) code.pop());
     }
     output.addToken(Token.builder()
@@ -93,7 +93,7 @@ public class CharacterLiteralsChannel extends Channel<Lexer> {
 
   private void readUdSuffix(CodeReader code) {
     for (int start_index = index, len = 0;; index++) {
-      var charAt = code.charAt(index);
+      char charAt = code.charAt(index);
       if (charAt == EOF) {
         return;
       }

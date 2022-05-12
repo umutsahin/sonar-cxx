@@ -54,10 +54,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.lineHits("ProjectKey:HGBuildNumberLookup.cpp", 42)).isEqualTo(10);
     softly.assertAll();
 
@@ -75,10 +75,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.coveredConditions("ProjectKey:HGBuildNumberLookup.cpp", 50)).isEqualTo(1);
     softly.assertAll();
 
@@ -96,10 +96,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.coveredConditions("ProjectKey:HGBuildNumberLookup.cpp", 56)).isEqualTo(2);
     softly.assertAll();
 
@@ -121,10 +121,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.lineHits("ProjectKey:test-wildmatch.c", 3)).isEqualTo(209);
     softly.assertAll();
 
@@ -146,10 +146,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.coveredConditions("ProjectKey:test-wildmatch.c", 6)).isEqualTo(2);
     softly.assertAll();
 
@@ -171,10 +171,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.conditions("ProjectKey:credential-store.c", 78)).isEqualTo(8);
     softly.assertAll();
 
@@ -192,10 +192,10 @@ public class CxxTestwellCtcTxtParserTest {
                                          + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                                        + "\n\n\n\n\n\n\n").build());
 
-    var sensor = new CxxCoverageTestwellCtcTxtSensor();
+    CxxCoverageTestwellCtcTxtSensor sensor = new CxxCoverageTestwellCtcTxtSensor();
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.lineHits("ProjectKey:test-wildmatch.c", 3)).isNull();
     softly.assertAll();
 

@@ -26,6 +26,7 @@ package org.sonar.cxx.squidbridge.test.miniC.fakeChecks;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifierRule;
@@ -40,7 +41,7 @@ public class FakeCommentCheckTest {
   private class FakeCommentCheck extends SquidCheck<Grammar> implements AstAndTokenVisitor {
 
     public void visitToken(Token token) {
-      for (var trivia : token.getTrivia()) {
+      for (Trivia trivia : token.getTrivia()) {
         if (trivia.isComment() && trivia.getToken().getValue().contains("stupid")) {
           getContext().createLineViolation(this, "Be gentle in your comments.", trivia.getToken().getLine());
         }

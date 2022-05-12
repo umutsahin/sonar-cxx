@@ -60,13 +60,13 @@ public class JsonCompilationDatabase {
   }
 
   private static String[] tokenizeCommandLine(String cmdLine) {
-    var args = new ArrayList<String>();
-    var escape = false;
+    ArrayList<String> args = new ArrayList<String>();
+    boolean escape = false;
     char stringOpen = 0;
-    var sb = new StringBuilder(512);
+    StringBuilder sb = new StringBuilder(512);
 
     // Tokenize command line with support for escaping
-    for (var ch : cmdLine.toCharArray()) {
+    for (char ch : cmdLine.toCharArray()) {
       if (escape) {
         escape = false;
         sb.append(ch);
@@ -118,7 +118,7 @@ public class JsonCompilationDatabase {
 
     LOG.debug("Parsing 'JSON Compilation Database' format");
 
-    var mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
     mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     mapper.enable(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY);
     mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
@@ -127,15 +127,15 @@ public class JsonCompilationDatabase {
                                              = mapper.readValue(compileCommandsFile,
                                                                 JsonCompilationDatabaseCommandObject[].class);
 
-    for (var commandObject : commandObjects) {
+    for (JsonCompilationDatabaseCommandObject commandObject : commandObjects) {
       parseCommandObject(commandObject);
     }
   }
 
   private void parseCommandObject(JsonCompilationDatabaseCommandObject commandObject) {
 
-    var defines = commandObject.getDefines();
-    var includes = commandObject.getIncludes();
+    Map<String, String> defines = commandObject.getDefines();
+    List<Path> includes = commandObject.getIncludes();
 
     Path cwd;
     if (commandObject.getDirectory() != null) {
@@ -164,14 +164,14 @@ public class JsonCompilationDatabase {
       }
 
       String[] args = tokenizeCommandLine(cmdLine);
-      var next = ArgNext.NONE;
+      ArgNext next = ArgNext.NONE;
 
       defines = new HashMap<>();
       includes = new ArrayList<>();
-      var iSystem = new ArrayList<Path>();
-      var iDirAfter = new ArrayList<Path>();
+      ArrayList<Path> iSystem = new ArrayList<Path>();
+      ArrayList<Path> iDirAfter = new ArrayList<Path>();
 
-      for (var arg : args) {
+      for (String arg : args) {
         if (arg.startsWith("-D")) {
           arg = arg.substring(2);
           next = ArgNext.DEFINE;
@@ -224,7 +224,7 @@ public class JsonCompilationDatabase {
   }
 
   private void addIncludes(String level, List<Path> includes) {
-    for (var include : includes) {
+    for (Path include : includes) {
       squidConfig.add(level, CxxSquidConfiguration.INCLUDE_DIRECTORIES, include.toString());
     }
   }

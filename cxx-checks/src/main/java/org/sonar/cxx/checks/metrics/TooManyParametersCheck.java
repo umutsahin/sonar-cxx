@@ -58,11 +58,11 @@ public class TooManyParametersCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    var parameterList = node.getFirstChild(CxxGrammarImpl.parameterDeclarationList);
+    AstNode parameterList = node.getFirstChild(CxxGrammarImpl.parameterDeclarationList);
     if (parameterList != null) {
       int nbParameters = parameterList.getChildren(CxxGrammarImpl.parameterDeclaration).size();
       if (nbParameters > max) {
-        var message = "parameter list has {0} parameters, which is greater than the {1} authorized.";
+        String message = "parameter list has {0} parameters, which is greater than the {1} authorized.";
         getContext().createLineViolation(this, message, node, nbParameters, max);
       }
     }

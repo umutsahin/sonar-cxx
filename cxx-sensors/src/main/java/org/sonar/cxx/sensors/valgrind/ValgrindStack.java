@@ -75,7 +75,7 @@ class ValgrindStack {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    var other = (ValgrindStack) obj;
+    ValgrindStack other = (ValgrindStack) obj;
     return new EqualsBuilder()
       .append(frames, other.frames)
       .isEquals();
@@ -90,7 +90,7 @@ class ValgrindStack {
   @CheckForNull
   public ValgrindFrame getLastOwnFrame(String basedir) {
     String workdir = FilenameUtils.normalize(basedir);
-    for (var frame : frames) {
+    for (ValgrindFrame frame : frames) {
       if (isInside(frame.getDir(), workdir)) {
         return frame;
       }

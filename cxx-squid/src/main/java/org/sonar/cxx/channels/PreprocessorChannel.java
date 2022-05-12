@@ -41,10 +41,10 @@ public class PreprocessorChannel extends Channel<Lexer> {
 
   public PreprocessorChannel(TokenType[]
     ... keywordSets) {
-    var regexp = new StringBuilder(256);
+    StringBuilder regexp = new StringBuilder(256);
     regexp.append("#");
-    for (var keywords : keywordSets) {
-      for (var keyword : keywords) {
+    for (TokenType[] keywords : keywordSets) {
+      for (TokenType keyword : keywords) {
         regexp.append("|");
         regexp.append(keyword.getValue());
         regexp.append("\\s");
@@ -77,7 +77,7 @@ public class PreprocessorChannel extends Channel<Lexer> {
 
   private void read(CodeReader code) {
     while (true) {
-      var ch = code.charAt(0);
+      char ch = code.charAt(0);
       if (isNewline(ch) || ch == EOF) {
         code.pop();
         break;
@@ -114,7 +114,7 @@ public class PreprocessorChannel extends Channel<Lexer> {
   private static void consumeSingleLineComment(CodeReader code) {
     code.pop(); // initial '/'
     while (true) {
-      var charAt = code.charAt(0);
+      char charAt = code.charAt(0);
       if (isNewline(charAt) || charAt == EOF) {
         break;
       }
@@ -125,7 +125,7 @@ public class PreprocessorChannel extends Channel<Lexer> {
   private static void consumeMultiLineComment(CodeReader code) {
     code.pop(); // initial '*'
     while (true) {
-      var ch = (char) code.pop();
+      char ch = (char) code.pop();
       if (ch == EOF) {
         break;
       }

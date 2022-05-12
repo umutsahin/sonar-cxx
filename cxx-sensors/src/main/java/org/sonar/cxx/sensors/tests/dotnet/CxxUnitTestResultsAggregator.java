@@ -27,6 +27,8 @@ import org.sonar.api.scanner.ScannerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import java.io.File;
+
 /**
  * CxxUnitTestResultsAggregator (from .Net test library)
  */
@@ -56,10 +58,10 @@ public class CxxUnitTestResultsAggregator {
 
   private static void aggregate(WildcardPatternFileProvider wildcardPatternFileProvider, String[] reportPaths,
                                 UnitTestResultsParser parser, UnitTestResults unitTestResults) {
-    for (var reportPathPattern : reportPaths) {
+    for (String reportPathPattern : reportPaths) {
       LOG.info("Report path pattern: '{}'", reportPathPattern);
       if (!reportPathPattern.isEmpty()) {
-        for (var reportFile : wildcardPatternFileProvider.listFiles(reportPathPattern)) {
+        for (File reportFile : wildcardPatternFileProvider.listFiles(reportPathPattern)) {
           parser.accept(reportFile, unitTestResults);
         }
       }

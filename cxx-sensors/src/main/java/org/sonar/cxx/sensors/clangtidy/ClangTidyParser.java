@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -44,7 +46,7 @@ public class ClangTidyParser {
   }
 
   public void parse(File report, String defaultEncoding) throws IOException {
-    try (var scanner = new TextScanner(report, defaultEncoding)) {
+    try (TextScanner scanner = new TextScanner(report, defaultEncoding)) {
       LOG.debug("Encoding='{}'", scanner.encoding());
 
       CxxReportIssue currentIssue = null;
@@ -61,7 +63,7 @@ public class ClangTidyParser {
             sensor.saveUniqueViolation(currentIssue);
           }
           currentIssue = new CxxReportIssue(issue.ruleId, issue.path, issue.line, issue.column, issue.info);
-          for (var aliasRuleId : issue.aliasRuleIds) {
+          for (String aliasRuleId : issue.aliasRuleIds) {
             currentIssue.addAliasRuleId(aliasRuleId);
           }
         }
@@ -73,7 +75,7 @@ public class ClangTidyParser {
   }
 
   private boolean parseLine(String data) {
-    var matcher = PATTERN.matcher(data);
+    Matcher matcher = PATTERN.matcher(data);
     issue = null;
     if (matcher.matches()) {
       issue = new Issue();
@@ -81,7 +83,7 @@ public class ClangTidyParser {
       //      <path>:<line>:<column>: <level>: <info> [ruleIds]
       // sample:
       //      c:\a\file.cc:5:20: warning: txt txt [clang-diagnostic-writable-strings]
-      var m = matcher.toMatchResult();
+      MatchResult m = matcher.toMatchResult();
       issue.path = m.group(1);   // relative paths
       issue.line = m.group(2);   // 1...n
       issue.column = m.group(3); // 1...n
@@ -108,13 +110,13 @@ public class ClangTidyParser {
       return;
     }
 
-    var end = issue.info.length() - 1;
-    for (var start = issue.info.length() - 2; start >= 0; start--) {
-      var c = issue.info.charAt(start);
+    int end = issue.info.length() - 1;
+    for (int start = issue.info.length() - 2; start >= 0; start--) {
+      char c = issue.info.charAt(start);
       if (Character.isLetterOrDigit(c) || c == '-' || c == '.' || c == '_') {
         continue;
       } else if (c == ',') {
-        var aliasId = issue.info.substring(start + 1, end);
+        String aliasId = issue.info.substring(start + 1, end);
         if (!"-warnings-as-errors".equals(aliasId)) {
           issue.aliasRuleIds.addFirst(aliasId);
         }

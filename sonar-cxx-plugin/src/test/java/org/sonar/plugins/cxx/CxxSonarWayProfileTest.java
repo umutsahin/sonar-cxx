@@ -28,8 +28,8 @@ public class CxxSonarWayProfileTest {
 
   @Test
   public void should_create_sonar_way_profile() {
-    var profileDef = new CxxSonarWayProfile();
-    var context = new BuiltInQualityProfilesDefinition.Context();
+    CxxSonarWayProfile profileDef = new CxxSonarWayProfile();
+    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("cxx", "Sonar way");
     assertThat(profile.language()).isEqualTo(CxxLanguage.KEY);

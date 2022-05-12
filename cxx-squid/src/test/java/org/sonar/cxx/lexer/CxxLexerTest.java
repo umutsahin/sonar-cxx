@@ -47,11 +47,11 @@ public class CxxLexerTest {
 
   @BeforeClass
   public static void init() {
-    var file = new File("snippet.cpp").getAbsoluteFile();
+    File file = new File("snippet.cpp").getAbsoluteFile();
     SquidAstVisitorContext<Grammar> context = mock(SquidAstVisitorContext.class);
     when(context.getFile()).thenReturn(file);
 
-    var cxxpp = new CxxPreprocessor(context);
+    CxxPreprocessor cxxpp = new CxxPreprocessor(context);
     lexer = CxxLexer.create(cxxpp, new JoinStringsPreprocessor());
   }
 
@@ -62,7 +62,7 @@ public class CxxLexerTest {
    */
   @Test
   public void comments_cxx() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(lexer.lex("//\n new line")).as("comment c++: empty").anySatisfy(token
       -> assertThat(token).isValue("new").hasTrivia().isTrivia("//").isComment().isTriviaLine(1));
     softly.assertThat(lexer.lex("// My comment \\n new line")).as("\"comment c++: simple\"").anySatisfy(token
@@ -79,7 +79,7 @@ public class CxxLexerTest {
    */
   @Test
   public void comments_c() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(lexer.lex("/**/")).as("comment c: empty").anySatisfy(token
       -> assertThat(token).isValue("EOF").hasTrivia().isTrivia("/**/").isComment().isTriviaLine(1));
     softly.assertThat(lexer.lex("/* My comment */")).as("comment c: simple").anySatisfy(token
@@ -98,7 +98,7 @@ public class CxxLexerTest {
    */
   @Test
   public void decimal_integer_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("0").tokenValue("0").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("7").tokenValue("7").tokenType(CxxTokenType.NUMBER).build(),
       // With "UnsignedSuffix
@@ -145,7 +145,7 @@ public class CxxLexerTest {
    */
   @Test
   public void octal_integer_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       // Octal integer
       LiteralValuesBuilder.builder("07").tokenValue("07").tokenType(CxxTokenType.NUMBER).build(),
       // With "UnsignedSuffix
@@ -192,7 +192,7 @@ public class CxxLexerTest {
    */
   @Test
   public void hex_integer_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       // Hex integer
       LiteralValuesBuilder.builder("0x7").tokenValue("0x7").tokenType(CxxTokenType.NUMBER).build(),
       // With "UnsignedSuffix
@@ -239,7 +239,7 @@ public class CxxLexerTest {
    */
   @Test
   public void bin_integer_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       // bin integer
       LiteralValuesBuilder.builder("0b0").tokenValue("0b0").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("0B1").tokenValue("0B1").tokenType(CxxTokenType.NUMBER).build(),
@@ -256,7 +256,7 @@ public class CxxLexerTest {
    */
   @Test
   public void hex_integer_literals_bigX() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       // Hex integer (big X)
       LiteralValuesBuilder.builder("0X7").tokenValue("0X7").tokenType(CxxTokenType.NUMBER).build(),
       // With "UnsignedSuffix
@@ -303,7 +303,7 @@ public class CxxLexerTest {
    */
   @Test
   public void bin_integer_literals_bigB() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       // Binary literal (big B)
       LiteralValuesBuilder.builder("0B1").tokenValue("0B1").tokenType(CxxTokenType.NUMBER).build(),
       // With "UnsignedSuffix
@@ -350,7 +350,7 @@ public class CxxLexerTest {
    */
   @Test
   public void floating_point_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("3.14").tokenValue("3.14").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("10.").tokenValue("10.").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder(".001").tokenValue(".001").tokenType(CxxTokenType.NUMBER).build(),
@@ -405,7 +405,7 @@ public class CxxLexerTest {
    */
   @Test
   public void user_defined_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("12_w").tokenValue("12_w").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("1.2_w").tokenValue("1.2_w").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("0x123ABC_print").tokenValue("0x123ABC_print").tokenType(CxxTokenType.NUMBER)
@@ -426,7 +426,7 @@ public class CxxLexerTest {
    */
   @Test
   public void digit_separators() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("1'000'000").tokenValue("1'000'000").tokenType(CxxTokenType.NUMBER).build(),
       LiteralValuesBuilder.builder("0b0100'1100'0110").tokenValue("0b0100'1100'0110").tokenType(CxxTokenType.NUMBER)
         .build(),
@@ -451,7 +451,7 @@ public class CxxLexerTest {
    */
   @Test
   public void boolean_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("true").tokenValue("true").tokenType(CxxKeyword.TRUE).build(),
       LiteralValuesBuilder.builder("false").tokenValue("false").tokenType(CxxKeyword.FALSE).build()
     ));
@@ -466,7 +466,7 @@ public class CxxLexerTest {
    */
   @Test
   public void pointer_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("nullptr").tokenValue("nullptr").tokenType(CxxTokenType.NUMBER).build()
     ));
 
@@ -480,7 +480,7 @@ public class CxxLexerTest {
    */
   @Test
   public void character_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("''").tokenValue("''").tokenType(CxxTokenType.CHARACTER).build(), // char: empty
       LiteralValuesBuilder.builder("u8''").tokenValue("u8''").tokenType(CxxTokenType.CHARACTER).build(), // char: prefix u8
       LiteralValuesBuilder.builder("u''").tokenValue("u''").tokenType(CxxTokenType.CHARACTER).build(), // char: prefix u
@@ -507,7 +507,7 @@ public class CxxLexerTest {
    */
   @Test
   public void string_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("\"\"").tokenValue("\"\"").tokenType(CxxTokenType.STRING).build(), // string: empty
       LiteralValuesBuilder.builder("u8\"\"").tokenValue("u8\"\"").tokenType(CxxTokenType.STRING).build(), // string: prefix u8
       LiteralValuesBuilder.builder("u\"\"").tokenValue("u\"\"").tokenType(CxxTokenType.STRING).build(), // string: prefix u
@@ -530,7 +530,7 @@ public class CxxLexerTest {
 
   @Test
   public void rawstring_literals() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("R\"(...)\"").tokenValue("R\"(...)\"").tokenType(CxxTokenType.STRING).build(), // raw string: empty
       LiteralValuesBuilder.builder("uR\"(...)\"").tokenValue("uR\"(...)\"").tokenType(CxxTokenType.STRING).build(), // raw string: prefix u
       LiteralValuesBuilder.builder("u8R\"(...)\"").tokenValue("u8R\"(...)\"").tokenType(CxxTokenType.STRING).build(), // raw string: prefix u8R
@@ -576,7 +576,7 @@ public class CxxLexerTest {
 
   @Test
   public void operators_and_delimiters() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder(":").tokenValue(":").tokenType(CxxPunctuator.COLON).build(),
       LiteralValuesBuilder.builder("=").tokenValue("=").tokenType(CxxPunctuator.ASSIGN).build(),
       LiteralValuesBuilder.builder("~").tokenValue("~").tokenType(CxxPunctuator.BW_NOT).build()
@@ -589,7 +589,7 @@ public class CxxLexerTest {
 
   @Test
   public void keywords_and_identifiers() {
-    var values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
+    ArrayList<LiteralValuesBuilder> values = new ArrayList<LiteralValuesBuilder>(Arrays.asList(
       LiteralValuesBuilder.builder("return").tokenValue("return").tokenType(CxxKeyword.RETURN).build(),
       LiteralValuesBuilder.builder("identifier").tokenValue("identifier").tokenType(GenericTokenType.IDENTIFIER)
         .build(),
@@ -606,7 +606,7 @@ public class CxxLexerTest {
 
   @Test
   public void blank_lines() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(lexer.lex("    // comment\\n")).hasSize(1);
     softly.assertThat(lexer.lex("    \n")).hasSize(1);
     softly.assertThat(lexer.lex("    ")).hasSize(1);

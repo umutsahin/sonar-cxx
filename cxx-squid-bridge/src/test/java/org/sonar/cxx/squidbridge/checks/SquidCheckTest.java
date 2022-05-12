@@ -30,7 +30,7 @@ public class SquidCheckTest {
 
   @Test
   public void test_getKey() {
-    var squidCheck = new SquidCheck() {
+    SquidCheck squidCheck = new SquidCheck() {
     };
     assertThat(squidCheck.getKey()).isNull();
   }

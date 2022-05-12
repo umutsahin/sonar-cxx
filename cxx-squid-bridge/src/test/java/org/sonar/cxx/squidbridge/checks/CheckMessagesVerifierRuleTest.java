@@ -39,13 +39,13 @@ public class CheckMessagesVerifierRuleTest {
 
   @Test
   public void shouldNotFailIfNothingToVerify() {
-    var rule = new CheckMessagesVerifierRule();
+    CheckMessagesVerifierRule rule = new CheckMessagesVerifierRule();
     rule.verify();
   }
 
   @Test
   public void shouldNotFailIfVerificationsWereSuccessful() {
-    var rule = new CheckMessagesVerifierRule();
+    CheckMessagesVerifierRule rule = new CheckMessagesVerifierRule();
     rule.verify(Collections.EMPTY_LIST);
     rule.verify(Collections.EMPTY_LIST);
     rule.verify();
@@ -57,7 +57,7 @@ public class CheckMessagesVerifierRuleTest {
     thrown.expectMessage("\nNo more violations expected\ngot:");
 
     Collection<CheckMessage> messages = Arrays.asList(mock(CheckMessage.class));
-    var rule = new CheckMessagesVerifierRule();
+    CheckMessagesVerifierRule rule = new CheckMessagesVerifierRule();
     rule.verify(messages);
     rule.verify(Collections.EMPTY_LIST);
     rule.verify();
@@ -69,7 +69,7 @@ public class CheckMessagesVerifierRuleTest {
     thrown.expectMessage("\nNo more violations expected\ngot:");
 
     Collection<CheckMessage> messages = Arrays.asList(mock(CheckMessage.class));
-    var rule = new CheckMessagesVerifierRule();
+    CheckMessagesVerifierRule rule = new CheckMessagesVerifierRule();
     rule.verify(Collections.EMPTY_LIST);
     rule.verify(messages);
     rule.verify();

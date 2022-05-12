@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
@@ -70,7 +71,7 @@ public class CoberturaParser implements CoverageParser {
       return "";
     }
     if (!path1.isAbsolute()) {
-      var root = path1.getRoot();
+      Path root = path1.getRoot();
       if (root != null && !root.toString().endsWith(File.separator)) { // special case drive letter only, e.g. c:
         path1 = Paths.get(path1.toString(), File.separator);
       } else {
@@ -81,7 +82,7 @@ public class CoberturaParser implements CoverageParser {
       path2 = Paths.get(".", path2.toString());
     }
 
-    var result = path1.resolve(path2).normalize();
+    Path result = path1.resolve(path2).normalize();
     if (!result.isAbsolute()) {
       result = Paths.get(".", result.toString());
     }
@@ -93,8 +94,8 @@ public class CoberturaParser implements CoverageParser {
     SMInputCursor line = clazz.childElementCursor("lines").advance().childElementCursor("line");
 
     while (line.getNext() != null) {
-      var lineId = Integer.parseInt(line.getAttrValue("number"));
-      var noHits = Long.parseLong(line.getAttrValue("hits"));
+      int lineId = Integer.parseInt(line.getAttrValue("number"));
+      long noHits = Long.parseLong(line.getAttrValue("hits"));
       if (noHits > Integer.MAX_VALUE) {
         LOG.warn("Truncating the actual number of hits ({}) to the maximum number supported by SonarQube ({})",
                  noHits, Integer.MAX_VALUE);
@@ -105,7 +106,7 @@ public class CoberturaParser implements CoverageParser {
       String isBranch = line.getAttrValue("branch");
       String text = line.getAttrValue("condition-coverage");
       if (text != null && "true".equals(isBranch) && !text.trim().isEmpty()) {
-        var m = CONDITION_PATTERN.matcher(text);
+        Matcher m = CONDITION_PATTERN.matcher(text);
         if (m.find()) {
           String[] conditions = m.group(1).split("/");
           builder.setConditions(lineId, Integer.parseInt(conditions[1]), Integer.parseInt(conditions[0]));
@@ -119,11 +120,11 @@ public class CoberturaParser implements CoverageParser {
    */
   @Override
   public Map<String, CoverageMeasures> parse(File report) {
-    var coverageData = new HashMap<String, CoverageMeasures>();
+    HashMap<String, CoverageMeasures> coverageData = new HashMap<String, CoverageMeasures>();
     try {
       baseDir = Paths.get(".");
 
-      var sourceParser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser sourceParser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         try {
           rootCursor.advance();
         } catch (com.ctc.wstx.exc.WstxEOFException e) {
@@ -133,7 +134,7 @@ public class CoberturaParser implements CoverageParser {
       });
       sourceParser.parse(report);
 
-      var packageParser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser packageParser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         rootCursor.advance();
         collectPackageMeasures(rootCursor.descendantElementCursor("package"), coverageData);
       });

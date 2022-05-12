@@ -35,9 +35,9 @@ public class JoinStringsPreprocessor extends Preprocessor {
   }
 
   private static String concatenateStringLiterals(List<Token> concatenatedTokens) {
-    var sb = new StringBuilder(256);
+    StringBuilder sb = new StringBuilder(256);
     sb.append("\"");
-    for (var t : concatenatedTokens) {
+    for (Token t : concatenatedTokens) {
       sb.append(stripQuotes(t.getValue()));
     }
     sb.append("\"");
@@ -47,9 +47,9 @@ public class JoinStringsPreprocessor extends Preprocessor {
   @Override
   public PreprocessorAction process(List<Token> tokens) {
 
-    var nrOfAdjacentStringLiterals = 0;
-    var isGenerated = false;
-    for (var t : tokens) {
+    int nrOfAdjacentStringLiterals = 0;
+    boolean isGenerated = false;
+    for (Token t : tokens) {
       if (!CxxTokenType.STRING.equals(t.getType())) {
         break;
       }
@@ -63,17 +63,17 @@ public class JoinStringsPreprocessor extends Preprocessor {
 
     // Concatenate adjacent string literals
     // (C++ Standard, "2.2 Phases of translation, Phase 6")
-    var concatenatedTokens = new ArrayList<Token>(tokens.subList(0, nrOfAdjacentStringLiterals));
+    ArrayList<Token> concatenatedTokens = new ArrayList<Token>(tokens.subList(0, nrOfAdjacentStringLiterals));
     String concatenatedLiteral = concatenateStringLiterals(concatenatedTokens);
     Trivia trivia = Trivia.createSkippedText(concatenatedTokens);
-    var firstToken = tokens.get(0);
-    var tokenToInject = Token.builder()
-      .setLine(firstToken.getLine())
-      .setColumn(firstToken.getColumn())
-      .setURI(firstToken.getURI())
-      .setType(CxxTokenType.STRING)
-      .setValueAndOriginalValue(concatenatedLiteral)
-      .setGeneratedCode(isGenerated).build();
+    Token firstToken = tokens.get(0);
+    Token tokenToInject = Token.builder()
+                               .setLine(firstToken.getLine())
+                               .setColumn(firstToken.getColumn())
+                               .setURI(firstToken.getURI())
+                               .setType(CxxTokenType.STRING)
+                               .setValueAndOriginalValue(concatenatedLiteral)
+                               .setGeneratedCode(isGenerated).build();
 
     return new PreprocessorAction(nrOfAdjacentStringLiterals, Collections.singletonList(trivia),
                                   Collections.singletonList(tokenToInject));

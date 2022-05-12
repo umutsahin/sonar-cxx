@@ -68,7 +68,7 @@ public final class CxxPlugin implements Plugin {
    */
   @Override
   public void define(Context context) {
-    var l = new ArrayList<Object>();
+    ArrayList<Object> l = new ArrayList<Object>();
 
     // plugin elements
     l.add(CxxLanguage.class);
@@ -103,7 +103,7 @@ public final class CxxPlugin implements Plugin {
   }
 
   static private List<Object> getSensorsImpl() {
-    var l = new ArrayList<Object>();
+    ArrayList<Object> l = new ArrayList<Object>();
 
     // utility classes
     l.add(CxxUnitTestResultsAggregator.class);

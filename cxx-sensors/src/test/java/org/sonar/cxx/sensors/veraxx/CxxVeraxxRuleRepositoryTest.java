@@ -30,9 +30,9 @@ public class CxxVeraxxRuleRepositoryTest {
 
   @Test
   public void createRulesTest() {
-    var def = new CxxVeraxxRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
+    CxxVeraxxRuleRepository def = new CxxVeraxxRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxVeraxxRuleRepository.KEY);

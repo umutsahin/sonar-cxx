@@ -90,7 +90,7 @@ public class CxxCognitiveComplexityVisitor<G extends Grammar> extends MultiLocat
 
   @Override
   public void init() {
-    for (var astNodeType : SUBSCRIPTION_NODES) {
+    for (AstNodeType astNodeType : SUBSCRIPTION_NODES) {
       subscribeTo(astNodeType);
     }
     complexityScopes = new LinkedList<>();
@@ -117,7 +117,7 @@ public class CxxCognitiveComplexityVisitor<G extends Grammar> extends MultiLocat
     }
 
     if (node.is(NESTING_LEVEL_TYPES)) {
-      for (var scope : complexityScopes) {
+      for (CxxComplexityScope scope : complexityScopes) {
         scope.increaseNesting();
       }
     }
@@ -138,7 +138,7 @@ public class CxxCognitiveComplexityVisitor<G extends Grammar> extends MultiLocat
     }
 
     if (node.is(NESTING_LEVEL_TYPES)) {
-      for (var scope : complexityScopes) {
+      for (CxxComplexityScope scope : complexityScopes) {
         scope.decreaseNesting();
       }
     }

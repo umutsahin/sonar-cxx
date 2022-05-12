@@ -69,7 +69,7 @@ public class ValgrindErrorTest {
 
   @Test
   public void getKindWorks() {
-    var KIND = "kind";
+    String KIND = "kind";
     assertEquals(new ValgrindError(KIND, "", Collections.singletonList(new ValgrindStack())).getKind(), KIND);
   }
 

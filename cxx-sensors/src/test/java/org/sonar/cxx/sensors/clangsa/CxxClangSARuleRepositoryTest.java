@@ -30,10 +30,10 @@ public class CxxClangSARuleRepositoryTest {
 
   @Test
   public void createRulesTest() {
-    var def = new CxxClangSARuleRepository(
+    CxxClangSARuleRepository def = new CxxClangSARuleRepository(
       mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxClangSARuleRepository.KEY);

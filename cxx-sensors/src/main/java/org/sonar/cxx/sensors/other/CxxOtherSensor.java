@@ -48,7 +48,7 @@ public class CxxOtherSensor extends CxxIssuesReportSensor {
   private static final Logger LOG = Loggers.get(CxxOtherSensor.class);
 
   public static List<PropertyDefinition> properties() {
-    var subcategory = "Other Analyser(s)";
+    String subcategory = "Other Analyser(s)";
     return Collections.unmodifiableList(Arrays.asList(
       PropertyDefinition.builder(REPORT_PATH_KEY)
         .name("Other Report(s)")
@@ -85,7 +85,7 @@ public class CxxOtherSensor extends CxxIssuesReportSensor {
   @Override
   public void processReport(File report) {
     try {
-      var parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         rootCursor.advance();
 
         SMInputCursor errorCursor = rootCursor.childElementCursor("error");
@@ -96,7 +96,7 @@ public class CxxOtherSensor extends CxxIssuesReportSensor {
           String id = errorCursor.getAttrValue("id");
           String msg = errorCursor.getAttrValue("msg");
 
-          var issue = new CxxReportIssue(id, file, line, column, msg);
+          CxxReportIssue issue = new CxxReportIssue(id, file, line, column, msg);
           saveUniqueViolation(issue);
         }
       });

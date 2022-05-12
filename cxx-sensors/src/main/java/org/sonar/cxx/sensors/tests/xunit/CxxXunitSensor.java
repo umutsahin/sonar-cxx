@@ -101,9 +101,9 @@ public class CxxXunitSensor extends CxxReportSensor {
    * @throws IOException
    */
   private XunitReportParser parseReport(List<File> reports) throws XMLStreamException {
-    var parserHandler = new XunitReportParser(context.fileSystem().baseDir().getPath());
-    var parser = new StaxParser(parserHandler, false);
-    for (var report : reports) {
+    XunitReportParser parserHandler = new XunitReportParser(context.fileSystem().baseDir().getPath());
+    StaxParser parser = new StaxParser(parserHandler, false);
+    for (File report : reports) {
       LOG.info("Processing xUnit report '{}'", report);
       try {
         parser.parse(report);
@@ -116,14 +116,14 @@ public class CxxXunitSensor extends CxxReportSensor {
 
   private void save(Collection<TestFile> testfiles) {
 
-    var testsCount = 0;
-    var testsSkipped = 0;
-    var testsErrors = 0;
-    var testsFailures = 0;
+    int testsCount = 0;
+    int testsSkipped = 0;
+    int testsErrors = 0;
+    int testsFailures = 0;
     long testsTime = 0;
-    for (var tf : testfiles) {
+    for (TestFile tf : testfiles) {
       if (!tf.getFilename().isEmpty()) {
-        var inputFile = getInputFileIfInProject(tf.getFilename());
+        InputFile inputFile = getInputFileIfInProject(tf.getFilename());
         if (inputFile != null) {
           if (inputFile.language() != null && inputFile.type() == Type.TEST) {
             LOG.debug("Saving xUnit data for '{}': tests={} | errors:{} | failure:{} | skipped:{} | time:{}",

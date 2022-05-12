@@ -58,7 +58,7 @@ public class QueryByName implements Query {
       return false;
     }
 
-    var other = (QueryByName) obj;
+    QueryByName other = (QueryByName) obj;
 
     if (resourceName != null ? !resourceName.equals(other.resourceName) : other.resourceName != null) {
       return false;

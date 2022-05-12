@@ -87,7 +87,7 @@ public class CxxConfigurationModel extends AbstractConfigurationModel {
                                                                                   FORCE_INCLUDES_PROPERTY_KEY, ""));
 
   static String getPropertyOrDefaultValue(String propertyKey, String defaultValue) {
-    var propertyValue = System.getProperty(propertyKey);
+    String propertyValue = System.getProperty(propertyKey);
 
     if (propertyValue == null) {
       LOG.info("The property '{}' is not set, using the default value '{}'.", propertyKey, defaultValue);
@@ -107,9 +107,9 @@ public class CxxConfigurationModel extends AbstractConfigurationModel {
 
   static String[] getStringArray(@Nullable String value) {
     if (value != null) {
-      var strings = value.split(",");
-      var results = new String[strings.length];
-      for (var index = 0; index < strings.length; index++) {
+      String[] strings = value.split(",");
+      String[] results = new String[strings.length];
+      for (int index = 0; index < strings.length; index++) {
         results[index] = strings[index].trim();
       }
       return results;
@@ -135,7 +135,7 @@ public class CxxConfigurationModel extends AbstractConfigurationModel {
 
   @Override
   public Parser<? extends Grammar> doGetParser() {
-    var context = new SquidAstVisitorContextImpl<>(new SourceProject(""));
+    SquidAstVisitorContextImpl<Grammar> context = new SquidAstVisitorContextImpl<>(new SourceProject(""));
     context.setFile(new File("file.cpp").getAbsoluteFile(), CxxMetric.FILES);
     return CxxParser.create(context, getConfiguration());
   }
@@ -152,7 +152,7 @@ public class CxxConfigurationModel extends AbstractConfigurationModel {
   }
 
   CxxSquidConfiguration getConfiguration() {
-    var config = new CxxSquidConfiguration("", getCharset());
+    CxxSquidConfiguration config = new CxxSquidConfiguration("", getCharset());
     config.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.ERROR_RECOVERY_ENABLED,
                errorRecoveryEnabled.getValue());
     config.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.DEFINES,

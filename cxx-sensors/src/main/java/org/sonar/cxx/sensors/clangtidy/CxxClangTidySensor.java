@@ -75,7 +75,7 @@ public class CxxClangTidySensor extends CxxIssuesReportSensor {
 
   @Override
   protected void processReport(File report) {
-    var parser = new ClangTidyParser(this);
+    ClangTidyParser parser = new ClangTidyParser(this);
     try {
       String defaultEncoding = context.config().get(REPORT_ENCODING_DEF).orElse(DEFAULT_ENCODING_DEF);
       parser.parse(report, defaultEncoding);

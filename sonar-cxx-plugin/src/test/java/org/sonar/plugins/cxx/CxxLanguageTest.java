@@ -31,21 +31,21 @@ public class CxxLanguageTest {
 
   @Test
   public void testCxxLanguageStringConfiguration() throws Exception {
-    var language = new CxxLanguage(settings.asConfig());
+    CxxLanguage language = new CxxLanguage(settings.asConfig());
     assertThat(language.getKey()).isEqualTo("cxx");
   }
 
   @Test
   public void shouldReturnConfiguredFileSuffixes() {
     settings.setProperty(CxxLanguage.FILE_SUFFIXES_KEY, ".C,.c,.H,.h");
-    var cxx = new CxxLanguage(settings.asConfig());
+    CxxLanguage cxx = new CxxLanguage(settings.asConfig());
     String[] expected = {".C", ".c", ".H", ".h"};
     assertThat(cxx.getFileSuffixes(), is(expected));
   }
 
   @Test
   public void shouldReturnDefaultFileSuffixes1() {
-    var cxx = new CxxLanguage(settings.asConfig());
+    CxxLanguage cxx = new CxxLanguage(settings.asConfig());
     String[] expected = {"disabled"};
     assertThat(cxx.getFileSuffixes(), is(expected));
   }
@@ -53,7 +53,7 @@ public class CxxLanguageTest {
   @Test
   public void shouldReturnDefaultFileSuffixes2() {
     settings.setProperty(CxxLanguage.FILE_SUFFIXES_KEY, "");
-    var cxx = new CxxLanguage(settings.asConfig());
+    CxxLanguage cxx = new CxxLanguage(settings.asConfig());
     String[] expected = {"disabled"};
     assertThat(cxx.getFileSuffixes(), is(expected));
   }
@@ -61,7 +61,7 @@ public class CxxLanguageTest {
   @Test
   public void shouldBeDisabled() {
     settings.setProperty(CxxLanguage.FILE_SUFFIXES_KEY, "-");
-    var cxx = new CxxLanguage(settings.asConfig());
+    CxxLanguage cxx = new CxxLanguage(settings.asConfig());
     String[] expected = {"disabled"};
     assertThat(cxx.getFileSuffixes(), is(expected));
   }

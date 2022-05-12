@@ -44,7 +44,7 @@ public class CxxVeraxxSensorTest {
 
   @Test
   public void shouldReportCorrectViolations() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxVeraxxSensor.REPORT_PATH_KEY, "vera++-reports/vera++-result-*.xml");
     context.setSettings(settings);
 
@@ -61,7 +61,7 @@ public class CxxVeraxxSensorTest {
     context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", "sources/utils/utils.cpp")
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n").build());
 
-    var sensor = new CxxVeraxxSensor();
+    CxxVeraxxSensor sensor = new CxxVeraxxSensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(10);
@@ -69,11 +69,11 @@ public class CxxVeraxxSensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxVeraxxSensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxVeraxxSensor sensor = new CxxVeraxxSensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Vera++ report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxVeraxxRuleRepository.KEY);

@@ -26,7 +26,9 @@ import javax.annotation.CheckForNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.config.internal.MapSettings;
@@ -49,7 +51,7 @@ public class CxxChecksTest {
 
   @Before
   public void setUp() {
-    var activeRules = new ActiveRulesBuilder()
+    ActiveRules activeRules = new ActiveRulesBuilder()
       .addRule(new NewActiveRule.Builder()
         .setRuleKey(RuleKey.of(DEFAULT_REPOSITORY_KEY, DEFAULT_RULE_KEY))
         .build())
@@ -60,14 +62,14 @@ public class CxxChecksTest {
     checkFactory = new CheckFactory(activeRules);
 
     customRulesDefinition = new MyCustomPlSqlRulesDefinition();
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     customRulesDefinition.define(context);
   }
 
   @SuppressWarnings("rawtypes")
   @Test
   public void shouldReturnDefaultChecks() {
-    var checks = CxxChecks.createCxxCheck(checkFactory);
+    CxxChecks checks = CxxChecks.createCxxCheck(checkFactory);
     checks.addChecks(DEFAULT_REPOSITORY_KEY, new ArrayList<>(Collections.singletonList(MyRule.class)));
 
     SquidAstVisitor<Grammar> defaultCheck = check(checks, DEFAULT_REPOSITORY_KEY, DEFAULT_RULE_KEY);
@@ -80,7 +82,7 @@ public class CxxChecksTest {
 
   @Test
   public void shouldReturnCustomChecks() {
-    var checks = CxxChecks.createCxxCheck(checkFactory);
+    CxxChecks checks = CxxChecks.createCxxCheck(checkFactory);
     checks.addCustomChecks(new CustomCxxRulesDefinition[]{customRulesDefinition});
 
     SquidAstVisitor<Grammar> customCheck = check(checks, CUSTOM_REPOSITORY_KEY, CUSTOM_RULE_KEY);
@@ -93,7 +95,7 @@ public class CxxChecksTest {
 
   @Test
   public void shouldWorkWithoutCustomChecks() {
-    var checks = CxxChecks.createCxxCheck(checkFactory);
+    CxxChecks checks = CxxChecks.createCxxCheck(checkFactory);
     checks.addCustomChecks(null);
     assertThat(checks.all()).isEmpty();
   }
@@ -101,7 +103,7 @@ public class CxxChecksTest {
   @SuppressWarnings("rawtypes")
   @Test
   public void shouldNotReturnRuleKeyIfCheckDoesNotExists() {
-    var checks = CxxChecks.createCxxCheck(checkFactory);
+    CxxChecks checks = CxxChecks.createCxxCheck(checkFactory);
     checks.addChecks(DEFAULT_REPOSITORY_KEY, new ArrayList<>(Collections.singletonList(MyRule.class)));
     assertThat(checks.ruleKey(new MyCustomRule())).isNull();
   }
@@ -111,7 +113,7 @@ public class CxxChecksTest {
     RuleKey key = RuleKey.of(repository, rule);
 
     SquidAstVisitor<Grammar> check;
-    for (var checks : cxxChecks.getChecks()) {
+    for (Checks<SquidAstVisitor<Grammar>> checks : cxxChecks.getChecks()) {
       check = checks.of(key);
 
       if (check != null) {

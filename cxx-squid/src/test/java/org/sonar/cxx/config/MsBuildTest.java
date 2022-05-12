@@ -49,7 +49,7 @@ public class MsBuildTest {
 
     List<String> includes = getIncludesForReferenceLogFile();
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
 
     // Absolute path
     softly.assertThat(includes).contains("C:\\Development\\Source\\ThirdParty\\VS2017\\Firebird-2.5.8\\include");
@@ -64,10 +64,10 @@ public class MsBuildTest {
   @Test
   public void relativeIncludesVS2019ReferenceLog() {
 
-    var REFERENCE_LOG = "src/test/resources/msbuild/msbuild-azure-devops-en.txt";
+    String REFERENCE_LOG = "src/test/resources/msbuild/msbuild-azure-devops-en.txt";
     List<String> includes = getIncludesForUniqueFile(REFERENCE_LOG);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     // Absolute path
     softly.assertThat(includes).contains("C:\\agent\\_work\\1\\s\\_Globals\\Include");
     softly.assertThat(includes).hasSize(1);
@@ -80,7 +80,7 @@ public class MsBuildTest {
     List<String> refIncludes = getIncludesForReferenceLogFile();
     List<String> includes = getIncludesForUniqueFile("src/test/resources/msbuild/msbuild-detailed-de.txt");
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
 
     softly.assertThat(includes).containsExactlyInAnyOrderElementsOf(refIncludes);
     softly.assertAll();
@@ -92,7 +92,7 @@ public class MsBuildTest {
     List<String> refIncludes = getIncludesForReferenceLogFile();
     List<String> includes = getIncludesForUniqueFile("src/test/resources/msbuild/msbuild-detailed-fr.txt");
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
 
     softly.assertThat(includes).containsExactlyInAnyOrderElementsOf(refIncludes);
     softly.assertAll();
@@ -103,10 +103,10 @@ public class MsBuildTest {
   }
 
   private List<String> getIncludesForUniqueFile(String log) {
-    var squidConfig = new CxxSquidConfiguration();
-    var logFile = new File(log);
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
+    File logFile = new File(log);
 
-    var parser = new MsBuild(squidConfig);
+    MsBuild parser = new MsBuild(squidConfig);
     parser.parse(logFile, ".", VC_CHARSET);
 
     List<String> includes = squidConfig.getValues(UNIQUE_FILE, CxxSquidConfiguration.INCLUDE_DIRECTORIES);

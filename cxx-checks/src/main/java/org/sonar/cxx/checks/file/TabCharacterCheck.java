@@ -55,8 +55,8 @@ public class TabCharacterCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitFile(AstNode astNode) {
-    var nr = 0;
-    for (var line : getContext().getInputFileLines()) {
+    int nr = 0;
+    for (String line : getContext().getInputFileLines()) {
       ++nr;
       if (line.contains("\t")) {
         if (createLineViolation) {

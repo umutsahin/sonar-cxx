@@ -24,6 +24,9 @@ import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Grammar;
 import static java.lang.Math.min;
 import java.util.Collection;
+
+import com.sonar.sslr.api.Token;
+import com.sonar.sslr.impl.Parser;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.config.CxxSquidConfiguration;
@@ -107,9 +110,9 @@ public final class CxxAstScanner {
    */
   @SafeVarargs
   public static AstScanner<Grammar> create(CxxSquidConfiguration squidConfig, SquidAstVisitor<Grammar>... visitors) {
-    var context = new SquidAstVisitorContextImpl<>(new SourceProject("Cxx Project"));
-    var parser = CxxParser.create(context, squidConfig);
-    var builder = AstScanner.<Grammar>builder(context).setBaseParser(parser);
+    SquidAstVisitorContextImpl<Grammar> context = new SquidAstVisitorContextImpl<>(new SourceProject("Cxx Project"));
+    Parser<Grammar> parser = CxxParser.create(context, squidConfig);
+    AstScanner.Builder<Grammar> builder = AstScanner.<Grammar>builder(context).setBaseParser(parser);
 
     /* Metrics */
     builder.withMetrics(CxxMetric.values());
@@ -122,7 +125,7 @@ public final class CxxAstScanner {
       new CommentAnalyser() {
       @Override
       public boolean isBlank(String line) {
-        for (var i = 0; i < line.length(); i++) {
+        for (int i = 0; i < line.length(); i++) {
           if (Character.isLetterOrDigit(line.charAt(i))) {
             return false;
           }
@@ -132,7 +135,7 @@ public final class CxxAstScanner {
 
       @Override
       public String getContents(String comment) {
-        var HEADER_LEN = 2;
+        int HEADER_LEN = 2;
         return "/*".equals(comment.substring(0, HEADER_LEN))
                  ? comment.substring(HEADER_LEN, comment.length() - HEADER_LEN)
                  : comment.substring(HEADER_LEN);
@@ -141,14 +144,14 @@ public final class CxxAstScanner {
 
     /* Functions */
     builder.withSquidAstVisitor(new SourceCodeBuilderVisitor<>((SourceCode parentSourceCode, AstNode astNode) -> {
-      var sb = new StringBuilder(512);
-      for (var token : astNode.getFirstDescendant(CxxGrammarImpl.declaratorId).getTokens()) {
+      StringBuilder sb = new StringBuilder(512);
+      for (Token token : astNode.getFirstDescendant(CxxGrammarImpl.declaratorId).getTokens()) {
         sb.append(token.getValue());
       }
-      var functionName = sb.toString();
+      String functionName = sb.toString();
       sb.setLength(0);
       // todo: check if working with nested-namespace-definition
-      var namespace = astNode.getFirstAncestor(CxxGrammarImpl.namedNamespaceDefinition);
+      AstNode namespace = astNode.getFirstAncestor(CxxGrammarImpl.namedNamespaceDefinition);
       while (namespace != null) {
         if (sb.length() > 0) {
           sb.insert(0, "::");
@@ -157,9 +160,9 @@ public final class CxxAstScanner {
         // todo: check if working with nested-namespace-definition
         namespace = namespace.getFirstAncestor(CxxGrammarImpl.namedNamespaceDefinition);
       }
-      var namespaceName = sb.length() > 0 ? sb.toString() + "::" : "";
-      var function = new SourceFunction(intersectingConcatenate(namespaceName, functionName)
-                                      + ":" + astNode.getToken().getLine());
+      String namespaceName = sb.length() > 0 ? sb.toString() + "::" : "";
+      SourceFunction function = new SourceFunction(intersectingConcatenate(namespaceName, functionName)
+                                                   + ":" + astNode.getToken().getLine());
       function.setStartAtLine(astNode.getTokenLine());
       return function;
     }, CxxGrammarImpl.functionDefinition));
@@ -171,9 +174,9 @@ public final class CxxAstScanner {
 
     /* Classes */
     builder.withSquidAstVisitor(new SourceCodeBuilderVisitor<>((SourceCode parentSourceCode, AstNode astNode) -> {
-      var classNameAst = astNode.getFirstDescendant(CxxGrammarImpl.className);
-      var className = classNameAst == null ? "" : classNameAst.getFirstChild().getTokenValue();
-      var cls = new SourceClass(className + ":" + astNode.getToken().getLine(), className);
+      AstNode classNameAst = astNode.getFirstDescendant(CxxGrammarImpl.className);
+      String className = classNameAst == null ? "" : classNameAst.getFirstChild().getTokenValue();
+      SourceClass cls = new SourceClass(className + ":" + astNode.getToken().getLine(), className);
       cls.setStartAtLine(astNode.getTokenLine());
       return cls;
     }, CxxGrammarImpl.classSpecifier));
@@ -225,7 +228,7 @@ public final class CxxAstScanner {
     builder.withSquidAstVisitor(new CxxFileLinesVisitor());
 
     /* External visitors (typically Check ones) */
-    for (var visitor : visitors) {
+    for (SquidAstVisitor<Grammar> visitor : visitors) {
       if (visitor instanceof CxxCharsetAwareVisitor) {
         ((CxxCharsetAwareVisitor) visitor).setCharset(squidConfig.getCharset());
       }
@@ -240,12 +243,12 @@ public final class CxxAstScanner {
   public static String intersectingConcatenate(String a, String b) {
 
     // find length of maximum possible match
-    var lenOfA = a.length();
-    var lenOfB = b.length();
-    var minIntersectionLen = min(lenOfB, lenOfA);
+    int lenOfA = a.length();
+    int lenOfB = b.length();
+    int minIntersectionLen = min(lenOfB, lenOfA);
 
     // search down from maximum match size, to get longest possible intersection
-    for (var size = minIntersectionLen; size > 0; size--) {
+    for (int size = minIntersectionLen; size > 0; size--) {
       if (a.regionMatches(lenOfA - size, b, 0, size)) {
         return a + b.substring(size, lenOfB);
       }

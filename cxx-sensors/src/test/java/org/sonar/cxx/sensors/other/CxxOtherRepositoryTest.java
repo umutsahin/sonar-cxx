@@ -79,9 +79,9 @@ public class CxxOtherRepositoryTest {
   @Test
   public void verifyTemplateRuleIsFound() {
     settings.setProperty(CxxOtherSensor.RULES_KEY, "");
-    var def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
+    CxxOtherRepository def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxOtherRepository.KEY);
@@ -91,9 +91,9 @@ public class CxxOtherRepositoryTest {
   @Test
   public void createNonEmptyRulesTest() {
     settings.setProperty(CxxOtherSensor.RULES_KEY, profile1);
-    var def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
+    CxxOtherRepository def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxOtherRepository.KEY);
@@ -103,9 +103,9 @@ public class CxxOtherRepositoryTest {
   @Test
   public void createNullRulesTest() {
     settings.setProperty(CxxOtherSensor.RULES_KEY, "");
-    var def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
+    CxxOtherRepository def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxOtherRepository.KEY);
@@ -115,13 +115,13 @@ public class CxxOtherRepositoryTest {
   @Test
   public void verifyRuleValuesTest() {
     settings.setProperty(CxxOtherSensor.RULES_KEY, profile2);
-    var def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
+    CxxOtherRepository def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxOtherRepository.KEY);
-    var rule = repo.rule("key1");
+    RulesDefinition.Rule rule = repo.rule("key1");
     assertThat(rule).isNotNull();
 
     assertThat(rule.key()).isEqualTo("key1");
@@ -133,15 +133,15 @@ public class CxxOtherRepositoryTest {
   @Test
   public void verifyRulesWithSameKey() {
     settings.setProperty(CxxOtherSensor.RULES_KEY, profile2 + "," + profile3);
-    var def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
+    CxxOtherRepository def = new CxxOtherRepository(settings.asConfig(), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxOtherRepository.KEY);
     assertThat(repo.rules()).hasSize(3);
 
-    var rule = repo.rule("key1");
+    RulesDefinition.Rule rule = repo.rule("key1");
     assertThat(rule).isNotNull();
 
     assertThat(rule.key()).isEqualTo("key1");

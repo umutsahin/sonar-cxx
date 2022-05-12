@@ -46,8 +46,8 @@ public class CxxBullseyeCoverageSensorTest {
 
   @Test
   public void shouldReportCorrectCoverage() {
-    var coverageReport = "coverage-reports/bullseye/coverage-result-bullseye.xml";
-    var context = SensorContextTester.create(fs.baseDir());
+    String coverageReport = "coverage-reports/bullseye/coverage-result-bullseye.xml";
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
 
     if (TestUtils.isWindows()) {
       settings.setProperty(CxxCoverageBullseyeSensor.REPORT_PATH_KEY, coverageReport);
@@ -73,25 +73,25 @@ public class CxxBullseyeCoverageSensorTest {
           "asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         .build());
 
-      var sensor = new CxxCoverageBullseyeSensor();
+      CxxCoverageBullseyeSensor sensor = new CxxCoverageBullseyeSensor();
       sensor.execute(context);
 
       assertThat(context.lineHits("ProjectKey:main.cpp", 7)).isEqualTo(1);
 
-      var zeroHitLines = new int[]{5, 10, 15, 17, 28, 32, 35, 40, 41, 44};
-      for (var line : zeroHitLines) {
+      int[] zeroHitLines = new int[]{5, 10, 15, 17, 28, 32, 35, 40, 41, 44};
+      for (int line : zeroHitLines) {
         LOG.debug("Check zero line coverage: {}", line);
         assertThat(context.lineHits("ProjectKey:source_1.cpp", line)).isZero();
       }
 
-      var oneHitlinesA = new int[]{7, 12, 17, 30};
-      for (var line : oneHitlinesA) {
+      int[] oneHitlinesA = new int[]{7, 12, 17, 30};
+      for (int line : oneHitlinesA) {
         LOG.debug("Check line coverage: {}", line);
         assertThat(context.lineHits("ProjectKey:testclass.cpp", line)).isEqualTo(1);
         assertThat(context.lineHits("ProjectKey:src/testclass.cpp", line)).isEqualTo(1);
       }
-      var fullCoveredTwoCondition = new int[]{34, 43, 46};
-      for (var line : fullCoveredTwoCondition) {
+      int[] fullCoveredTwoCondition = new int[]{34, 43, 46};
+      for (int line : fullCoveredTwoCondition) {
         LOG.debug("Check full covered two conditions - line: {}", line);
         assertThat(context.conditions("ProjectKey:testclass.cpp", line)).isEqualTo(2);
         assertThat(context.conditions("ProjectKey:src/testclass.cpp", line)).isEqualTo(2);
@@ -128,8 +128,8 @@ public class CxxBullseyeCoverageSensorTest {
   @Test
   public void shouldParseTopLevelFiles() {
     // read top level folder name from report file
-    var coverageReport = "coverage-reports/bullseye/bullseye-coverage-report-data-in-root-node-win.xml";
-    var context = SensorContextTester.create(fs.baseDir());
+    String coverageReport = "coverage-reports/bullseye/bullseye-coverage-report-data-in-root-node-win.xml";
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     if (TestUtils.isWindows()) {
       settings.setProperty(CxxCoverageBullseyeSensor.REPORT_PATH_KEY, coverageReport);
       context.setSettings(settings);
@@ -151,7 +151,7 @@ public class CxxBullseyeCoverageSensorTest {
         .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         .build());
 
-      var sensor = new CxxCoverageBullseyeSensor();
+      CxxCoverageBullseyeSensor sensor = new CxxCoverageBullseyeSensor();
       sensor.execute(context);
 
       assertThat(context.lineHits("ProjectKey:randomfoldernamethatihopeknowmachinehas/test/test.c", 4)).isEqualTo(1);
@@ -162,14 +162,14 @@ public class CxxBullseyeCoverageSensorTest {
   @Test
   public void shouldReportAllProbes() {
 
-    var coverageReport = "coverage-reports/bullseye/bullseye-coverage-Linux-V8.9.60.xml";
-    var context = SensorContextTester.create(fs.baseDir());
+    String coverageReport = "coverage-reports/bullseye/bullseye-coverage-Linux-V8.9.60.xml";
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
 
     if (TestUtils.isWindows()) {
       settings.setProperty(CxxCoverageBullseyeSensor.REPORT_PATH_KEY, coverageReport);
       context.setSettings(settings);
 
-      var fileList = new String[]{
+      String[] fileList = new String[]{
         "covfile/import/cereal/archives/json.hpp",
         "covfile/import/jpeg-compressor/src/jpgd.cpp",
         "covfile/src/main/vr_io/src/ModalityLUTJson.cpp",
@@ -185,22 +185,22 @@ public class CxxBullseyeCoverageSensorTest {
         "covfile/src/main/vr_core/src/VR.cpp"
       };
 
-      var sourceContent = new StringBuilder(8192);
+      StringBuilder sourceContent = new StringBuilder(8192);
       sourceContent.append("asd\nasdas\nasda\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-      for (var i = 0; i < 4000; i++) {
+      for (int i = 0; i < 4000; i++) {
         sourceContent.append('\n');
       }
 
-      for (var filepath : fileList) {
+      for (String filepath : fileList) {
         context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", filepath)
           .setLanguage("cxx").initMetadata(sourceContent.toString()).build());
       }
-      var sensor = new CxxCoverageBullseyeSensor();
+      CxxCoverageBullseyeSensor sensor = new CxxCoverageBullseyeSensor();
       sensor.execute(context);
 
-      var coveredCondition = new int[]{496, 524};
+      int[] coveredCondition = new int[]{496, 524};
 
-      for (var line : coveredCondition) {
+      for (int line : coveredCondition) {
         LOG.debug("Check conditions line: {}", line);
         assertThat(context.conditions("ProjectKey:covfile/import/cereal/archives/json.hpp", line)).isEqualTo(2);
         assertThat(context.coveredConditions("ProjectKey:covfile/import/cereal/archives/json.hpp", line)).isEqualTo(2);
@@ -237,8 +237,8 @@ public class CxxBullseyeCoverageSensorTest {
   public void shouldIgnoreBlocks() {
 
     // report contains a block tag => ignore
-    var coverageReport = "coverage-reports/bullseye/bullseye-coverage-Windows-V8.20.2.xml";
-    var context = SensorContextTester.create(fs.baseDir());
+    String coverageReport = "coverage-reports/bullseye/bullseye-coverage-Windows-V8.20.2.xml";
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
 
     if (TestUtils.isWindows()) {
       settings.setProperty(CxxCoverageBullseyeSensor.REPORT_PATH_KEY, coverageReport);
@@ -258,7 +258,7 @@ public class CxxBullseyeCoverageSensorTest {
         .build()
       );
 
-      var sensor = new CxxCoverageBullseyeSensor();
+      CxxCoverageBullseyeSensor sensor = new CxxCoverageBullseyeSensor();
       sensor.execute(context);
 
       assertThat(context.lineHits("ProjectKey:root/folder/test.cpp", 3)).isEqualTo(1);

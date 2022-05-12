@@ -57,7 +57,7 @@ public class CxxParserTest {
 
   @Test
   public void testParsingCppSourceFiles() {
-    var map = new HashMap<String, Integer>() {
+    HashMap map = new HashMap<String, Integer>() {
       private static final long serialVersionUID = 6029310517902718597L;
 
       {
@@ -83,34 +83,34 @@ public class CxxParserTest {
     Parser<Grammar> p = createParser(null, false, null);
 
     long start = System.currentTimeMillis();
-    for (var file : listFiles(goodFiles, new String[]{"cc", "cpp", "hpp"})) {
+    for (File file : listFiles(goodFiles, new String[]{"cc", "cpp", "hpp"})) {
       AstNode root = parse(p, file);
       verify(root, file, map);
     }
     long finish = System.currentTimeMillis();
-    var duration = (finish - start) / 1000.;
+    double duration = (finish - start) / 1000.;
   }
 
   //@Test todo
   public void testParsingCSourceFiles() {
-    var map = new HashMap<String, Integer>() {
+    HashMap map = new HashMap<String, Integer>() {
     };
 
     Parser<Grammar> p = createParser(null, false, null);
 
     long start = System.currentTimeMillis();
-    for (var file : listFiles(cCompatibilityFiles, new String[]{"cc", "h"})) { // todo add "c"
+    for (File file : listFiles(cCompatibilityFiles, new String[]{"cc", "h"})) { // todo add "c"
       AstNode root = parse(p, file);
       verify(root, file, map);
     }
     long finish = System.currentTimeMillis();
-    var duration = (finish - start) / 1000.;
+    double duration = (finish - start) / 1000.;
   }
 
   @SuppressWarnings("unchecked")
   @Test
   public void testPreproccessorParsingSourceFiles() {
-    var includes = Arrays.asList(
+    List<String> includes = Arrays.asList(
       "C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\INCLUDE",
       "C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\ATLMFC\\INCLUDE",
       "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.10586.0\\ucrt",
@@ -122,7 +122,7 @@ public class CxxParserTest {
       "resources",
       "resources\\parser\\preprocessor");
 
-    var map = new HashMap<String, Integer>() {
+    HashMap map = new HashMap<String, Integer>() {
       private static final long serialVersionUID = 1433381506274827684L;
 
       {
@@ -134,16 +134,16 @@ public class CxxParserTest {
       }
     };
 
-    var baseDir = new File("src/test").getAbsolutePath();
+    String baseDir = new File("src/test").getAbsolutePath();
     Parser<Grammar> p = createParser(baseDir, false, includes);
 
     long start = System.currentTimeMillis();
-    for (var file : listFiles(preprocessorFiles, new String[]{"cc", "cpp", "hpp", "h"})) {
+    for (File file : listFiles(preprocessorFiles, new String[]{"cc", "cpp", "hpp", "h"})) {
       AstNode root = parse(p, file);
       verify(root, file, map);
     }
     long finish = System.currentTimeMillis();
-    var duration = (finish - start) / 1000.;
+    double duration = (finish - start) / 1000.;
   }
 
   @Test
@@ -160,7 +160,7 @@ public class CxxParserTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testParseErrorRecoveryEnabled() {
-    var map = new HashMap<String, Integer>() {
+    HashMap map = new HashMap<String, Integer>() {
       private static final long serialVersionUID = 3433381506274827684L;
 
       {
@@ -178,8 +178,8 @@ public class CxxParserTest {
   }
 
   private List<File> listFiles(String[] dirs, String[] extensions) {
-    var files = new ArrayList<File>();
-    for (var dir : dirs) {
+    ArrayList<File> files = new ArrayList<File>();
+    for (String dir : dirs) {
       files.addAll(FileUtils.listFiles(new File(rootDir, dir), extensions, true));
     }
     return files;

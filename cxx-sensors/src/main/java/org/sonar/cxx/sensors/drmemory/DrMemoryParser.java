@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -52,22 +53,22 @@ public final class DrMemoryParser {
    */
   public static List<DrMemoryError> parse(File file, String encoding) {
 
-    var result = new ArrayList<DrMemoryError>();
+    ArrayList<DrMemoryError> result = new ArrayList<DrMemoryError>();
 
     List<String> elements = getElements(file, encoding);
 
-    for (var element : elements) {
-      var m = RX_MESSAGE_FINDER.matcher(element);
+    for (String element : elements) {
+      Matcher m = RX_MESSAGE_FINDER.matcher(element);
 
       if (m.find()) {
-        var error = new DrMemoryError();
+        DrMemoryError error = new DrMemoryError();
         error.type = extractErrorType(m.group(1));
         String[] elementSplitted = CxxUtils.EOL_PATTERN.split(element);
         error.message = elementSplitted[0];
-        for (var elementPart : elementSplitted) {
-          var locationMatcher = RX_FILE_FINDER.matcher(elementPart);
+        for (String elementPart : elementSplitted) {
+          Matcher locationMatcher = RX_FILE_FINDER.matcher(elementPart);
           if (locationMatcher.find()) {
-            var location = new Location();
+            Location location = new Location();
             location.file = locationMatcher.group(1);
             location.line = Integer.valueOf(locationMatcher.group(2));
             error.stackTrace.add(location);
@@ -90,13 +91,13 @@ public final class DrMemoryParser {
    */
   public static List<String> getElements(File file, String encoding) {
 
-    var list = new ArrayList<String>();
-    try (var br = new BufferedReader(
+    ArrayList<String> list = new ArrayList<String>();
+    try (BufferedReader br = new BufferedReader(
       new InputStreamReader(java.nio.file.Files.newInputStream(file.toPath()), encoding))) {
-      var sb = new StringBuilder(4096);
+      StringBuilder sb = new StringBuilder(4096);
       String line;
-      var cnt = 0;
-      var whitespacesOnly = Pattern.compile("^\\s*$");
+      int cnt = 0;
+      Pattern whitespacesOnly = Pattern.compile("^\\s*$");
 
       while ((line = br.readLine()) != null) {
         if (cnt > (TOP_COUNT)) {
@@ -115,9 +116,9 @@ public final class DrMemoryParser {
         list.add(sb.toString());
       }
     } catch (IOException e) {
-      var msg = new StringBuilder(512).append("Cannot feed the data into SonarQube, details: '")
-        .append(e.getMessage())
-        .append("'").toString();
+      String msg = new StringBuilder(512).append("Cannot feed the data into SonarQube, details: '")
+                                         .append(e.getMessage())
+                                         .append("'").toString();
       LOG.error(msg);
     }
     return list;
@@ -125,7 +126,7 @@ public final class DrMemoryParser {
 
   private static DrMemoryErrorType extractErrorType(String title) {
     String cleanedTitle = clean(title);
-    for (var drMemoryErrorType : DrMemoryErrorType.values()) {
+    for (DrMemoryErrorType drMemoryErrorType : DrMemoryErrorType.values()) {
       if (cleanedTitle.startsWith(drMemoryErrorType.getTitle())) {
         return drMemoryErrorType;
       }

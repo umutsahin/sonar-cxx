@@ -41,14 +41,14 @@ public class ExternalDescriptionLoaderTest {
   @Test
   public void existing_rule_description() throws Exception {
     repository.createRule("ruleWithExternalInfo").setName("name1");
-    var rule = buildRepository().rule("ruleWithExternalInfo");
+    RulesDefinition.Rule rule = buildRepository().rule("ruleWithExternalInfo");
     assertThat(rule.htmlDescription()).isEqualTo("description for ruleWithExternalInfo");
   }
 
   @Test
   public void rule_with_non_external_description() throws Exception {
     repository.createRule("ruleWithoutExternalInfo").setName("name1").setHtmlDescription("my description");
-    var rule = buildRepository().rule("ruleWithoutExternalInfo");
+    RulesDefinition.Rule rule = buildRepository().rule("ruleWithoutExternalInfo");
     assertThat(rule.htmlDescription()).isEqualTo("my description");
   }
 
@@ -60,8 +60,8 @@ public class ExternalDescriptionLoaderTest {
 
   @Test(expected = IllegalStateException.class)
   public void invalid_url() throws Exception {
-    var loader = new ExternalDescriptionLoader(repository, LANGUAGE_KEY);
-    var rule = repository.createRule("ruleWithoutExternalInfo").setName("name1");
+    ExternalDescriptionLoader loader = new ExternalDescriptionLoader(repository, LANGUAGE_KEY);
+    RulesDefinition.NewRule rule = repository.createRule("ruleWithoutExternalInfo").setName("name1");
     loader.addHtmlDescription(rule, new URL("file:///xx/yy"));
   }
 

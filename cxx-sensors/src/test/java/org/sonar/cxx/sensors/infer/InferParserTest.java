@@ -27,15 +27,15 @@ public class InferParserTest {
 
   @Test
   public void shouldParseImportantInformation() {
-    var expected = new InferParser.InferIssue();
+    InferParser.InferIssue expected = new InferParser.InferIssue();
     expected.setBugType("TotoType");
     expected.setFile("path/to/toto.c");
     expected.setLine(11);
     expected.setQualifier("Toto should not be toto.");
 
-    var json = "{'bug_type':'TotoType','qualifier':'Toto should not be toto.',"
-             + "'line':11,'file':'path/to/toto.c'}";
-    var gson = new Gson();
+    String json = "{'bug_type':'TotoType','qualifier':'Toto should not be toto.',"
+                  + "'line':11,'file':'path/to/toto.c'}";
+    Gson gson = new Gson();
     InferParser.InferIssue value = gson.fromJson(json, InferParser.InferIssue.class);
 
     assertEquals(expected.toString(), value.toString());

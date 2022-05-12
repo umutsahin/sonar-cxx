@@ -64,7 +64,7 @@ public class NUnitTestResultsFileParserTest {
 
   @Test
   public void valid() throws Exception {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new NUnitTestResultsFileParser().accept(new File(REPORT_PATH + "valid.xml"), results);
 
     assertThat(results.tests()).isEqualTo(196);
@@ -77,7 +77,7 @@ public class NUnitTestResultsFileParserTest {
 
   @Test
   public void valid_comma_in_double() throws Exception {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new NUnitTestResultsFileParser().accept(new File(REPORT_PATH + "valid_comma_in_double.xml"), results);
 
     assertThat(results.executionTime()).isEqualTo(1051);
@@ -85,7 +85,7 @@ public class NUnitTestResultsFileParserTest {
 
   @Test
   public void valid_no_execution_time() throws Exception {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new NUnitTestResultsFileParser().accept(new File(REPORT_PATH + "valid_no_execution_time.xml"), results);
 
     assertThat(results.tests()).isEqualTo(196);
@@ -98,7 +98,7 @@ public class NUnitTestResultsFileParserTest {
 
   @Test
   public void empty() {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new NUnitTestResultsFileParser().accept(new File(REPORT_PATH + "empty.xml"), results);
 
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(

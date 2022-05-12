@@ -52,13 +52,13 @@ public class CxxOtherRepository implements RulesDefinition {
 
   @Override
   public void define(Context context) {
-    var repository = context.createRepository(KEY, "cxx")
-      .setName(NAME);
-    var validate = context.createRepository("Validate", "cxx")
-      .setName("validate");
+    NewRepository repository = context.createRepository(KEY, "cxx")
+                                      .setName(NAME);
+    NewRepository validate = context.createRepository("Validate", "cxx")
+                                    .setName("validate");
 
     xmlRuleLoader.load(repository, getClass().getResourceAsStream("/external-rule.xml"), StandardCharsets.UTF_8.name());
-    for (var ruleDefs : this.config.getStringArray(CxxOtherSensor.RULES_KEY)) {
+    for (String ruleDefs : this.config.getStringArray(CxxOtherSensor.RULES_KEY)) {
       if (ruleDefs != null && !ruleDefs.trim().isEmpty()) {
         try {
           // read rules first into dummy repository to check if there are errors
@@ -68,8 +68,8 @@ public class CxxOtherRepository implements RulesDefinition {
         } catch (IllegalStateException e) {
           // In case of an error, ignore the whole XML block. The loading happens during the server start,
           // errors are critical and can cause that the server cannot be started anymore.
-          var xml = ruleDefs.substring(0, Math.min(ruleDefs.length(), 120))
-            .replaceAll("\\R", "").replaceAll(">[ ]+<", "><");
+          String xml = ruleDefs.substring(0, Math.min(ruleDefs.length(), 120))
+                               .replaceAll("\\R", "").replaceAll(">[ ]+<", "><");
           LOG.error("Cannot load rule definions for 'sonar.cxx.other.rules', '{}', XML '{}...', skipping",
                     e.getMessage(), xml);
         }

@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +45,7 @@ public class XunitReportParserTest {
   @Test
   public void testParse() throws javax.xml.stream.XMLStreamException {
 
-    var ioMap = new TreeMap<String, Integer>();
+    TreeMap<String, Integer> ioMap = new TreeMap<String, Integer>();
 
     // report: number of tests
     ioMap.put("xunit-result-2.xml", 5);
@@ -54,14 +56,14 @@ public class XunitReportParserTest {
     ioMap.put("nested_testsuites.xml", 2);
     ioMap.put("xunit-result-no-testsuite.xml", 0);
 
-    for (var entry : ioMap.entrySet()) {
+    for (Map.Entry<String, Integer> entry : ioMap.entrySet()) {
       parserHandler = new XunitReportParser("");
       parser = new StaxParser(parserHandler, false);
       File report = TestUtils.loadResource(pathPrefix + entry.getKey());
       parser.parse(report);
 
       long tests = 0;
-      for (var testFile : parserHandler.getTestFiles()) {
+      for (TestFile testFile : parserHandler.getTestFiles()) {
         tests += testFile.getTests();
       }
       assertEquals((long) entry.getValue(), tests);
@@ -83,19 +85,19 @@ public class XunitReportParserTest {
     File report = TestUtils.loadResource(pathPrefix + "xunit-result-SAMPLE-inconsistent-case.xml");
     parser.parse(report);
 
-    var actualPaths = parserHandler.getTestFiles()
-        .stream()
-        .map(TestFile::getFilename)
-        .filter(p -> !Strings.isNullOrEmpty(p))
-        .map(s -> Paths.get(s))
-        .collect(Collectors.toList());
+    List<Path> actualPaths = parserHandler.getTestFiles()
+                                          .stream()
+                                          .map(TestFile::getFilename)
+                                          .filter(p -> !Strings.isNullOrEmpty(p))
+                                          .map(s -> Paths.get(s))
+                                          .collect(Collectors.toList());
 
-    var expectPaths = Stream.of(
+    Path[] expectPaths = Stream.of(
         Paths.get("/test/file.cpp"),
         Paths.get("/test/File.cpp"),
         Paths.get("/TEST/file.cpp"))
-        .distinct()
-        .toArray(n -> new Path[n]);
+                               .distinct()
+                               .toArray(n -> new Path[n]);
 
     assertThat(actualPaths).containsExactlyInAnyOrder(expectPaths);
   }

@@ -21,6 +21,7 @@ package org.sonar.cxx.checks.error;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.Token;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.cxx.parser.CxxGrammarImpl;
@@ -45,8 +46,8 @@ public class ParsingErrorRecoveryCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitNode(AstNode node) {
-    var msg = "C++ Parser can't read code. Declaration is skipped";
-    var lastToken = node.getLastToken();
+    String msg = "C++ Parser can't read code. Declaration is skipped";
+    Token lastToken = node.getLastToken();
     if (lastToken != null) {
       msg += String.format(" (last token='%s', line=%d, column=%d)",
                            lastToken.getValue(),

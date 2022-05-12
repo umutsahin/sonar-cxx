@@ -32,10 +32,10 @@ public final class ChecksHelper {
   }
 
   public static int getRecursiveMeasureInt(SourceCode sourceCode, MetricDef metric) {
-    var childrenValue = 0;
+    int childrenValue = 0;
 
     if (sourceCode.getChildren() != null) {
-      for (var child : sourceCode.getChildren()) {
+      for (SourceCode child : sourceCode.getChildren()) {
         childrenValue += getRecursiveMeasureInt(child, metric);
       }
     }

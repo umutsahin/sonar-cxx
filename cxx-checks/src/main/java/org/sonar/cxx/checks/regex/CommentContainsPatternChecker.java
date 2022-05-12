@@ -20,7 +20,11 @@
 package org.sonar.cxx.checks.regex;
 
 import com.sonar.sslr.api.Token;
+
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.sonar.sslr.api.Trivia;
 import org.sonar.cxx.squidbridge.checks.SquidCheck;
 
 class CommentContainsPatternChecker {
@@ -51,17 +55,17 @@ class CommentContainsPatternChecker {
    * @param token
    */
   public void visitToken(Token token) {
-    for (var trivia : token.getTrivia()) {
+    for (Trivia trivia : token.getTrivia()) {
       if (!trivia.isComment()) {
         continue;
       }
-      var triviaToken = trivia.getToken();
+      Token triviaToken = trivia.getToken();
       String comment = triviaToken.getOriginalValue();
       int line = triviaToken.getLine();
       if (indexOfIgnoreCase(comment) != -1) {
         String[] lines = EOL_PATTERN.split(comment);
 
-        for (var i = 0; i < lines.length; i++) {
+        for (int i = 0; i < lines.length; i++) {
           int start = indexOfIgnoreCase(lines[i]);
           if (start != -1 && !isLetterAround(lines[i], start)) {
             check.getContext().createLineViolation(check, message, line + i);
@@ -72,15 +76,15 @@ class CommentContainsPatternChecker {
   }
 
   private int indexOfIgnoreCase(String str) {
-    var m = p.matcher(str);
+    Matcher m = p.matcher(str);
     return m.find() ? m.start() : -1;
   }
 
   private boolean isLetterAround(String line, int start) {
     int end = start + pattern.length();
 
-    var pre = start > 0 ? Character.isLetter(line.charAt(start - 1)) : false;
-    var post = end < line.length() - 1 ? Character.isLetter(line.charAt(end)) : false;
+    boolean pre = start > 0 ? Character.isLetter(line.charAt(start - 1)) : false;
+    boolean post = end < line.length() - 1 ? Character.isLetter(line.charAt(end)) : false;
 
     return pre || post;
   }

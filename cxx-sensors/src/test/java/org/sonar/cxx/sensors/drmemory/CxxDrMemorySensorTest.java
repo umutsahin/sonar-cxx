@@ -25,6 +25,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -41,15 +42,15 @@ public class CxxDrMemorySensorTest {
 
   @Test
   public void shouldIgnoreAViolationWhenTheResourceCouldntBeFoundV1() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     context.settings().setProperty(CxxDrMemorySensor.REPORT_PATH_KEY,
                                    "drmemory-reports/drmemory-result-SAMPLE-V1.txt");
 
-    var inputFile = TestInputFileBuilder.create("ProjectKey", "sources/utils/code_chunks.cpp")
-      .initMetadata("asd\nasdas\nasda\n").setCharset(StandardCharsets.UTF_8).build();
+    DefaultInputFile inputFile = TestInputFileBuilder.create("ProjectKey", "sources/utils/code_chunks.cpp")
+                                                     .initMetadata("asd\nasdas\nasda\n").setCharset(StandardCharsets.UTF_8).build();
     context.fileSystem().add(inputFile);
 
-    var sensor = new CxxDrMemorySensor();
+    CxxDrMemorySensor sensor = new CxxDrMemorySensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
@@ -57,11 +58,11 @@ public class CxxDrMemorySensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxDrMemorySensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxDrMemorySensor sensor = new CxxDrMemorySensor();
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX Dr. Memory report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories()).containsOnly(CxxDrMemoryRuleRepository.KEY);

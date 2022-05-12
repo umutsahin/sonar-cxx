@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -113,11 +114,11 @@ public class CxxSquidConfiguration extends SquidConfiguration {
     super(encoding);
     this.baseDir = baseDir;
 
-    var root = new Element("CompilationDatabase");
+    Element root = new Element("CompilationDatabase");
     root.setAttribute(new Attribute("version", "1.0"));
     document = new Document(root);
 
-    var element = new Element(PREDEFINED_MACROS);
+    Element element = new Element(PREDEFINED_MACROS);
     root.addContent(element);
     parentList.addFirst(element);
 
@@ -183,7 +184,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
   public void add(String level, String key, @Nullable String[] values) {
     if (values != null) {
       Element eKey = getKey(level, key);
-      for (var value : values) {
+      for (String value : values) {
         setValue(eKey, value);
       }
     }
@@ -201,7 +202,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
   public void add(String level, String key, List<String> values) {
     if (!values.isEmpty()) {
       Element eKey = getKey(level, key);
-      for (var value : values) {
+      for (String value : values) {
         setValue(eKey, value);
       }
     }
@@ -248,7 +249,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
     if (eLevel != null) {
       Element eKey = eLevel.getChild(key);
       if (eKey != null) {
-        for (var value : eKey.getChildren("Value")) {
+        for (Element value : eKey.getChildren("Value")) {
           result.add(value.getText());
         }
       }
@@ -274,7 +275,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
       if (eLevel != null) {
         Element eKey = eLevel.getChild(key);
         if (eKey != null) {
-          for (var value : eKey.getChildren("Value")) {
+          for (Element value : eKey.getChildren("Value")) {
             result.add(value.getText());
           }
         }
@@ -298,10 +299,10 @@ public class CxxSquidConfiguration extends SquidConfiguration {
     List<String> result = new ArrayList<>();
     Element eLevel = findLevel(level, parentList.getFirst());
     if (eLevel != null) {
-      for (var child : eLevel.getChildren()) {
+      for (Element child : eLevel.getChildren()) {
         Element eKey = child.getChild(key);
         if (eKey != null) {
-          for (var value : eKey.getChildren("Value")) {
+          for (Element value : eKey.getChildren("Value")) {
             result.add(value.getText());
           }
         }
@@ -393,7 +394,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
    */
   public void save(OutputStream out) {
     try {
-      var xmlOutput = new XMLOutputter();
+      XMLOutputter xmlOutput = new XMLOutputter();
       xmlOutput.setFormat(Format.getPrettyFormat());
       xmlOutput.output(document, out);
     } catch (IOException e) {
@@ -407,7 +408,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
    * @return object XML encoded
    */
   public String toString() {
-    var stream = new ByteArrayOutputStream();
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
     save(stream);
     return stream.toString(StandardCharsets.UTF_8);
   }
@@ -418,7 +419,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
 
   public void readMsBuildFiles(List<File> logFiles, String charsetName) {
     MsBuild msBuild = msBuild = new MsBuild(this);
-    for (var logFile : logFiles) {
+    for (File logFile : logFiles) {
       if (logFile.exists()) {
         msBuild.parse(logFile, baseDir, charsetName);
       } else {
@@ -428,11 +429,11 @@ public class CxxSquidConfiguration extends SquidConfiguration {
   }
 
   public void readJsonCompilationDb() {
-    var jsonDbFile = get(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES,
-                     CxxSquidConfiguration.JSON_COMPILATION_DATABASE);
+    Optional<String> jsonDbFile = get(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES,
+                                      CxxSquidConfiguration.JSON_COMPILATION_DATABASE);
     if (jsonDbFile.isPresent()) {
       try {
-        var jsonDb = new JsonCompilationDatabase(this);
+        JsonCompilationDatabase jsonDb = new JsonCompilationDatabase(this);
         jsonDb.parse(new File(jsonDbFile.get()));
       } catch (IOException e) {
         LOG.error("Cannot access Json DB File: " + e.getMessage());
@@ -468,9 +469,9 @@ public class CxxSquidConfiguration extends SquidConfiguration {
    */
   @CheckForNull
   private Element getParentElement(@Nullable Element element) {
-    var parentIterator = parentList.iterator();
+    Iterator<Element> parentIterator = parentList.iterator();
     while (parentIterator.hasNext()) {
-      var next = parentIterator.next();
+      Element next = parentIterator.next();
       if (next.equals(element)) {
         if (parentIterator.hasNext()) {
           return parentIterator.next();
@@ -546,7 +547,7 @@ public class CxxSquidConfiguration extends SquidConfiguration {
    * @param value to add
    */
   static private void setValue(Element key, String value) {
-    var eValue = new Element("Value");
+    Element eValue = new Element("Value");
     eValue.setText(value);
     key.addContent(eValue);
   }

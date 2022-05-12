@@ -21,11 +21,16 @@ package org.sonar.cxx.checks.metrics;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
+import org.sonar.cxx.squidbridge.api.SourceFile;
+import org.sonar.cxx.utils.CxxReportIssue;
 import org.sonar.cxx.utils.CxxReportLocation;
 import org.sonar.cxx.visitors.MultiLocatitionSquidCheck;
 
@@ -33,19 +38,19 @@ public class FunctionComplexityCheckTest {
 
   @Test
   public void check() throws UnsupportedEncodingException, IOException {
-    var check = new FunctionComplexityCheck();
+    FunctionComplexityCheck check = new FunctionComplexityCheck();
     check.setMaxComplexity(5);
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/FunctionComplexity.cc", ".");
-    var file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
-    var issues = MultiLocatitionSquidCheck.getMultiLocationCheckMessages(file);
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/FunctionComplexity.cc", ".");
+    SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
+    Set<CxxReportIssue> issues = MultiLocatitionSquidCheck.getMultiLocationCheckMessages(file);
     assertThat(issues).isNotNull();
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(issues).hasSize(5);
     softly.assertThat(issues).allSatisfy(issue -> assertThat(issue.getRuleId()).isEqualTo("FunctionComplexity"));
 
-    var issue0 = issues.stream()
-      .filter(issue -> issue.getLocations().get(0).getLine().equals("13"))
-      .findFirst().orElseThrow(() -> new AssertionError("No issue at line 13"));
+    CxxReportIssue issue0 = issues.stream()
+                                  .filter(issue -> issue.getLocations().get(0).getLine().equals("13"))
+                                  .findFirst().orElseThrow(() -> new AssertionError("No issue at line 13"));
     softly.assertThat(issue0.getLocations()).containsOnly(
       new CxxReportLocation(null, "13", null,
                             "The Cyclomatic Complexity of this function is 8 which is greater than 5 authorized."),
@@ -58,9 +63,9 @@ public class FunctionComplexityCheckTest {
       new CxxReportLocation(null, "22", null, "+1: conditional operator"),
       new CxxReportLocation(null, "24", null, "+1: conditional operator"));
 
-    var issue1 = issues.stream()
-      .filter(issue -> issue.getLocations().get(0).getLine().equals("33"))
-      .findFirst().orElseThrow(() -> new AssertionError("No issue at line 33"));
+    CxxReportIssue issue1 = issues.stream()
+                                  .filter(issue -> issue.getLocations().get(0).getLine().equals("33"))
+                                  .findFirst().orElseThrow(() -> new AssertionError("No issue at line 33"));
     softly.assertThat(issue1.getLocations()).containsOnly(
       new CxxReportLocation(null, "33", null,
                             "The Cyclomatic Complexity of this function is 8 which is greater than 5 authorized."),
@@ -73,9 +78,9 @@ public class FunctionComplexityCheckTest {
       new CxxReportLocation(null, "42", null, "+1: conditional operator"),
       new CxxReportLocation(null, "44", null, "+1: conditional operator"));
 
-    var issue2 = issues.stream()
-      .filter(issue -> issue.getLocations().get(0).getLine().equals("51"))
-      .findFirst().orElseThrow(() -> new AssertionError("No issue at line 51"));
+    CxxReportIssue issue2 = issues.stream()
+                                  .filter(issue -> issue.getLocations().get(0).getLine().equals("51"))
+                                  .findFirst().orElseThrow(() -> new AssertionError("No issue at line 51"));
     softly.assertThat(issue2.getLocations()).containsOnly(
       new CxxReportLocation(null, "51", null,
                             "The Cyclomatic Complexity of this function is 8 which is greater than 5 authorized."),
@@ -88,9 +93,9 @@ public class FunctionComplexityCheckTest {
       new CxxReportLocation(null, "60", null, "+1: conditional operator"),
       new CxxReportLocation(null, "62", null, "+1: conditional operator"));
 
-    var issue3 = issues.stream()
-      .filter(issue -> issue.getLocations().get(0).getLine().equals("72"))
-      .findFirst().orElseThrow(() -> new AssertionError("No issue at line 72"));
+    CxxReportIssue issue3 = issues.stream()
+                                  .filter(issue -> issue.getLocations().get(0).getLine().equals("72"))
+                                  .findFirst().orElseThrow(() -> new AssertionError("No issue at line 72"));
     softly.assertThat(issue3.getLocations()).containsOnly(
       new CxxReportLocation(null, "72", null,
                             "The Cyclomatic Complexity of this function is 8 which is greater than 5 authorized."),
@@ -103,9 +108,9 @@ public class FunctionComplexityCheckTest {
       new CxxReportLocation(null, "81", null, "+1: conditional operator"),
       new CxxReportLocation(null, "83", null, "+1: conditional operator"));
 
-    var issue4 = issues.stream()
-      .filter(issue -> issue.getLocations().get(0).getLine().equals("89"))
-      .findFirst().orElseThrow(() -> new AssertionError("No issue at line 89"));
+    CxxReportIssue issue4 = issues.stream()
+                                  .filter(issue -> issue.getLocations().get(0).getLine().equals("89"))
+                                  .findFirst().orElseThrow(() -> new AssertionError("No issue at line 89"));
     softly.assertThat(issue4.getLocations()).containsOnly(
       new CxxReportLocation(null, "89", null,
                             "The Cyclomatic Complexity of this function is 14 which is greater than 5 authorized."),

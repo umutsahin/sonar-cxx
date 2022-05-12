@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.utils.CxxReportIssue;
@@ -36,15 +37,15 @@ public class ClassComplexityCheckTest {
 
   @Test
   public void test() throws UnsupportedEncodingException, IOException {
-    var check = new ClassComplexityCheck();
+    ClassComplexityCheck check = new ClassComplexityCheck();
     check.setMaxComplexity(5);
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/ClassComplexity.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/ClassComplexity.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
 
     Set<CxxReportIssue> issues = MultiLocatitionSquidCheck.getMultiLocationCheckMessages(file);
     assertThat(issues).isNotNull();
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(issues).hasSize(3);
     softly.assertThat(issues).allSatisfy(issue -> assertThat(issue.getRuleId()).isEqualTo("ClassComplexity"));
 

@@ -74,7 +74,7 @@ public class CxxVeraxxSensor extends CxxIssuesReportSensor {
   @Override
   protected void processReport(File report) {
     try {
-      var parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         try {
           rootCursor.advance();
         } catch (com.ctc.wstx.exc.WstxEOFException e) {
@@ -92,7 +92,7 @@ public class CxxVeraxxSensor extends CxxIssuesReportSensor {
               String message = errorCursor.getAttrValue("message");
               String source = errorCursor.getAttrValue("source");
 
-              var issue = new CxxReportIssue(source, name, line, null, message);
+              CxxReportIssue issue = new CxxReportIssue(source, name, line, null, message);
               saveUniqueViolation(issue);
             } else {
               LOG.debug("Error in file '{}', with message '{}'",

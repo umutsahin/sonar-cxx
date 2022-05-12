@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -62,7 +63,7 @@ public class VisualStudioTestResultsFileParser implements UnitTestResultsParser 
     }
 
     public void parse() {
-      try (var xmlParserHelper = new XmlParserHelper(file)) {
+      try (XmlParserHelper xmlParserHelper = new XmlParserHelper(file)) {
         checkRootTag(xmlParserHelper);
         dispatchTags(xmlParserHelper);
         if (!foundCounters) {
@@ -87,24 +88,24 @@ public class VisualStudioTestResultsFileParser implements UnitTestResultsParser 
     private void handleCountersTag(XmlParserHelper xmlParserHelper) {
       foundCounters = true;
 
-      var passed = xmlParserHelper.getIntAttributeOrZero("passed");
-      var failed = xmlParserHelper.getIntAttributeOrZero("failed");
-      var errors = xmlParserHelper.getIntAttributeOrZero("error");
-      var timeout = xmlParserHelper.getIntAttributeOrZero("timeout");
-      var aborted = xmlParserHelper.getIntAttributeOrZero("aborted");
+      int passed = xmlParserHelper.getIntAttributeOrZero("passed");
+      int failed = xmlParserHelper.getIntAttributeOrZero("failed");
+      int errors = xmlParserHelper.getIntAttributeOrZero("error");
+      int timeout = xmlParserHelper.getIntAttributeOrZero("timeout");
+      int aborted = xmlParserHelper.getIntAttributeOrZero("aborted");
 
-      var inconclusive = xmlParserHelper.getIntAttributeOrZero("inconclusive");
+      int inconclusive = xmlParserHelper.getIntAttributeOrZero("inconclusive");
 
-      var tests = passed + failed + errors + timeout + aborted;
-      var skipped = inconclusive;
-      var failures = timeout + failed + aborted;
+      int tests = passed + failed + errors + timeout + aborted;
+      int skipped = inconclusive;
+      int failures = timeout + failed + aborted;
 
       unitTestResults.add(tests, passed, skipped, failures, errors, null);
     }
 
     private void handleTimesTag(XmlParserHelper xmlParserHelper) {
-      var start = getRequiredDateAttribute(xmlParserHelper, "start");
-      var finish = getRequiredDateAttribute(xmlParserHelper, "finish");
+      Date start = getRequiredDateAttribute(xmlParserHelper, "start");
+      Date finish = getRequiredDateAttribute(xmlParserHelper, "finish");
       long duration = finish.getTime() - start.getTime();
 
       unitTestResults.add(0, 0, 0, 0, 0, duration);
@@ -122,14 +123,14 @@ public class VisualStudioTestResultsFileParser implements UnitTestResultsParser 
     }
 
     private String keepOnlyMilliseconds(String value) {
-      var sb = new StringBuffer(256);
+      StringBuffer sb = new StringBuffer(256);
 
-      var matcher = millisecondsPattern.matcher(value);
-      var trailingZeros = new StringBuilder(128);
+      Matcher matcher = millisecondsPattern.matcher(value);
+      StringBuilder trailingZeros = new StringBuilder(128);
       while (matcher.find()) {
         String milliseconds = matcher.group(2);
         trailingZeros.setLength(0);
-        for (var i = 0; i < 3 - milliseconds.length(); i++) {
+        for (int i = 0; i < 3 - milliseconds.length(); i++) {
           trailingZeros.append('0');
         }
         matcher.appendReplacement(sb, "$1" + trailingZeros);

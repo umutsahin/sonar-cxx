@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -83,8 +84,8 @@ public class MsBuild {
   }
 
   private static List<String> getMatches(Pattern pattern, String text) {
-    var matches = new ArrayList<String>();
-    var m = pattern.matcher(text);
+    ArrayList<String> matches = new ArrayList<String>();
+    Matcher m = pattern.matcher(text);
     while (m.find()) {
       matches.add(m.group(1));
     }
@@ -123,17 +124,17 @@ public class MsBuild {
   public void parse(File buildLog, String baseDir, String encodingName) {
     LOG.info("Processing MsBuild log '{}', Encoding= '{}'", buildLog.getName(), encodingName);
 
-    var detectedPlatform = false;
-    try (var br = new BufferedReader(new InputStreamReader(java.nio.file.Files.newInputStream(buildLog.toPath()),
-                                                       encodingName))) {
+    boolean detectedPlatform = false;
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(java.nio.file.Files.newInputStream(buildLog.toPath()),
+                                                                      encodingName))) {
       String line;
       LOG.debug("build log parser baseDir='{}'", baseDir);
-      var currentProjectPath = Paths.get(baseDir);
+      Path currentProjectPath = Paths.get(baseDir);
 
       while ((line = br.readLine()) != null) {
         if (line.trim().startsWith("INCLUDE=")) { // handle environment includes
           String[] includes = line.split("=")[1].split(";");
-          for (var include : includes) {
+          for (String include : includes) {
             squidConfig.add(CxxSquidConfiguration.GLOBAL, CxxSquidConfiguration.INCLUDE_DIRECTORIES, include);
           }
         }
@@ -242,14 +243,14 @@ public class MsBuild {
   }
 
   private void parseVCppCompilerCLLine(String line, String projectPath, String fileElement) {
-    for (var includePattern : INCLUDE_PATTERNS) {
-      for (var includeElem : getMatches(includePattern, line)) {
+    for (Pattern includePattern : INCLUDE_PATTERNS) {
+      for (String includeElem : getMatches(includePattern, line)) {
         parseInclude(includeElem, projectPath, fileElement);
       }
     }
 
-    for (var definePattern : DEFINE_PATTERNS) {
-      for (var macroElem : getMatches(definePattern, line)) {
+    for (Pattern definePattern : DEFINE_PATTERNS) {
+      for (String macroElem : getMatches(definePattern, line)) {
         addMacro(macroElem, fileElement);
       }
     }
@@ -286,11 +287,11 @@ public class MsBuild {
 
   private void parseInclude(String element, String project, String fileElement) {
     try {
-      var includeRoot = new File(element.replace("\"", ""));
-      var p = Paths.get(project);
+      File includeRoot = new File(element.replace("\"", ""));
+      Path p = Paths.get(project);
       if (!includeRoot.isAbsolute()) {
         // handle path without drive information but represent absolute path
-        var pseudoAbsolute = new File(p.getRoot().toString(), includeRoot.toString());
+        File pseudoAbsolute = new File(p.getRoot().toString(), includeRoot.toString());
         if (pseudoAbsolute.exists()) {
           includeRoot = new File(p.getRoot().toString(), includeRoot.getPath());
         } else {

@@ -69,26 +69,26 @@ public final class CxxLexer {
     //
     // changes here must be always aligned: CxxLexer.java <=> CppLexer.java
     //
-    var builder = Lexer.builder()
-      .withCharset(charset)
-      .withFailIfNoChannelToConsumeOneCharacter(true)
-      .withChannel(new BlackHoleChannel("\\s"))
-      // C++ Standard, Section 2.8 "Comments"
-      .withChannel(commentRegexp("//[^\\n\\r]*+"))
-      .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
-      // backslash at the end of the line: just throw away
-      .withChannel(new BackslashChannel())
-      // detects preprocessor directives:
-      // This channel detects source code lines which should be handled by the preprocessor.
-      // If a line is not marked CxxTokenType.PREPROCESSOR it is not handled by CppLexer and CppGrammar.
-      .withChannel(new PreprocessorChannel(CppSpecialIdentifier.values()))
-      // C++ Standard, Section 2.14.3 "Character literals"
-      .withChannel(new CharacterLiteralsChannel())
-      // C++ Standard, Section 2.14.5 "String literals"
-      .withChannel(new StringLiteralsChannel())
-      // C++ Standard, Section 2.14.2 "Integer literals"
-      // C++ Standard, Section 2.14.4 "Floating literals"
-      .withChannel(
+    Lexer.Builder builder = Lexer.builder()
+                                 .withCharset(charset)
+                                 .withFailIfNoChannelToConsumeOneCharacter(true)
+                                 .withChannel(new BlackHoleChannel("\\s"))
+                                 // C++ Standard, Section 2.8 "Comments"
+                                 .withChannel(commentRegexp("//[^\\n\\r]*+"))
+                                 .withChannel(commentRegexp("/\\*", ANY_CHAR + "*?", "\\*/"))
+                                 // backslash at the end of the line: just throw away
+                                 .withChannel(new BackslashChannel())
+                                 // detects preprocessor directives:
+                                 // This channel detects source code lines which should be handled by the preprocessor.
+                                 // If a line is not marked CxxTokenType.PREPROCESSOR it is not handled by CppLexer and CppGrammar.
+                                 .withChannel(new PreprocessorChannel(CppSpecialIdentifier.values()))
+                                 // C++ Standard, Section 2.14.3 "Character literals"
+                                 .withChannel(new CharacterLiteralsChannel())
+                                 // C++ Standard, Section 2.14.5 "String literals"
+                                 .withChannel(new StringLiteralsChannel())
+                                 // C++ Standard, Section 2.14.2 "Integer literals"
+                                 // C++ Standard, Section 2.14.4 "Floating literals"
+                                 .withChannel(
         regexp(CxxTokenType.NUMBER,
                and(
                  or(
@@ -102,18 +102,18 @@ public final class CxxLexer {
                )
         )
       )
-      // C++ Standard, Section 2.14.7 "Pointer literals"
-      .withChannel(regexp(CxxTokenType.NUMBER, CxxKeyword.NULLPTR.getValue() + "\\b"))
-      // C++ Standard, Section 2.12 "Keywords"
-      // C++ Standard, Section 2.11 "Identifiers"
-      .withChannel(new IdentifierAndKeywordChannel(and("[a-zA-Z_]", o2n("\\w")), true, CxxKeyword.values()))
-      // C++ Standard, Section 2.13 "Operators and punctuators"
-      .withChannel(new RightAngleBracketsChannel())
-      .withChannel(new PunctuatorChannel(CxxPunctuator.values()))
-      .withChannel(new BomCharacterChannel())
-      .withChannel(new UnknownCharacterChannel());
+                                 // C++ Standard, Section 2.14.7 "Pointer literals"
+                                 .withChannel(regexp(CxxTokenType.NUMBER, CxxKeyword.NULLPTR.getValue() + "\\b"))
+                                 // C++ Standard, Section 2.12 "Keywords"
+                                 // C++ Standard, Section 2.11 "Identifiers"
+                                 .withChannel(new IdentifierAndKeywordChannel(and("[a-zA-Z_]", o2n("\\w")), true, CxxKeyword.values()))
+                                 // C++ Standard, Section 2.13 "Operators and punctuators"
+                                 .withChannel(new RightAngleBracketsChannel())
+                                 .withChannel(new PunctuatorChannel(CxxPunctuator.values()))
+                                 .withChannel(new BomCharacterChannel())
+                                 .withChannel(new UnknownCharacterChannel());
 
-    for (var preprocessor : preprocessors) {
+    for (Preprocessor preprocessor : preprocessors) {
       builder.withPreprocessor(preprocessor);
     }
 

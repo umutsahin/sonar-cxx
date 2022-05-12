@@ -68,7 +68,7 @@ public final class CxxUtils {
    * @param config
    */
   public static void validateRecovery(String msg, Exception ex, Configuration config) {
-    var message = (msg + ", cause='" + ExceptionUtils.getRootCauseMessage(ex) + "'")
+    String message = (msg + ", cause='" + ExceptionUtils.getRootCauseMessage(ex) + "'")
       .replaceAll("\\R+", " ");
     Optional<Boolean> recovery = config.getBoolean(CxxReportSensor.ERROR_RECOVERY_KEY);
     if (recovery.isPresent() && recovery.get()) {
@@ -122,8 +122,8 @@ public final class CxxUtils {
 
     LOG.debug("Searching '{}' files with Ant pattern '{}'", reportPathsKey, reportPaths);
 
-    var normalizedReportPaths = new ArrayList<String>();
-    for (var reportPath : reportPaths) {
+    ArrayList<String> normalizedReportPaths = new ArrayList<String>();
+    for (String reportPath : reportPaths) {
       String normalizedPath = resolveAntPath(context.fileSystem().baseDir().getAbsolutePath(), reportPath.trim());
       if (normalizedPath != null) {
         normalizedReportPaths.add(normalizedPath);
@@ -134,7 +134,7 @@ public final class CxxUtils {
     LOG.debug("Search files(s) in path(s): '{}'", String.join(", ", normalizedReportPaths));
 
     // Includes array cannot contain null elements
-    var directoryScanner = new DirectoryScanner();
+    DirectoryScanner directoryScanner = new DirectoryScanner();
     directoryScanner.setIncludes(normalizedReportPaths.toArray(new String[normalizedReportPaths.size()]));
     directoryScanner.scan();
     String[] existingReportPaths = directoryScanner.getIncludedFiles();

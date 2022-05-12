@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.CxxFileTester;
 import org.sonar.cxx.CxxFileTesterHelper;
 
 public class CxxParseErrorLoggerVisitorTest {
@@ -35,14 +36,14 @@ public class CxxParseErrorLoggerVisitorTest {
 
   @Before
   public void scanFile() throws Exception {
-    var tester = CxxFileTesterHelper.create("src/test/resources/visitors/syntaxerror.cc", ".", "");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/visitors/syntaxerror.cc", ".", "");
     logTester.setLevel(LoggerLevel.DEBUG);
     CxxAstScanner.scanSingleInputFile(tester.asInputFile());
   }
 
   @Test
   public void handleParseErrorTest() throws Exception {
-    var log = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    String log = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
 
     assertThat(log)
       .isNotEmpty()

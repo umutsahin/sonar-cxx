@@ -40,7 +40,7 @@ public class SquidIndex implements SourceCodeIndexer, SourceCodeSearchEngine {
   @Override
   public Collection<SourceCode> search(Query... query) {
     Set<SourceCode> result = new HashSet<>();
-    for (var unit : index.values()) {
+    for (SourceCode unit : index.values()) {
       if (isSquidUnitMatchQueries(unit, query)) {
         result.add(unit);
       }
@@ -50,7 +50,7 @@ public class SquidIndex implements SourceCodeIndexer, SourceCodeSearchEngine {
 
   private boolean isSquidUnitMatchQueries(SourceCode unit, Query... queries) {
     boolean match;
-    for (var query : queries) {
+    for (Query query : queries) {
       match = query.match(unit);
       if (!match) {
         return false;

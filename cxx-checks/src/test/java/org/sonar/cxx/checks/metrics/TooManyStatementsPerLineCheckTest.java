@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -33,10 +34,10 @@ public class TooManyStatementsPerLineCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test() throws UnsupportedEncodingException, IOException {
-    var check = new TooManyStatementsPerLineCheck();
+    TooManyStatementsPerLineCheck check = new TooManyStatementsPerLineCheck();
     check.excludeCaseBreak = false;
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyStatementsPerLine.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyStatementsPerLine.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
 
     CheckMessagesVerifier.verify(file.getCheckMessages())
@@ -52,17 +53,17 @@ public class TooManyStatementsPerLineCheckTest {
 
   @Test
   public void testDefaultExcludeCaseBreak() {
-    var check = new TooManyStatementsPerLineCheck();
+    TooManyStatementsPerLineCheck check = new TooManyStatementsPerLineCheck();
     assertThat(check.excludeCaseBreak).isFalse();
   }
 
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void testExcludeCaseBreak() throws UnsupportedEncodingException, IOException {
-    var check = new TooManyStatementsPerLineCheck();
+    TooManyStatementsPerLineCheck check = new TooManyStatementsPerLineCheck();
     check.excludeCaseBreak = true;
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyStatementsPerLine.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/TooManyStatementsPerLine.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(17).withMessage(

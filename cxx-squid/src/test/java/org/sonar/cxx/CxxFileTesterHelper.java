@@ -39,7 +39,7 @@ public class CxxFileTesterHelper {
 
   public static CxxFileTester create(String fileName, String basePath, String moduleKey)
     throws UnsupportedEncodingException, IOException {
-    var tester = new CxxFileTester();
+    CxxFileTester tester = new CxxFileTester();
 
     tester.context = SensorContextTester.create(new File(basePath));
     tester.cxxFile = createInputFile(moduleKey, fileName, basePath, Charset.defaultCharset());
@@ -59,7 +59,7 @@ public class CxxFileTesterHelper {
 
   private static DefaultInputFile createInputFile(String moduleKey, String fileName, String basePath, Charset charset)
     throws IOException {
-    var fb = TestInputFileBuilder.create(moduleKey, fileName);
+    TestInputFileBuilder fb = TestInputFileBuilder.create(moduleKey, fileName);
 
     fb.setCharset(charset);
     fb.setProjectBaseDir(Paths.get(basePath));
@@ -69,12 +69,12 @@ public class CxxFileTesterHelper {
   }
 
   private static String getSourceCode(File filename, Charset defaultCharset) throws IOException {
-    try ( var bomInputStream = new BOMInputStream(new FileInputStream(filename),
-                                              ByteOrderMark.UTF_8,
-                                              ByteOrderMark.UTF_16LE,
-                                              ByteOrderMark.UTF_16BE,
-                                              ByteOrderMark.UTF_32LE,
-                                              ByteOrderMark.UTF_32BE)) {
+    try (BOMInputStream bomInputStream = new BOMInputStream(new FileInputStream(filename),
+                                                            ByteOrderMark.UTF_8,
+                                                            ByteOrderMark.UTF_16LE,
+                                                            ByteOrderMark.UTF_16BE,
+                                                            ByteOrderMark.UTF_32LE,
+                                                            ByteOrderMark.UTF_32BE)) {
       ByteOrderMark bom = bomInputStream.getBOM();
       Charset charset = bom != null ? Charset.forName(bom.getCharsetName()) : defaultCharset;
       byte[] bytes = bomInputStream.readAllBytes();

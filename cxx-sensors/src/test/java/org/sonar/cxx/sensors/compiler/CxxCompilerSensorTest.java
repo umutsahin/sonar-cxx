@@ -55,36 +55,36 @@ public class CxxCompilerSensorTest {
 
   @Test
   public void testFileNotFound() {
-    var report = new File("");
+    File report = new File("");
     sensor.setRegex("(?<test>.*)");
     sensor.testExecuteReport(report);
-    var log = logTester.logs().toString();
+    String log = logTester.logs().toString();
     assertThat(log).contains("FileNotFoundException");
   }
 
   @Test
   public void testRegexEmpty() {
-    var report = new File("");
+    File report = new File("");
     sensor.testExecuteReport(report);
-    var log = logTester.logs().toString();
+    String log = logTester.logs().toString();
     assertThat(log).contains("empty custom regular expression");
   }
 
   @Test
   public void testRegexInvalid() {
-    var report = new File(fs.baseDir(), "compiler-reports/VC-report.vclog");
+    File report = new File(fs.baseDir(), "compiler-reports/VC-report.vclog");
     sensor.setRegex("(?<test>*)");
     sensor.testExecuteReport(report);
-    var log = logTester.logs().toString();
+    String log = logTester.logs().toString();
     assertThat(log).contains("PatternSyntaxException");
   }
 
   @Test
   public void testRegexNamedGroupMissing() {
-    var report = new File(fs.baseDir(), "compiler-reports/VC-report.vclog");
+    File report = new File(fs.baseDir(), "compiler-reports/VC-report.vclog");
     sensor.setRegex(".*");
     sensor.testExecuteReport(report);
-    var log = logTester.logs().toString();
+    String log = logTester.logs().toString();
     assertThat(log).contains("contains no named-capturing group");
   }
 

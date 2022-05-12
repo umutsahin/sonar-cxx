@@ -20,6 +20,8 @@
 package org.sonar.cxx.sensors.valgrind;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -69,7 +71,7 @@ public class ValgrindFrameTest {
 
   @Test
   public void stringRepresentationShouldResembleValgrindsStandard() {
-    var ioMap = new HashMap<String, ValgrindFrame>();
+    HashMap<String, ValgrindFrame> ioMap = new HashMap<String, ValgrindFrame>();
 
     ioMap.put("0xDEADBEAF: main() (main.cc:1)",
               new ValgrindFrame("0xDEADBEAF", "libX.so", "main()", "src", "main.cc", "1"));
@@ -86,7 +88,7 @@ public class ValgrindFrameTest {
     ioMap.put("???: ???",
               new ValgrindFrame(null, null, null, null, null, ""));
 
-    for (var entry : ioMap.entrySet()) {
+    for (Map.Entry<String, ValgrindFrame> entry : ioMap.entrySet()) {
       assertEquals(entry.getKey(), entry.getValue().toString());
     }
   }

@@ -48,7 +48,7 @@ public class CxxUnitTestResultsImportSensor implements ProjectSensor {
   }
 
   public static List<PropertyDefinition> properties() {
-    var category = "CXX External Analyzers";
+    String category = "CXX External Analyzers";
     return Collections.unmodifiableList(Arrays.asList(
       PropertyDefinition.builder(UnitTestConfiguration.VISUAL_STUDIO_TEST_RESULTS_PROPERTY_KEY)
         .multiValues(true)
@@ -94,8 +94,8 @@ public class CxxUnitTestResultsImportSensor implements ProjectSensor {
   }
 
   public void analyze(UnitTestResults unitTestResults, UnitTestConfiguration unitTestConf) {
-    var aggregatedResults = unitTestResultsAggregator.aggregate(wildcardPatternFileProvider,
-                                                            unitTestResults, unitTestConf);
+    UnitTestResults aggregatedResults = unitTestResultsAggregator.aggregate(wildcardPatternFileProvider,
+                                                                            unitTestResults, unitTestConf);
     if (aggregatedResults != null) {
       saveMetric(CoreMetrics.TESTS, aggregatedResults.tests());
       saveMetric(CoreMetrics.TEST_ERRORS, aggregatedResults.errors());

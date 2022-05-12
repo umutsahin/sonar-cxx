@@ -44,10 +44,10 @@ public class CxxCompilerGccSensorTest {
 
   @Test
   public void sensorDescriptorGcc() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxCompilerGccSensor();
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxCompilerGccSensor sensor = new CxxCompilerGccSensor();
     sensor.describe(descriptor);
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX GCC compiler report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertThat(descriptor.ruleRepositories())
@@ -57,14 +57,14 @@ public class CxxCompilerGccSensorTest {
 
   @Test
   public void shouldReportCorrectGccViolations() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxCompilerGccSensor.REPORT_PATH_KEY, "compiler-reports/build.gcclog");
     context.setSettings(settings);
 
     context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", "src/zipmanager.cpp")
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n").build());
 
-    var sensor = new CxxCompilerGccSensor();
+    CxxCompilerGccSensor sensor = new CxxCompilerGccSensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(4);
@@ -72,18 +72,18 @@ public class CxxCompilerGccSensorTest {
 
   @Test
   public void shouldReportCorrectGccViolationsWithOrWithoutIds() {
-    var context = SensorContextTester.create(fs.baseDir());
+    SensorContextTester context = SensorContextTester.create(fs.baseDir());
     settings.setProperty(CxxCompilerGccSensor.REPORT_PATH_KEY, "compiler-reports/build-warning-without-id.gcclog");
     context.setSettings(settings);
 
     context.fileSystem().add(TestInputFileBuilder.create("ProjectKey", "main.c")
       .setLanguage("cxx").initMetadata("asd\nasdas\nasda\n").build());
 
-    var sensor = new CxxCompilerGccSensor();
+    CxxCompilerGccSensor sensor = new CxxCompilerGccSensor();
     sensor.execute(context);
 
     assertThat(context.allIssues()).hasSize(2);
-    var issuesList = new ArrayList<Issue>(context.allIssues());
+    ArrayList<Issue> issuesList = new ArrayList<Issue>(context.allIssues());
     // warning without activation switch (no id) should be mapped to the "default" rule
     assertThat(issuesList.get(0).ruleKey().rule()).isEqualTo("default");
     // warning with activation switch should be mapped to the matching rule

@@ -36,8 +36,8 @@ public class XmlParserHelperTest {
   @Test
   public void invalid_prolog() throws IOException {
     IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
-                                           try ( var helper = new XmlParserHelper(new File(REPORT_PATH
-                                                                                         + "invalid_prolog.txt"))) {
+                                           try (XmlParserHelper helper = new XmlParserHelper(new File(REPORT_PATH
+                                                                                                      + "invalid_prolog.txt"))) {
                                              helper.nextStartTag();
                                            }
                                          });
@@ -47,7 +47,7 @@ public class XmlParserHelperTest {
 
   @Test
   public void nextStartOrEndTag() {
-    var xml = new XmlParserHelper(new File(REPORT_PATH + "valid.xml"));
+    XmlParserHelper xml = new XmlParserHelper(new File(REPORT_PATH + "valid.xml"));
     assertThat(xml.nextStartOrEndTag()).isEqualTo("<foo>");
     assertThat(xml.nextStartOrEndTag()).isEqualTo("<bar>");
     assertThat(xml.nextStartOrEndTag()).isEqualTo("</bar>");
@@ -63,7 +63,7 @@ public class XmlParserHelperTest {
 
   @Test
   public void getDoubleAttribute() {
-    var xml = new XmlParserHelper(new File(REPORT_PATH + "valid.xml"));
+    XmlParserHelper xml = new XmlParserHelper(new File(REPORT_PATH + "valid.xml"));
     xml.nextStartTag();
     assertThat(xml.getDoubleAttribute("myDouble")).isEqualTo(0.123);
     assertThat(xml.getDoubleAttribute("myCommaDouble")).isEqualTo(1.234);

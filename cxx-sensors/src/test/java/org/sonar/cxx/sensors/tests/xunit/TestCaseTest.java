@@ -28,7 +28,7 @@ public class TestCaseTest {
 
   @Test
   public void rendersRightDetails() {
-    var testCase = new TestCase("testCaseName", 1, "ok", "stack", "msg", "classname", "filename", "testSuiteName");
+    TestCase testCase = new TestCase("testCaseName", 1, "ok", "stack", "msg", "classname", "filename", "testSuiteName");
     assertEquals("classname", testCase.getClassname());
     assertEquals("testSuiteName:testCaseName", testCase.getFullname());
     assertEquals("filename", testCase.getFilename());

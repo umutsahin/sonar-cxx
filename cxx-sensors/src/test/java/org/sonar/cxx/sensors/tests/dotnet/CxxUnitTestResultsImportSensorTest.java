@@ -45,11 +45,11 @@ public class CxxUnitTestResultsImportSensorTest {
 
   @Test
   public void sensorDescriptor() {
-    var descriptor = new DefaultSensorDescriptor();
-    var sensor = new CxxUnitTestResultsImportSensor(mock(CxxUnitTestResultsAggregator.class));
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    CxxUnitTestResultsImportSensor sensor = new CxxUnitTestResultsImportSensor(mock(CxxUnitTestResultsAggregator.class));
     sensor.describe(descriptor);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(descriptor.name()).isEqualTo("CXX VSTest/NUnit Test report import");
     softly.assertThat(descriptor.languages()).containsOnly("cxx", "cpp", "c++", "c");
     softly.assertAll();
@@ -57,7 +57,7 @@ public class CxxUnitTestResultsImportSensorTest {
 
   @Test
   public void analyze() throws Exception {
-    var context = SensorContextTester.create(temp.newFolder());
+    SensorContextTester context = SensorContextTester.create(temp.newFolder());
     UnitTestResults results = mock(UnitTestResults.class);
     when(results.tests()).thenReturn(42);
     when(results.passedPercentage()).thenReturn(84d);
@@ -72,7 +72,7 @@ public class CxxUnitTestResultsImportSensorTest {
                                              Mockito.any(UnitTestResults.class), same(unitTestConf)))
       .thenReturn(results);
 
-    var sensor = new CxxUnitTestResultsImportSensor(unitTestResultsAggregator);
+    CxxUnitTestResultsImportSensor sensor = new CxxUnitTestResultsImportSensor(unitTestResultsAggregator);
     sensor.execute(context); // set context
     sensor.analyze(results, unitTestConf);
 
@@ -91,7 +91,7 @@ public class CxxUnitTestResultsImportSensorTest {
 
   @Test
   public void should_not_save_metrics_with_empty_results() throws Exception {
-    var context = SensorContextTester.create(temp.newFolder());
+    SensorContextTester context = SensorContextTester.create(temp.newFolder());
 
     CxxUnitTestResultsAggregator unitTestResultsAggregator = mock(CxxUnitTestResultsAggregator.class);
     UnitTestConfiguration unitTestConf = mock(UnitTestConfiguration.class);
@@ -105,7 +105,7 @@ public class CxxUnitTestResultsImportSensorTest {
                                              Mockito.any(UnitTestResults.class), same(unitTestConf)))
       .thenReturn(results);
 
-    var sensor = new CxxUnitTestResultsImportSensor(unitTestResultsAggregator);
+    CxxUnitTestResultsImportSensor sensor = new CxxUnitTestResultsImportSensor(unitTestResultsAggregator);
     sensor.execute(context); // set context
     sensor.analyze(results, unitTestConf);
 

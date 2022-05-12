@@ -62,7 +62,7 @@ public class CxxValgrindSensor extends CxxIssuesReportSensor {
   }
 
   private static String createErrorMsg(ValgrindError error, ValgrindStack stack, int stackNr) {
-    var errorMsg = new StringBuilder(512);
+    StringBuilder errorMsg = new StringBuilder(512);
     errorMsg.append(error.getText());
     if (error.getStacks().size() > 1) {
       errorMsg.append(" (Stack ").append(stackNr).append(")");
@@ -94,9 +94,10 @@ public class CxxValgrindSensor extends CxxIssuesReportSensor {
 
     String errorMsg = createErrorMsg(error, stack, stackNr);
     // set the last own frame as a primary location
-    var issue = new CxxReportIssue(error.getKind(), lastOwnFrame.getPath(), lastOwnFrame.getLine(), null, errorMsg);
+    CxxReportIssue
+            issue = new CxxReportIssue(error.getKind(), lastOwnFrame.getPath(), lastOwnFrame.getLine(), null, errorMsg);
     // add all frames as secondary locations
-    for (var frame : stack.getFrames()) {
+    for (ValgrindFrame frame : stack.getFrames()) {
       boolean frameIsInProject = frameIsInProject(frame);
       String mappedPath = (frameIsInProject) ? frame.getPath() : lastOwnFrame.getPath();
       String mappedLine = (frameIsInProject) ? frame.getLine() : lastOwnFrame.getLine();
@@ -108,7 +109,7 @@ public class CxxValgrindSensor extends CxxIssuesReportSensor {
   @Override
   protected void processReport(File report) {
     try {
-      var parser = new ValgrindReportParser();
+      ValgrindReportParser parser = new ValgrindReportParser();
       saveErrors(parser.parse(report));
     } catch (XMLStreamException e) {
       throw new InvalidReportException("The 'Valgrind' report is invalid", e);
@@ -126,9 +127,9 @@ public class CxxValgrindSensor extends CxxIssuesReportSensor {
   }
 
   void saveErrors(Set<ValgrindError> valgrindErrors) {
-    for (var error : valgrindErrors) {
-      var stackNr = 0;
-      for (var stack : error.getStacks()) {
+    for (ValgrindError error : valgrindErrors) {
+      int stackNr = 0;
+      for (ValgrindStack stack : error.getStacks()) {
         CxxReportIssue issue = createIssue(error, stack, stackNr);
         if (issue != null) {
           saveUniqueViolation(issue);

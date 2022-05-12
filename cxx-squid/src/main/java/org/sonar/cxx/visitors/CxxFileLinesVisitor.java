@@ -26,6 +26,8 @@ import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sonar.sslr.api.TokenType;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.parser.CxxGrammarImpl;
@@ -44,7 +46,7 @@ public class CxxFileLinesVisitor extends SquidAstVisitor<Grammar> implements Ast
   private int isWithinFunctionDefinition;
 
   private static boolean isDefaultOrDeleteFunctionBody(AstNode astNode) {
-    var node = astNode.getFirstChild(CxxGrammarImpl.functionBody);
+    AstNode node = astNode.getFirstChild(CxxGrammarImpl.functionBody);
     if ((node != null)) {
       List<AstNode> functionBody = node.getChildren();
 
@@ -62,7 +64,7 @@ public class CxxFileLinesVisitor extends SquidAstVisitor<Grammar> implements Ast
   }
 
   static boolean isCodeToken(Token token) {
-    var type = token.getType();
+    TokenType type = token.getType();
     if (!(type instanceof CxxPunctuator)) {
       return true;
     }
@@ -83,7 +85,7 @@ public class CxxFileLinesVisitor extends SquidAstVisitor<Grammar> implements Ast
   }
 
   static boolean isExecutableToken(Token token) {
-    var type = token.getType();
+    TokenType type = token.getType();
     return !CxxPunctuator.CURLBR_LEFT.equals(type) && !CxxKeyword.DEFAULT.equals(type) && !CxxKeyword.CASE.equals(type);
   }
 

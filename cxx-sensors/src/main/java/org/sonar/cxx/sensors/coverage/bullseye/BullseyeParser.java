@@ -65,7 +65,7 @@ public class BullseyeParser implements CoverageParser {
    * @return
    */
   private static String buildPath(List<String> path, String correctPath) {
-    var fileName = String.join(File.separator, path);
+    String fileName = String.join(File.separator, path);
     if (!(new File(fileName)).isAbsolute()) {
       fileName = correctPath + fileName;
     }
@@ -77,9 +77,9 @@ public class BullseyeParser implements CoverageParser {
    */
   @Override
   public Map<String, CoverageMeasures> parse(File report)  {
-    var coverageData = new HashMap<String, CoverageMeasures>();
+    HashMap<String, CoverageMeasures> coverageData = new HashMap<String, CoverageMeasures>();
     try {
-      var topLevelparser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser topLevelparser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         try {
           rootCursor.advance();
         } catch (com.ctc.wstx.exc.WstxEOFException e) {
@@ -88,7 +88,7 @@ public class BullseyeParser implements CoverageParser {
         collectCoverageLeafNodes(rootCursor.getAttrValue("dir"), rootCursor.childElementCursor("src"), coverageData);
       });
 
-      var parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         rootCursor.advance();
         collectCoverage2(rootCursor.getAttrValue("dir"), rootCursor.childElementCursor("folder"), coverageData);
       });
@@ -113,7 +113,7 @@ public class BullseyeParser implements CoverageParser {
     String correctPath = ensureRefPathIsCorrect(refPath);
 
     while (folder.getNext() != null) {
-      var fileName = new File(correctPath, folder.getAttrValue("name"));
+      File fileName = new File(correctPath, folder.getAttrValue("name"));
       recTreeTopWalk(fileName, folder, coverageData);
     }
   }
@@ -123,7 +123,7 @@ public class BullseyeParser implements CoverageParser {
     throws XMLStreamException {
     SMInputCursor child = folder.childElementCursor();
     while (child.getNext() != null) {
-      var fileMeasuresBuilderIn = CoverageMeasures.create();
+      CoverageMeasures fileMeasuresBuilderIn = CoverageMeasures.create();
 
       funcWalk(child, fileMeasuresBuilderIn);
       coverageData.put(fileName.getPath(), fileMeasuresBuilderIn);
@@ -136,7 +136,7 @@ public class BullseyeParser implements CoverageParser {
 
     String correctPath = ensureRefPathIsCorrect(refPath);
 
-    var path = new LinkedList<String>();
+    LinkedList<String> path = new LinkedList<String>();
     while (folder.getNext() != null) {
       String folderName = folder.getAttrValue("name");
       path.add(folderName);
@@ -184,7 +184,7 @@ public class BullseyeParser implements CoverageParser {
       path.add(name);
       if ("src".equalsIgnoreCase(folderChildName)) {
         String filePath = buildPath(path, correctPath);
-        var fileMeasuresBuilderIn = CoverageMeasures.create();
+        CoverageMeasures fileMeasuresBuilderIn = CoverageMeasures.create();
         fileWalk(child, fileMeasuresBuilderIn);
         coverageData.put(filePath, fileMeasuresBuilderIn);
       } else {
@@ -225,7 +225,7 @@ public class BullseyeParser implements CoverageParser {
         }
         break;
       case "function":
-        var lineHits = 0;
+        int lineHits = 0;
         if ("full".equalsIgnoreCase(event)) {
           lineHits = 1;
         }

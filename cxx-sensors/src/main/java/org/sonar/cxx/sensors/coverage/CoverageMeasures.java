@@ -44,24 +44,24 @@ public final class CoverageMeasures {
 
   public void setHits(int lineId, int hits) {
     lineMeasures.computeIfAbsent(lineId, v -> new CoverageMeasure(lineId));
-    var coverageMeasure = lineMeasures.get(lineId);
+    CoverageMeasure coverageMeasure = lineMeasures.get(lineId);
     coverageMeasure.setHits(hits);
   }
 
   public void setConditions(int lineId, int totalConditions, int coveredConditions) {
     lineMeasures.computeIfAbsent(lineId, v -> new CoverageMeasure(lineId));
-    var coverageMeasure = lineMeasures.get(lineId);
+    CoverageMeasure coverageMeasure = lineMeasures.get(lineId);
     coverageMeasure.setConditions(totalConditions, coveredConditions);
   }
 
   Collection<CoverageMeasure> getCoverageMeasures() {
-    var measures = new HashMap<Integer, CoverageMeasure>();
+    HashMap<Integer, CoverageMeasure> measures = new HashMap<Integer, CoverageMeasure>();
     measures.putAll(lineMeasures);
     return measures.values();
   }
 
   public Set<Integer> getCoveredLines() {
-    var coveredLines = new HashSet<Integer>();
+    HashSet<Integer> coveredLines = new HashSet<Integer>();
     lineMeasures.forEach((key, value) -> {
       if (value.getHits() != 0) {
         coveredLines.add(value.getLine());
@@ -71,7 +71,7 @@ public final class CoverageMeasures {
   }
 
   public Set<Integer> getCoveredConditions() {
-    var coveredConditionLines = new HashSet<Integer>();
+    HashSet<Integer> coveredConditionLines = new HashSet<Integer>();
     lineMeasures.forEach((key, value) -> {
       if (value.getCoveredConditions() != 0) {
         coveredConditionLines.add(value.getLine());

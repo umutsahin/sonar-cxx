@@ -23,6 +23,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.api.utils.log.Logger;
@@ -53,7 +55,7 @@ public abstract class CoverageSensor extends CxxReportSensor {
   @Override
   public void executeImpl() {
     List<File> reports = getReports(reportPathsKey);
-    for (var report : reports) {
+    for (File report : reports) {
       executeReport(report);
     }
   }
@@ -73,7 +75,7 @@ public abstract class CoverageSensor extends CxxReportSensor {
   }
 
   protected void processReport(File report) {
-    var coverageData = parser.parse(report);
+    Map<String, CoverageMeasures> coverageData = parser.parse(report);
     if (coverageData.isEmpty()) {
       throw new EmptyReportException("Coverage report " + report + " result is empty (parsed by " + parser + ")");
     }
@@ -82,13 +84,13 @@ public abstract class CoverageSensor extends CxxReportSensor {
   }
 
   protected void saveMeasures(Map<String, CoverageMeasures> coverageMeasures) {
-    for (var entry : coverageMeasures.entrySet()) {
+    for (Map.Entry<String, CoverageMeasures> entry : coverageMeasures.entrySet()) {
       final String filePath = PathUtils.sanitize(entry.getKey());
       if (filePath != null) {
-        var cxxFile = getInputFileIfInProject(filePath);
+        InputFile cxxFile = getInputFileIfInProject(filePath);
 
         if (cxxFile != null) {
-          var newCoverage = context.newCoverage().onFile(cxxFile);
+          NewCoverage newCoverage = context.newCoverage().onFile(cxxFile);
           Collection<CoverageMeasure> measures = entry.getValue().getCoverageMeasures();
           measures.forEach((CoverageMeasure measure) -> checkCoverage(newCoverage, measure));
 
@@ -96,7 +98,7 @@ public abstract class CoverageSensor extends CxxReportSensor {
             newCoverage.save();
             LOG.debug("Saved '{}' coverage measures for file '{}'", measures.size(), filePath);
           } catch (RuntimeException e) {
-            var msg = "Cannot save coverage measures for file '" + filePath + "'";
+            String msg = "Cannot save coverage measures for file '" + filePath + "'";
             CxxUtils.validateRecovery(msg, e, context.config());
           }
         } else {
@@ -121,7 +123,7 @@ public abstract class CoverageSensor extends CxxReportSensor {
       newCoverage.lineHits(measure.getLine(), measure.getHits());
       newCoverage.conditions(measure.getLine(), measure.getConditions(), measure.getCoveredConditions());
     } catch (RuntimeException e) {
-      var msg = "Cannot save Conditions Hits for Line '" + measure.getLine() + "'";
+      String msg = "Cannot save Conditions Hits for Line '" + measure.getLine() + "'";
       CxxUtils.validateRecovery(msg, e, context.config());
     }
   }

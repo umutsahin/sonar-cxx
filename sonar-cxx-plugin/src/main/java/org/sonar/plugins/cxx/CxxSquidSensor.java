@@ -40,10 +40,12 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.cpd.NewCpdTokens;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
+import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
+import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Qualifiers;
@@ -58,10 +60,14 @@ import org.sonar.cxx.checks.CheckList;
 import org.sonar.cxx.config.CxxSquidConfiguration;
 import org.sonar.cxx.config.MsBuild;
 import org.sonar.cxx.sensors.utils.CxxUtils;
+import org.sonar.cxx.squidbridge.AstScanner;
 import org.sonar.cxx.squidbridge.SquidAstVisitor;
+import org.sonar.cxx.squidbridge.api.CheckMessage;
 import org.sonar.cxx.squidbridge.api.SourceCode;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.indexer.QueryByType;
+import org.sonar.cxx.utils.CxxReportIssue;
+import org.sonar.cxx.utils.CxxReportLocation;
 import org.sonar.cxx.visitors.CxxCpdVisitor;
 import org.sonar.cxx.visitors.CxxHighlighterVisitor;
 import org.sonar.cxx.visitors.CxxPublicApiVisitor;
@@ -296,8 +302,8 @@ public class CxxSquidSensor implements ProjectSensor {
     this.context = context;
 
     // add visitor only if corresponding rule is active
-    var visitors = new ArrayList<SquidAstVisitor<Grammar>>();
-    for (var check : checks.all()) {
+    ArrayList<SquidAstVisitor<Grammar>> visitors = new ArrayList<SquidAstVisitor<Grammar>>();
+    for (SquidAstVisitor<Grammar> check : checks.all()) {
       RuleKey key = checks.ruleKey(check);
       if (key != null) {
         if (context.activeRules().find(key) != null) {
@@ -306,7 +312,7 @@ public class CxxSquidSensor implements ProjectSensor {
       }
     }
 
-    var scanner = CxxAstScanner.create(
+    AstScanner scanner = CxxAstScanner.create(
       createConfiguration(),
       visitors.toArray(new SquidAstVisitor[visitors.size()])
     );
@@ -329,15 +335,15 @@ public class CxxSquidSensor implements ProjectSensor {
   private String[] stripValue(String key, String regex) {
     Optional<String> value = context.config().get(key);
     if (value.isPresent()) {
-      var PATTERN = Pattern.compile(regex);
+      Pattern PATTERN = Pattern.compile(regex);
       return PATTERN.split(value.get(), -1);
     }
     return new String[0];
   }
 
   private CxxSquidConfiguration createConfiguration() {
-    var squidConfig = new CxxSquidConfiguration(context.fileSystem().baseDir().getAbsolutePath(),
-                                            context.fileSystem().encoding());
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration(context.fileSystem().baseDir().getAbsolutePath(),
+                                                                  context.fileSystem().encoding());
 
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.ERROR_RECOVERY_ENABLED,
                     context.config().get(ERROR_RECOVERY_KEY));
@@ -373,10 +379,10 @@ public class CxxSquidSensor implements ProjectSensor {
   }
 
   private void save(Collection<SourceCode> sourceCodeFiles) {
-    for (var sourceCodeFile : sourceCodeFiles) {
+    for (SourceCode sourceCodeFile : sourceCodeFiles) {
       try {
-        var sourceFile = (SourceFile) sourceCodeFile;
-        var ioFile = new File(sourceFile.getKey());
+        SourceFile sourceFile = (SourceFile) sourceCodeFile;
+        File ioFile = new File(sourceFile.getKey());
         InputFile inputFile = context.fileSystem().inputFile(context.fileSystem().predicates().is(ioFile));
 
         saveMeasures(inputFile, sourceFile);
@@ -385,7 +391,7 @@ public class CxxSquidSensor implements ProjectSensor {
         saveCpdTokens(inputFile, sourceFile);
         saveHighlighting(inputFile, sourceFile);
       } catch (IllegalStateException e) {
-        var msg = "Cannot save all measures for file '" + sourceCodeFile.getKey() + "'";
+        String msg = "Cannot save all measures for file '" + sourceCodeFile.getKey() + "'";
         CxxUtils.validateRecovery(msg, e, context.config());
       }
     }
@@ -426,19 +432,19 @@ public class CxxSquidSensor implements ProjectSensor {
 
   private void saveViolations(InputFile inputFile, SourceFile sourceFile) {
     if (sourceFile.hasCheckMessages()) {
-      for (var message : sourceFile.getCheckMessages()) {
-        var line = 1;
+      for (CheckMessage message : sourceFile.getCheckMessages()) {
+        int line = 1;
         if (message.getLine() != null && message.getLine() > 0) {
           line = message.getLine();
         }
 
         RuleKey ruleKey = checks.ruleKey((SquidAstVisitor<Grammar>) message.getCheck());
         if (ruleKey != null) {
-          var newIssue = context.newIssue().forRule(RuleKey.of(CheckList.REPOSITORY_KEY, ruleKey.rule()));
-          var location = newIssue.newLocation()
-            .on(inputFile)
-            .at(inputFile.selectLine(line))
-            .message(message.getText(Locale.ENGLISH));
+          NewIssue newIssue = context.newIssue().forRule(RuleKey.of(CheckList.REPOSITORY_KEY, ruleKey.rule()));
+          NewIssueLocation location = newIssue.newLocation()
+                                              .on(inputFile)
+                                              .at(inputFile.selectLine(line))
+                                              .message(message.getText(Locale.ENGLISH));
 
           newIssue.at(location);
           newIssue.save();
@@ -449,10 +455,10 @@ public class CxxSquidSensor implements ProjectSensor {
     }
 
     if (MultiLocatitionSquidCheck.hasMultiLocationCheckMessages(sourceFile)) {
-      for (var issue : MultiLocatitionSquidCheck.getMultiLocationCheckMessages(sourceFile)) {
-        var newIssue = context.newIssue().forRule(RuleKey.of(CheckList.REPOSITORY_KEY, issue.getRuleId()));
-        var locationNr = 0;
-        for (var location : issue.getLocations()) {
+      for (CxxReportIssue issue : MultiLocatitionSquidCheck.getMultiLocationCheckMessages(sourceFile)) {
+        NewIssue newIssue = context.newIssue().forRule(RuleKey.of(CheckList.REPOSITORY_KEY, issue.getRuleId()));
+        int locationNr = 0;
+        for (CxxReportLocation location : issue.getLocations()) {
           final Integer line = Integer.valueOf(location.getLine());
           final NewIssueLocation newIssueLocation = newIssue.newLocation().on(inputFile).at(inputFile.selectLine(line))
             .message(location.getInfo());
@@ -471,7 +477,7 @@ public class CxxSquidSensor implements ProjectSensor {
 
   private void saveFileLinesContext(InputFile inputFile, SourceFile sourceFile) {
     // measures for the lines of file
-    var fileLinesContext = fileLinesContextFactory.createFor(inputFile);
+    FileLinesContext fileLinesContext = fileLinesContextFactory.createFor(inputFile);
     List<Integer> linesOfCode = (List<Integer>) sourceFile.getData(CxxMetric.NCLOC_DATA);
     linesOfCode.stream().sequential().distinct().forEach((line) -> {
       try {

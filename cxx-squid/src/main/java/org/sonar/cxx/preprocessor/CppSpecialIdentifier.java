@@ -40,8 +40,8 @@ public enum CppSpecialIdentifier implements TokenType {
 
   public static String[] keywordValues() {
     CppSpecialIdentifier[] keywordsEnum = CppSpecialIdentifier.values();
-    var keywords = new String[keywordsEnum.length];
-    for (var i = 0; i < keywords.length; i++) {
+    String[] keywords = new String[keywordsEnum.length];
+    for (int i = 0; i < keywords.length; i++) {
       keywords[i] = keywordsEnum[i].getValue();
     }
     return keywords;

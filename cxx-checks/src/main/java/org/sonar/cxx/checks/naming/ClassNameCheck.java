@@ -64,7 +64,7 @@ public class ClassNameCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitNode(AstNode astNode) {
-    var nameNode = astNode.getFirstDescendant(CxxGrammarImpl.className);
+    AstNode nameNode = astNode.getFirstDescendant(CxxGrammarImpl.className);
     if (nameNode != null) {
       String className = nameNode.getTokenValue();
       if (!pattern.matcher(className).matches()) {

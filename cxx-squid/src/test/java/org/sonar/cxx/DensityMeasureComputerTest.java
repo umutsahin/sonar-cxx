@@ -31,7 +31,7 @@ import org.sonar.api.ce.measure.test.TestSettings;
 public class DensityMeasureComputerTest {
 
   private static TestMeasureComputerContext createContext(DensityMeasureComputer computer) {
-    var component = new TestComponent("file", Type.FILE, new FileAttributesImpl("cxx", false));
+    TestComponent component = new TestComponent("file", Type.FILE, new FileAttributesImpl("cxx", false));
     return new TestMeasureComputerContext(component, new TestSettings(), new MeasureComputerDefinitionBuilderImpl()
                                           .setInputMetrics(computer.getInputMetrics()).setOutputMetrics(computer
                                           .getOutputMetrics()).build());
@@ -39,14 +39,14 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void metricsNumber() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     assertThat(computer.getInputMetrics()).hasSize(8);
     assertThat(computer.getOutputMetrics()).hasSize(5);
   }
 
   @Test
   public void ignoreMissingValue() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     context.addInputMeasure(CxxMetrics.LOC_IN_FUNCTIONS_KEY, 500);
@@ -57,7 +57,7 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void ignoreMissingTotal() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     context.addInputMeasure(CxxMetrics.BIG_FUNCTIONS_LOC_KEY, 100);
@@ -68,7 +68,7 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void ignoreMissingBoth() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     computer.compute(context);
@@ -78,7 +78,7 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void ignoreAlreadyCalculated() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     context.addInputMeasure(CxxMetrics.BIG_FUNCTIONS_LOC_KEY, 100);
@@ -92,7 +92,7 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void calculatePercent() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     context.addInputMeasure(CxxMetrics.BIG_FUNCTIONS_LOC_KEY, 100);
@@ -105,7 +105,7 @@ public class DensityMeasureComputerTest {
 
   @Test
   public void calculateRemainingPercent() {
-    var computer = new DensityMeasureComputer();
+    DensityMeasureComputer computer = new DensityMeasureComputer();
     TestMeasureComputerContext context = createContext(computer);
 
     context.addInputMeasure(CxxMetrics.PUBLIC_UNDOCUMENTED_API_KEY, 100);

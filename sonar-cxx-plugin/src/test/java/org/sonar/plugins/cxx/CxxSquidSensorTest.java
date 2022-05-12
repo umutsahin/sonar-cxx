@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.cpd.internal.TokensLine;
@@ -49,7 +50,7 @@ public class CxxSquidSensorTest {
   @Before
   public void setUp() {
     ActiveRules rules = mock(ActiveRules.class);
-    var checkFactory = new CheckFactory(rules);
+    CheckFactory checkFactory = new CheckFactory(rules);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(Mockito.any(InputFile.class))).thenReturn(fileLinesContext);
@@ -60,13 +61,13 @@ public class CxxSquidSensorTest {
   @Test
   public void testCollectingSquidMetrics() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/codechunks-project");
-    var inputFile0 = TestUtils.buildInputFile(baseDir, "code_chunks.cc");
+    DefaultInputFile inputFile0 = TestUtils.buildInputFile(baseDir, "code_chunks.cc");
 
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.fileSystem().add(inputFile0);
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile0.key(), CoreMetrics.NCLOC).value()).isEqualTo(54);
     softly.assertThat(context.measure(inputFile0.key(), CoreMetrics.STATEMENTS).value()).isEqualTo(50);
     softly.assertThat(context.measure(inputFile0.key(), CoreMetrics.FUNCTIONS).value()).isEqualTo(7);
@@ -80,12 +81,12 @@ public class CxxSquidSensorTest {
   @Test
   public void testCpdTokens() throws Exception {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     settings.setProperty(CxxSquidSensor.CPD_IGNORE_IDENTIFIERS_KEY, true);
     settings.setProperty(CxxSquidSensor.CPD_IGNORE_LITERALS_KEY, true);
     context.setSettings(settings);
 
-    var inputFile = TestUtils.buildInputFile(baseDir, "cpd.cc");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "cpd.cc");
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
@@ -93,7 +94,7 @@ public class CxxSquidSensorTest {
     assertThat(cpdTokenLines).hasSize(75);
 
     // ld &= 0xFF;
-    var firstTokensLine = cpdTokenLines.get(2);
+    TokensLine firstTokensLine = cpdTokenLines.get(2);
     assertThat(firstTokensLine.getValue()).isEqualTo("_I&=_N;");
     assertThat(firstTokensLine.getStartLine()).isEqualTo(4);
     assertThat(firstTokensLine.getStartUnit()).isEqualTo(10);
@@ -101,7 +102,7 @@ public class CxxSquidSensorTest {
     assertThat(firstTokensLine.getEndUnit()).isEqualTo(13);
 
     // if (xosfile_read_stamped_no_path(fn, &ob, 1, 1, 1, 1, 1)) return 1;
-    var secondTokensLine = cpdTokenLines.get(48);
+    TokensLine secondTokensLine = cpdTokenLines.get(48);
     assertThat(secondTokensLine.getValue()).isEqualTo("if(_I(_I,&_I,_N,_N,_N,_N,_N))return_N;");
     assertThat(secondTokensLine.getStartLine()).isEqualTo(60);
     assertThat(secondTokensLine.getStartUnit()).isEqualTo(283);
@@ -109,7 +110,7 @@ public class CxxSquidSensorTest {
     assertThat(secondTokensLine.getEndUnit()).isEqualTo(305);
 
     // case 3: return "three";
-    var thirdTokensLine = cpdTokenLines.get(71);
+    TokensLine thirdTokensLine = cpdTokenLines.get(71);
     assertThat(thirdTokensLine.getValue()).isEqualTo("case_N:return_S;");
     assertThat(thirdTokensLine.getStartLine()).isEqualTo(86);
     assertThat(thirdTokensLine.getStartUnit()).isEqualTo(381);
@@ -120,16 +121,16 @@ public class CxxSquidSensorTest {
   @Test
   public void testComplexitySquidMetrics() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/complexity-project");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     settings.setProperty(CxxSquidSensor.FUNCTION_COMPLEXITY_THRESHOLD_KEY, 3);
     settings.setProperty(CxxSquidSensor.FUNCTION_SIZE_THRESHOLD_KEY, 3);
     context.setSettings(settings);
 
-    var inputFile = TestUtils.buildInputFile(baseDir, "complexity.cc");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "complexity.cc");
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.FUNCTIONS).value()).isEqualTo(22);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.CLASSES).value()).isEqualTo(2);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.COMPLEXITY).value()).isEqualTo(38);
@@ -152,13 +153,13 @@ public class CxxSquidSensorTest {
   @Test
   public void testDocumentationSquidMetrics() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/documentation-project");
-    var inputFile = TestUtils.buildInputFile(baseDir, "documentation0.hh");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "documentation0.hh");
 
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile.key(), CxxMetrics.PUBLIC_API_KEY).value()).isEqualTo(8);
     softly.assertThat(context.measure(inputFile.key(), CxxMetrics.PUBLIC_UNDOCUMENTED_API_KEY).value()).isEqualTo(2);
     softly.assertThat(context.measure(inputFile.key(), CxxMetrics.PUBLIC_DOCUMENTED_API_DENSITY_KEY)).isNull(); // see DensityMeasureComputer
@@ -173,15 +174,15 @@ public class CxxSquidSensorTest {
   @Test
   public void testReplacingOfExtenalMacros() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/external-macro-project");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     settings.setProperty(CxxSquidSensor.DEFINES_KEY, "MACRO class A{};");
     context.setSettings(settings);
 
-    var inputFile = TestUtils.buildInputFile(baseDir, "test.cc");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "test.cc");
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.NCLOC).value()).isEqualTo(1);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.STATEMENTS).value()).isZero();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.FUNCTIONS).value()).isZero();
@@ -192,15 +193,15 @@ public class CxxSquidSensorTest {
   @Test
   public void testFindingIncludedFiles() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/include-directories-project");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     settings.setProperty(CxxSquidSensor.INCLUDE_DIRECTORIES_KEY, "include");
     context.setSettings(settings);
 
-    var inputFile = TestUtils.buildInputFile(baseDir, "src/main.cc");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "src/main.cc");
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.NCLOC).value()).isEqualTo(9);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.STATEMENTS).value()).isZero();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.FUNCTIONS).value()).isEqualTo(9);
@@ -212,17 +213,17 @@ public class CxxSquidSensorTest {
   @Test
   public void testForceIncludedFiles() throws IOException {
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/force-include-project");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     settings.setProperty(CxxSquidSensor.INCLUDE_DIRECTORIES_KEY, "include");
     settings.setProperty(CxxSquidSensor.FORCE_INCLUDES_KEY, "force1.hh,subfolder/force2.hh");
     context.setSettings(settings);
 
-    var inputFile = TestUtils.buildInputFile(baseDir, "src/src1.cc");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "src/src1.cc");
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 
     // These checks actually check the force include feature, since only if it works the metric values will be like follows
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.NCLOC).value()).isEqualTo(1);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.STATEMENTS).value()).isEqualTo(2);
     softly.assertThat(context.measure(inputFile.key(), CoreMetrics.FUNCTIONS).value()).isEqualTo(1);
@@ -236,9 +237,9 @@ public class CxxSquidSensorTest {
     // files to analyse, include each other, the preprocessor guards have to be disabled
     // and both have to be counted in terms of metrics
     File baseDir = TestUtils.loadResource("/org/sonar/plugins/cxx/circular-includes-project");
-    var inputFile = TestUtils.buildInputFile(baseDir, "test1.hh");
+    DefaultInputFile inputFile = TestUtils.buildInputFile(baseDir, "test1.hh");
 
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.fileSystem().add(inputFile);
     sensor.execute(context);
 

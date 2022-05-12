@@ -31,10 +31,10 @@ public class CxxInferRuleRepositoryTest {
 
   @Test
   public void createRulesTest() {
-    var def = new CxxInferRuleRepository(
+    CxxInferRuleRepository def = new CxxInferRuleRepository(
       mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxInferRuleRepository.KEY);

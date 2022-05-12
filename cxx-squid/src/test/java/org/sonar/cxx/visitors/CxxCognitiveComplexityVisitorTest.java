@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.CxxFileTester;
 import org.sonar.cxx.CxxFileTesterHelper;
 import org.sonar.cxx.api.CxxMetric;
 import org.sonar.cxx.squidbridge.api.SourceFile;
@@ -151,7 +152,7 @@ public class CxxCognitiveComplexityVisitorTest {
   }
 
   private int testFile(String fileName) throws UnsupportedEncodingException, IOException {
-    var tester = CxxFileTesterHelper.create(fileName, ".", "");
+    CxxFileTester tester = CxxFileTesterHelper.create(fileName, ".", "");
     SourceFile sourceFile = CxxAstScanner.scanSingleInputFile(tester.asInputFile());
 
     return (sourceFile.getInt(CxxMetric.COGNITIVE_COMPLEXITY));

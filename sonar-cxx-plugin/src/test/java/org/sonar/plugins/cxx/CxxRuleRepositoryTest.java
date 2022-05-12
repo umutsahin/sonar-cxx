@@ -27,7 +27,7 @@ public class CxxRuleRepositoryTest {
 
   @Test
   public void rulesTest() {
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     assertThat(context.repositories()).isEmpty();
     new CxxRuleRepository().define(context);
 

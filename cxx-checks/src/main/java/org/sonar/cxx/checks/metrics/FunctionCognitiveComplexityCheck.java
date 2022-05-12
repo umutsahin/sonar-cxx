@@ -29,6 +29,7 @@ import org.sonar.cxx.visitors.CxxCognitiveComplexityVisitor;
 import org.sonar.cxx.visitors.CxxComplexityScope;
 import org.sonar.cxx.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.cxx.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
+import org.sonar.cxx.visitors.CxxComplexitySource;
 
 @Rule(
   key = "FunctionCognitiveComplexity",
@@ -57,12 +58,12 @@ public class FunctionCognitiveComplexityCheck extends CxxCognitiveComplexityVisi
   @Override
   protected void analyzeComplexity(CxxComplexityScope scope) {
     if (scope.getComplexity() > max) {
-      var msg = new StringBuilder(256);
+      StringBuilder msg = new StringBuilder(256);
       msg.append("The Cognitive Complexity of this function is ").append(scope.getComplexity())
         .append(" which is greater than ").append(max).append(" authorized.");
 
-      var issue = new CxxReportIssue(getRuleKey(), null, scope.getStartingLine(), null, msg.toString());
-      for (var source : scope.getSources()) {
+      CxxReportIssue issue = new CxxReportIssue(getRuleKey(), null, scope.getStartingLine(), null, msg.toString());
+      for (CxxComplexitySource source : scope.getSources()) {
         issue.addLocation(null, source.getLine(), null, source.getExplanation());
       }
       createMultiLocationViolation(issue);

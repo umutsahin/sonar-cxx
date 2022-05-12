@@ -30,9 +30,9 @@ public class CxxClangTidyRuleRepositoryTest {
 
   @Test
   public void createRulesTest() {
-    var def = new CxxClangTidyRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
+    CxxClangTidyRuleRepository def = new CxxClangTidyRuleRepository(mock(ServerFileSystem.class), new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxClangTidyRuleRepository.KEY);

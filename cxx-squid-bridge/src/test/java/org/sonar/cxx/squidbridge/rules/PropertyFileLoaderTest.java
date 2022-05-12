@@ -44,24 +44,24 @@ public class PropertyFileLoaderTest {
 
   @Test
   public void rule_and_parameter_defined_in_property_file() throws Exception {
-    var newRule = repository.createRule(RULE_KEY);
+    RulesDefinition.NewRule newRule = repository.createRule(RULE_KEY);
     newRule.setHtmlDescription("desc");
     newRule.createParam(PARAM_KEY);
     PropertyFileLoader.loadNames(repository, "/rules/names.properties");
-    var rule = buildRepository().rule(RULE_KEY);
+    RulesDefinition.Rule rule = buildRepository().rule(RULE_KEY);
     assertThat(rule.name()).isEqualTo("my rule name1");
     assertThat(rule.param(PARAM_KEY).description()).isEqualTo("my param description1");
   }
 
   @Test
   public void rule_and_parameter_not_defined_in_property_file() throws Exception {
-    var newRule = repository.createRule(RULE_KEY);
+    RulesDefinition.NewRule newRule = repository.createRule(RULE_KEY);
     newRule.setName("ruleName1");
     newRule.setHtmlDescription("desc");
-    var newParam = newRule.createParam(PARAM_KEY);
+    RulesDefinition.NewParam newParam = newRule.createParam(PARAM_KEY);
     newParam.setDescription("paramName1");
     PropertyFileLoader.loadNames(repository, "/rules/empty.properties");
-    var rule = buildRepository().rule(RULE_KEY);
+    RulesDefinition.Rule rule = buildRepository().rule(RULE_KEY);
     assertThat(rule.name()).isEqualTo("ruleName1");
     assertThat(rule.param(PARAM_KEY).description()).isEqualTo("paramName1");
   }

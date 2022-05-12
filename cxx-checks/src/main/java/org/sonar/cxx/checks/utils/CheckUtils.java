@@ -78,7 +78,7 @@ public class CheckUtils {
 
   public static boolean isFunctionDefinition(AstNode node) {
     if (node.is(CxxGrammarImpl.functionDefinition)) {
-      var decl = node.getFirstDescendant(CxxGrammarImpl.declarator);
+      AstNode decl = node.getFirstDescendant(CxxGrammarImpl.declarator);
       if (decl != null && decl.hasDescendant(CxxGrammarImpl.parametersAndQualifiers)) {
         return true;
       }

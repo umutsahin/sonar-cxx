@@ -30,11 +30,11 @@ public class CxxCompilerGccRuleRepositoryTest {
 
   @Test
   public void createGccRulesTest() {
-    var def = new CxxCompilerGccRuleRepository(
+    CxxCompilerGccRuleRepository def = new CxxCompilerGccRuleRepository(
       mock(ServerFileSystem.class),
       new RulesDefinitionXmlLoader());
 
-    var context = new RulesDefinition.Context();
+    RulesDefinition.Context context = new RulesDefinition.Context();
     def.define(context);
 
     RulesDefinition.Repository repo = context.repository(CxxCompilerGccRuleRepository.KEY);

@@ -86,12 +86,12 @@ public class VisualStudioParser implements CoverageParser {
     throws XMLStreamException {
     SMInputCursor range = function.childElementCursor("ranges").advance().childElementCursor("range");
     CoverageMeasures builder = null;
-    var lastSourceId = "";
+    String lastSourceId = "";
 
     while (range.getNext() != null) {
       String sourceId = range.getAttrValue("source_id");
-      var startLine = Integer.parseInt(range.getAttrValue("start_line"));
-      var endLine = Integer.parseInt(range.getAttrValue("end_line"));
+      int startLine = Integer.parseInt(range.getAttrValue("start_line"));
+      int endLine = Integer.parseInt(range.getAttrValue("end_line"));
       // value: yes/no/partial
       int covered = !"no".equalsIgnoreCase(range.getAttrValue("covered")) ? 1 : 0;
 
@@ -117,9 +117,9 @@ public class VisualStudioParser implements CoverageParser {
    */
   @Override
   public Map<String, CoverageMeasures> parse(File report) {
-    var coverageData = new HashMap<String, CoverageMeasures>();
+    HashMap<String, CoverageMeasures> coverageData = new HashMap<String, CoverageMeasures>();
     try {
-      var parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
+      StaxParser parser = new StaxParser((SMHierarchicCursor rootCursor) -> {
         try {
           rootCursor.advance();
         } catch (com.ctc.wstx.exc.WstxEOFException e) {

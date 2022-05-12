@@ -50,7 +50,7 @@ public class CxxReportSensorTest {
 
   @Test
   public void shouldntThrowWhenInstantiating() {
-    var sensor = new CxxReportSensorImpl(settings);
+    CxxReportSensorImpl sensor = new CxxReportSensorImpl(settings);
     assertThat(sensor).isNotNull();
   }
 
@@ -58,7 +58,7 @@ public class CxxReportSensorTest {
   public void getReports_shouldFindNothingIfNoKey() {
     settings.setProperty(REPORT_PATH_PROPERTY_KEY, INVALID_REPORT_PATH);
 
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.setSettings(settings);
     List<File> reports = CxxUtils.getFiles(context, "");
     assertThat(reports).isNotNull();
@@ -67,7 +67,7 @@ public class CxxReportSensorTest {
   @Test
   public void getReports_shouldFindNothingIfNoPath() {
     settings.setProperty(REPORT_PATH_PROPERTY_KEY, "");
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.setSettings(settings);
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_PROPERTY_KEY);
     assertThat(reports).isNotNull();
@@ -76,7 +76,7 @@ public class CxxReportSensorTest {
   @Test
   public void getReports_shouldFindNothingIfInvalidPath() {
     settings.setProperty(REPORT_PATH_PROPERTY_KEY, INVALID_REPORT_PATH);
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.setSettings(settings);
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_PROPERTY_KEY);
     assertThat(reports).isNotNull();
@@ -85,7 +85,7 @@ public class CxxReportSensorTest {
   @Test
   public void getReports_shouldFindSomething() {
     settings.setProperty(REPORT_PATH_PROPERTY_KEY, VALID_REPORT_PATH);
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.setSettings(settings);
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_PROPERTY_KEY);
     assertThat(reports).isNotNull();
@@ -97,7 +97,7 @@ public class CxxReportSensorTest {
   @Test
   public void getReports_shouldFindSomethingList() {
     settings.setProperty(REPORT_PATH_PROPERTY_KEY, VALID_REPORT_PATH_LIST);
-    var context = SensorContextTester.create(baseDir);
+    SensorContextTester context = SensorContextTester.create(baseDir);
     context.setSettings(settings);
     List<File> reports = CxxUtils.getFiles(context, REPORT_PATH_PROPERTY_KEY);
     assertThat(reports).isNotNull();

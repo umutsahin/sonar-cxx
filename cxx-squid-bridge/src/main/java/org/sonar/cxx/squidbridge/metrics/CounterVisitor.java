@@ -52,7 +52,7 @@ public final class CounterVisitor<G extends Grammar> extends SquidAstVisitor<G> 
     }
 
     public Builder<G> subscribeTo(AstNodeType... astNodeTypes) {
-      for (var astNodeType : astNodeTypes) {
+      for (AstNodeType astNodeType : astNodeTypes) {
         this.astNodeTypes.add(astNodeType);
       }
 
@@ -81,7 +81,7 @@ public final class CounterVisitor<G extends Grammar> extends SquidAstVisitor<G> 
 
   @Override
   public void init() {
-    for (var astNodeType : astNodeTypes) {
+    for (AstNodeType astNodeType : astNodeTypes) {
       subscribeTo(astNodeType);
     }
   }

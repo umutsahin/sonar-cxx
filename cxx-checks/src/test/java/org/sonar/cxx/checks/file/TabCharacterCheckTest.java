@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -36,7 +37,7 @@ public class TabCharacterCheckTest {
   public void fileWithTabsOneMessagePerFile() throws UnsupportedEncodingException, IOException {
     check.createLineViolation = false;
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/TabCharacter.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/TabCharacter.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
 
     CheckMessagesVerifier.verify(file.getCheckMessages())
@@ -48,7 +49,7 @@ public class TabCharacterCheckTest {
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void fileWithTabsOneMessagePerLine() throws UnsupportedEncodingException, IOException {
     check.createLineViolation = true;
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/TabCharacter.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/TabCharacter.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
 
     CheckMessagesVerifier.verify(file.getCheckMessages())
@@ -61,7 +62,7 @@ public class TabCharacterCheckTest {
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void fileWithoutTabs() throws UnsupportedEncodingException, IOException {
     check.createLineViolation = false;
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/NonEmptyFile.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/NonEmptyFile.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
 
     CheckMessagesVerifier.verify(file.getCheckMessages())

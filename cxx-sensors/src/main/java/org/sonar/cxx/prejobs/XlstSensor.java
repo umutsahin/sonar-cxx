@@ -20,10 +20,12 @@
 package org.sonar.cxx.prejobs;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -52,11 +54,11 @@ public class XlstSensor implements ProjectSensor {
   private SensorContext context;
 
   private static void transformFile(Source stylesheetFile, File input, File output) throws TransformerException {
-    var factory = TransformerFactory.newInstance();
+    TransformerFactory factory = TransformerFactory.newInstance();
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-    var transformer = factory.newTransformer(stylesheetFile);
+    Transformer transformer = factory.newTransformer(stylesheetFile);
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.transform(new StreamSource(input), new StreamResult(output));
   }
@@ -71,8 +73,8 @@ public class XlstSensor implements ProjectSensor {
   @Override
   public void execute(SensorContext context) {
     this.context = context;
-    for (var i = 1; i <= MAX_STYLESHEETS; i++) {
-      var paramError = false;
+    for (int i = 1; i <= MAX_STYLESHEETS; i++) {
+      boolean paramError = false;
 
       final String stylesheetKey = OTHER_XSLT_KEY + i + STYLESHEET_KEY;
       final String inputKey = OTHER_XSLT_KEY + i + INPUT_KEY;
@@ -112,17 +114,17 @@ public class XlstSensor implements ProjectSensor {
   }
 
   private void transformFileList(String baseDir, String stylesheet, List<File> inputs, String outputs) {
-    for (var j = 0; j < inputs.size(); j++) {
+    for (int j = 0; j < inputs.size(); j++) {
       try {
-        var inputStream = this.getClass().getResourceAsStream("/xsl/" + stylesheet);
+        InputStream inputStream = this.getClass().getResourceAsStream("/xsl/" + stylesheet);
         Source stylesheetFile;
         if (inputStream != null) {
           stylesheetFile = new StreamSource(inputStream);
         } else {
           stylesheetFile = new StreamSource(new File(CxxUtils.resolveAntPath(baseDir, stylesheet)));
         }
-        var inputFile = inputs.get(j);
-        var outputFile = createOutputFile(inputFile.getPath(), outputs);
+        File inputFile = inputs.get(j);
+        File outputFile = createOutputFile(inputFile.getPath(), outputs);
         transformFile(stylesheetFile, inputFile, outputFile);
       } catch (TransformerException | NullPointerException e) {
         CxxUtils.validateRecovery("Cannot XLS transform files", e, context.config());

@@ -23,6 +23,8 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.TokenType;
+import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.impl.ast.AstXmlPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,13 +85,13 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   protected boolean skipFile = true;
 
   private static boolean isTypedef(AstNode declaratorList) {
-    var simpleDeclSpezifierSeq = declaratorList.getPreviousSibling();
+    AstNode simpleDeclSpezifierSeq = declaratorList.getPreviousSibling();
     if (simpleDeclSpezifierSeq != null) {
-      var firstDeclSpecifier = simpleDeclSpezifierSeq.getFirstChild(CxxGrammarImpl.declSpecifier);
+      AstNode firstDeclSpecifier = simpleDeclSpezifierSeq.getFirstChild(CxxGrammarImpl.declSpecifier);
       if (firstDeclSpecifier != null && firstDeclSpecifier.getToken().getType().equals(CxxKeyword.TYPEDEF)) {
-        var classSpefifier = firstDeclSpecifier.getNextSibling();
+        AstNode classSpefifier = firstDeclSpecifier.getNextSibling();
         if (classSpefifier != null) {
-          var type = classSpefifier.getToken().getType();
+          TokenType type = classSpefifier.getToken().getType();
           if (type.equals(CxxKeyword.STRUCT)
                 || type.equals(CxxKeyword.CLASS)
                 || type.equals(CxxKeyword.UNION)
@@ -121,8 +123,8 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     List<AstNode> declSpecifiers = declSpecifierSeq
       .getChildren(CxxGrammarImpl.declSpecifier);
 
-    for (var declSpecifier : declSpecifiers) {
-      var friendNode = declSpecifier.getFirstChild(CxxKeyword.FRIEND);
+    for (AstNode declSpecifier : declSpecifiers) {
+      AstNode friendNode = declSpecifier.getFirstChild(CxxKeyword.FRIEND);
       if (friendNode != null) {
         return true;
       }
@@ -133,11 +135,11 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
 
   @CheckForNull
   private static AstNode getTypedefNode(AstNode classSpecifier) {
-    var declSpecifier = classSpecifier.getFirstAncestor(CxxGrammarImpl.declSpecifier);
+    AstNode declSpecifier = classSpecifier.getFirstAncestor(CxxGrammarImpl.declSpecifier);
     if (declSpecifier != null) {
       declSpecifier = declSpecifier.getPreviousSibling();
       if (declSpecifier != null) {
-        var typedef = declSpecifier.getFirstChild();
+        AstNode typedef = declSpecifier.getFirstChild();
         if (typedef != null && typedef.getToken().getType().equals(CxxKeyword.TYPEDEF)) {
           return typedef;
         }
@@ -162,8 +164,8 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       List<AstNode> declSpecifiers = declSpecifierSeq
         .getChildren(CxxGrammarImpl.declSpecifier);
 
-      for (var declSpecifier : declSpecifiers) {
-        var friendNode = declSpecifier.getFirstChild(CxxKeyword.FRIEND);
+      for (AstNode declSpecifier : declSpecifiers) {
+        AstNode friendNode = declSpecifier.getFirstChild(CxxKeyword.FRIEND);
         if (friendNode != null) {
           return true;
         }
@@ -173,7 +175,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   }
 
   private static boolean isDefaultOrDeleteFunctionBody(AstNode functionBodyNode) {
-    var defaultOrDelete = false;
+    boolean defaultOrDelete = false;
     List<AstNode> functionBody = functionBodyNode.getChildren();
 
     // look for exact sub AST
@@ -194,8 +196,8 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   private static boolean isOverriddenMethod(AstNode memberDeclarator) {
     List<AstNode> modifiers = memberDeclarator.getDescendants(CxxGrammarImpl.virtSpecifier);
 
-    for (var modifier : modifiers) {
-      var modifierId = modifier.getFirstChild();
+    for (AstNode modifier : modifiers) {
+      AstNode modifierId = modifier.getFirstChild();
 
       if (TOKEN_OVERRIDE.equals(modifierId.getTokenValue())) {
         return true;
@@ -208,12 +210,12 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   // XXX may go to a utility class
   private static String getOperatorId(AstNode operatorFunctionId) {
 
-    var builder = new StringBuilder(operatorFunctionId.getTokenValue());
-    var operator = operatorFunctionId.getFirstDescendant(CxxGrammarImpl.operator);
+    StringBuilder builder = new StringBuilder(operatorFunctionId.getTokenValue());
+    AstNode operator = operatorFunctionId.getFirstDescendant(CxxGrammarImpl.operator);
 
     if (operator != null) {
 
-      var opNode = operator.getFirstChild();
+      AstNode opNode = operator.getFirstChild();
       while (opNode != null) {
         builder.append(opNode.getTokenValue());
         opNode = opNode.getNextSibling();
@@ -228,7 +230,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
 
     // inline comments are attached to the next AST node (not sibling, because the last attribute inline comment
     // is attached to the next node of the parent)
-    var next = declarator.getNextAstNode();
+    AstNode next = declarator.getNextAstNode();
 
     // inline documentation may be on the next definition token or next curly brace
     if (next != null) {
@@ -270,7 +272,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
                               CxxKeyword.ENUM, CxxKeyword.UNION);
 
         if (enclosingSpecifierNode != null) {
-          var type = enclosingSpecifierNode.getToken().getType();
+          TokenType type = enclosingSpecifierNode.getToken().getType();
           if (type.equals(CxxKeyword.STRUCT) || type.equals(CxxKeyword.UNION)) {
             // struct and union members have public access, thus access level
             // is the access level of the enclosing classSpecifier
@@ -294,7 +296,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
 
       if (node.is(CxxGrammarImpl.functionDefinition)) {
         // filter out function definitions with nested name specifier: should be documented inside of class
-        var declarator = node.getFirstChild(CxxGrammarImpl.declarator);
+        AstNode declarator = node.getFirstChild(CxxGrammarImpl.declarator);
         if ((declarator != null) && declarator.hasDescendant(CxxGrammarImpl.nestedNameSpecifier)) {
           return false;
         }
@@ -311,11 +313,11 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
    * @return true if documentation is found for specified line, false otherwise
    */
   private static List<Token> getInlineDocumentation(Token token) {
-    var comments = new ArrayList<Token>();
+    ArrayList<Token> comments = new ArrayList<Token>();
 
-    for (var trivia : token.getTrivia()) {
+    for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
-        var triviaToken = trivia.getToken();
+        Token triviaToken = trivia.getToken();
         if ((triviaToken != null) && (isDoxygenInlineComment(triviaToken.getValue()))) {
           comments.add(triviaToken);
         }
@@ -325,12 +327,12 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   }
 
   private static List<Token> getBlockDocumentation(AstNode node) {
-    var commentTokens = new ArrayList<Token>();
+    ArrayList<Token> commentTokens = new ArrayList<Token>();
 
-    var token = node.getToken();
-    for (var trivia : token.getTrivia()) {
+    Token token = node.getToken();
+    for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment()) {
-        var triviaToken = trivia.getToken();
+        Token triviaToken = trivia.getToken();
         if (triviaToken != null) {
           String comment = triviaToken.getValue();
           if (isDoxygenCommentBlock(comment)
@@ -372,7 +374,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     skipFile = true;
 
     if (headerFileSuffixes != null) {
-      for (var suffix : headerFileSuffixes) {
+      for (String suffix : headerFileSuffixes) {
         if (getContext().getFile().getName().endsWith(suffix)) {
           skipFile = false;
           break;
@@ -419,9 +421,9 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   }
 
   private void visitPublicApi(AstNode node, String id, List<Token> comments) {
-    var doxygenComments = new ArrayList<Token>();
+    ArrayList<Token> doxygenComments = new ArrayList<Token>();
 
-    for (var token : comments) {
+    for (Token token : comments) {
       String comment = token.getValue();
       if (isDoxygenInlineComment(comment) || isDoxygenCommentBlock(comment)) {
         doxygenComments.add(token);
@@ -473,7 +475,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     } else {
       // with several declarators, documentation should be located
       // on each declarator
-      for (var declarator : declarators) {
+      for (AstNode declarator : declarators) {
         visitDeclarator(declarator, declarator);
       }
     }
@@ -521,7 +523,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   private void visitDeclarator(AstNode declarator, AstNode docNode) {
 
     // check if this is a template specification to adjust documentation node
-    var templateDeclaration = declarator.getFirstAncestor(CxxGrammarImpl.templateDeclaration);
+    AstNode templateDeclaration = declarator.getFirstAncestor(CxxGrammarImpl.templateDeclaration);
     if (templateDeclaration != null) {
       visitTemplateDeclaration(templateDeclaration);
     } else {
@@ -547,7 +549,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   private void visitClassSpecifier(AstNode classSpecifier) {
 
     // check if this is a template specification to adjust documentation node
-    var docNode = classSpecifier.getFirstAncestor(CxxGrammarImpl.templateDeclaration);
+    AstNode docNode = classSpecifier.getFirstAncestor(CxxGrammarImpl.templateDeclaration);
     if (docNode == null) {
       // check if this is a typedef to adjust documentation node
       docNode = getTypedefNode(classSpecifier);
@@ -566,7 +568,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     }
 
     // look for the specifier id
-    var id = classHead.getFirstDescendant(CxxGrammarImpl.className);
+    AstNode id = classHead.getFirstDescendant(CxxGrammarImpl.className);
 
     AstNode idNode;
     String idName;
@@ -588,7 +590,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   private void visitMemberDeclaration(AstNode memberDeclaration) {
 
     // check if this is a template specification to adjust documentation node
-    var templateDeclaration = memberDeclaration.getFirstDescendant(CxxGrammarImpl.templateDeclaration);
+    AstNode templateDeclaration = memberDeclaration.getFirstDescendant(CxxGrammarImpl.templateDeclaration);
     AstNode declaratorList = null;
     if (templateDeclaration == null) {
       declaratorList = memberDeclaration.getFirstDescendant(CxxGrammarImpl.memberDeclaratorList);
@@ -628,7 +630,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       } else {
         // if several declarator, doc should be placed before each
         // declarator, or in-lined
-        for (var declarator : declarators) {
+        for (AstNode declarator : declarators) {
           visitMemberDeclarator(declarator);
         }
       }
@@ -641,7 +643,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       return;
     }
 
-    var declId = templateDeclaration.getFirstDescendant(CxxGrammarImpl.declaratorId);
+    AstNode declId = templateDeclaration.getFirstDescendant(CxxGrammarImpl.declaratorId);
     if (declId == null) {
       return;
     }
@@ -695,7 +697,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       return;
     }
 
-    var container = node.getFirstAncestor(
+    AstNode container = node.getFirstAncestor(
       CxxGrammarImpl.templateDeclaration,
       CxxGrammarImpl.classSpecifier);
 
@@ -723,7 +725,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     String id = null;
 
     // first look for an operator function id
-    var idNode = node.getFirstDescendant(CxxGrammarImpl.operatorFunctionId);
+    AstNode idNode = node.getFirstDescendant(CxxGrammarImpl.operatorFunctionId);
 
     if (idNode != null) {
       id = getOperatorId(idNode);
@@ -751,7 +753,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   }
 
   private void visitAliasDeclaration(AstNode aliasDeclNode) {
-    var parent = aliasDeclNode.getFirstAncestor(
+    AstNode parent = aliasDeclNode.getFirstAncestor(
       CxxGrammarImpl.functionDefinition,
       CxxGrammarImpl.classSpecifier);
 
@@ -769,7 +771,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       } else {
         // Check if this is a template specification to adjust
         // documentation node
-        var container = aliasDeclNode.getFirstAncestor(
+        AstNode container = aliasDeclNode.getFirstAncestor(
           CxxGrammarImpl.templateDeclaration,
           CxxGrammarImpl.classSpecifier);
 
@@ -796,13 +798,13 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
   }
 
   private static List<Token> getTypedefInlineComment(AstNode typedef) {
-    var commentTokens = new ArrayList<Token>();
-    var node = typedef.getFirstAncestor(CxxGrammarImpl.declaration);
+    ArrayList<Token> commentTokens = new ArrayList<Token>();
+    AstNode node = typedef.getFirstAncestor(CxxGrammarImpl.declaration);
     node = node.getNextAstNode();
 
     // search for first child with a comment
     while (node != null) {
-      for (var trivia : node.getToken().getTrivia()) {
+      for (Trivia trivia : node.getToken().getTrivia()) {
         if (trivia.isComment()) {
           commentTokens.add(trivia.getToken());
           return commentTokens;
@@ -819,7 +821,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       return; // not in public API
     }
 
-    var docNode = getTypedefNode(enumSpecifierNode);
+    AstNode docNode = getTypedefNode(enumSpecifierNode);
     AstNode idNode;
     if (docNode == null) {
       // enum ...
@@ -829,7 +831,7 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
       }
     } else {
       // typedef enum ...
-      var declaration = enumSpecifierNode.getFirstAncestor(CxxGrammarImpl.declaration);
+      AstNode declaration = enumSpecifierNode.getFirstAncestor(CxxGrammarImpl.declaration);
       idNode = declaration.getFirstDescendant(CxxGrammarImpl.declaratorId);
       if (idNode != null) {
         List<Token> comments = getBlockDocumentation(docNode);
@@ -844,14 +846,14 @@ public abstract class AbstractCxxPublicApiVisitor<G extends Grammar> extends Squ
     AstNode enumeratorList = enumSpecifierNode.getFirstDescendant(CxxGrammarImpl.enumeratorList);
 
     if (enumeratorList != null) {
-      for (var definition : enumeratorList.getChildren(CxxGrammarImpl.enumeratorDefinition)) {
+      for (AstNode definition : enumeratorList.getChildren(CxxGrammarImpl.enumeratorDefinition)) {
 
         // look for block documentation
         List<Token> comments = getBlockDocumentation(definition);
 
         // look for inlined doc
         if (comments.isEmpty()) {
-          var next = definition.getNextAstNode();
+          AstNode next = definition.getNextAstNode();
 
           // inline documentation may be on the next definition token or next curly brace
           if (next != null) {

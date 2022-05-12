@@ -21,6 +21,7 @@ package org.sonar.cxx.checks.naming;
 
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.CheckMessagesVerifier;
@@ -30,8 +31,8 @@ public class MethodNameCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test() throws Exception {
-    var check = new MethodNameCheck();
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/MethodName.cc", ".");
+    MethodNameCheck check = new MethodNameCheck();
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/MethodName.cc", ".");
     SourceFile file = CxxAstScanner.scanSingleInputFile(tester.asInputFile(), check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(12).withMessage(

@@ -39,7 +39,7 @@ public abstract class AbstractParseErrorCheck<G extends Grammar> extends SquidCh
 
   @Override
   public void processException(Exception e) {
-    var exception = new StringWriter();
+    StringWriter exception = new StringWriter();
     e.printStackTrace(new PrintWriter(exception));
     getContext().createLineViolation(this, exception.toString(), 1);
   }

@@ -59,10 +59,10 @@ public class TestwellCtcTxtParser implements CoverageParser {
    */
   @Override
   public Map<String, CoverageMeasures> parse(File report) {
-    var coverageData = new HashMap<String, CoverageMeasures>();
-    try ( var scanner = new TextScanner(report, StandardCharsets.UTF_8.name())) {
+    HashMap<String, CoverageMeasures> coverageData = new HashMap<String, CoverageMeasures>();
+    try (TextScanner scanner = new TextScanner(report, StandardCharsets.UTF_8.name())) {
       scanner.useDelimiter(SECTION_SEP);
-      var headerMatcher = FILE_HEADER.matcher(scanner.next());
+      Matcher headerMatcher = FILE_HEADER.matcher(scanner.next());
       while (parseUnit(scanner, coverageData, headerMatcher)) {
         headerMatcher.reset(scanner.next());
       }
@@ -91,20 +91,20 @@ public class TestwellCtcTxtParser implements CoverageParser {
     } else {
       normalFilename = FilenameUtils.normalize("./" + filename);
     }
-    var file = new File(normalFilename);
+    File file = new File(normalFilename);
     addLines(scanner, file, coverageData);
   }
 
   private void addLines(TextScanner scanner, File file, final Map<String, CoverageMeasures> coverageData) {
-    var coverageMeasures = CoverageMeasures.create();
-    for (var nextLine = scanner.next(); !FILE_RESULT.matcher(nextLine).find(); nextLine = scanner.next()) {
+    CoverageMeasures coverageMeasures = CoverageMeasures.create();
+    for (String nextLine = scanner.next(); !FILE_RESULT.matcher(nextLine).find(); nextLine = scanner.next()) {
       parseLineSection(coverageMeasures, nextLine);
     }
     coverageData.put(file.getPath(), coverageMeasures);
   }
 
   private void parseLineSection(CoverageMeasures coverageMeasures, String nextLine) {
-    var lineMatcher = LINE_RESULT.matcher(nextLine);
+    Matcher lineMatcher = LINE_RESULT.matcher(nextLine);
     if (lineMatcher.find(FROM_START)) {
       addEachLine(coverageMeasures, lineMatcher);
     } else {
@@ -114,23 +114,23 @@ public class TestwellCtcTxtParser implements CoverageParser {
 
   private void addEachLine(CoverageMeasures coverageMeasures, Matcher lineMatcher) {
 
-    var lineHits = 0;
-    var lineIdPrev = 0;
-    var lineIdCond = 0;
-    var conditions = 0;
-    var coveredConditions = 0;
-    var conditionIsDetected = false;
+    int lineHits = 0;
+    int lineIdPrev = 0;
+    int lineIdCond = 0;
+    int conditions = 0;
+    int coveredConditions = 0;
+    boolean conditionIsDetected = false;
 
     do {
-      var lineIdCur = Integer.parseInt(lineMatcher.group(LINE_NR_GROUP));
+      int lineIdCur = Integer.parseInt(lineMatcher.group(LINE_NR_GROUP));
 
       String condsTrue = lineMatcher.group(CONDS_TRUE);
       String condsFalse = lineMatcher.group(CONDS_FALSE);
 
       if ((condsTrue != null) || (condsFalse != null)) {
 
-        var lineHitsTrue = (condsTrue != null ? new BigDecimal(condsTrue).intValue() : 0);
-        var lineHitsFalse = (condsFalse != null ? new BigDecimal(condsFalse).intValue() : 0);
+        int lineHitsTrue = (condsTrue != null ? new BigDecimal(condsTrue).intValue() : 0);
+        int lineHitsFalse = (condsFalse != null ? new BigDecimal(condsFalse).intValue() : 0);
         lineHits = lineHitsTrue + lineHitsFalse;
 
         if (lineIdPrev != lineIdCur) {

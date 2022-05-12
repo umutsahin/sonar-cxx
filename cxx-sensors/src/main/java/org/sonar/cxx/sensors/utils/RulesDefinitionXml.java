@@ -21,6 +21,7 @@ package org.sonar.cxx.sensors.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -68,16 +69,16 @@ public class RulesDefinitionXml implements RulesDefinition {
   @Override
   public void define(Context context) {
     Charset encoding = StandardCharsets.UTF_8;
-    var repository = context.createRepository(repositoryKey, repositoryLanguage)
-      .setName(repositoryName);
+    NewRepository repository = context.createRepository(repositoryKey, repositoryLanguage)
+                                      .setName(repositoryName);
 
-    var xmlLoader = new RulesDefinitionXmlLoader();
+    RulesDefinitionXmlLoader xmlLoader = new RulesDefinitionXmlLoader();
     if (!"".equals(repositoryFile)) {
-      var xmlStream = getClass().getResourceAsStream(repositoryFile);
+      InputStream xmlStream = getClass().getResourceAsStream(repositoryFile);
       xmlLoader.load(repository, xmlStream, encoding);
 
-      for (var userExtensionXml : getExtensions(repositoryKey, "xml")) {
-        try ( var input = java.nio.file.Files.newInputStream(userExtensionXml.toPath())) {
+      for (File userExtensionXml : getExtensions(repositoryKey, "xml")) {
+        try (InputStream input = java.nio.file.Files.newInputStream(userExtensionXml.toPath())) {
           xmlRuleLoader.load(repository, input, encoding);
         } catch (IOException | IllegalStateException e) {
           LOG.error("Cannot load Rules Definions '{}'", e.getMessage());
@@ -86,7 +87,7 @@ public class RulesDefinitionXml implements RulesDefinition {
 
       // add repository key as tag to make it possible to filter in issues by tool (tag must be a-z,0-9,-,+)
       String tag = repositoryKey.toLowerCase().replaceAll("[^a-z0-9-+]", "-");
-      for (var rule : repository.rules()) {
+      for (NewRule rule : repository.rules()) {
         prepareRule(rule);
         rule.addTags(tag);
       }
@@ -96,8 +97,8 @@ public class RulesDefinitionXml implements RulesDefinition {
   }
 
   public List<File> getExtensions(String dirName, @Nullable String... suffixes) {
-    var dir = new File(fileSystem.getHomeDir(), "extensions/rules/" + dirName);
-    var files = new ArrayList<File>();
+    File dir = new File(fileSystem.getHomeDir(), "extensions/rules/" + dirName);
+    ArrayList<File> files = new ArrayList<File>();
     if (dir.exists() && dir.isDirectory()) {
       if (suffixes != null && suffixes.length > 0) {
         files.addAll(FileUtils.listFiles(dir, suffixes, false));

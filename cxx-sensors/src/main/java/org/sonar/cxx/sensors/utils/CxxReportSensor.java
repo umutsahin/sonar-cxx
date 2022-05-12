@@ -22,6 +22,7 @@ package org.sonar.cxx.sensors.utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -115,10 +116,10 @@ public abstract class CxxReportSensor implements ProjectSensor {
   private InputFile getInputFileTryRealPath(String path) {
 
     // create absolute path (relative to baseDir)
-    var absPath = context.fileSystem().baseDir().toPath().resolve(path);
+    Path absPath = context.fileSystem().baseDir().toPath().resolve(path);
     try {
       // resolve symbolic links
-      var realPath = absPath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+      Path realPath = absPath.toRealPath(LinkOption.NOFOLLOW_LINKS);
 
       // if the real path is equal to the given one - skip search: we already tried such path
       // IMPORTANT: SQ works with string paths, so the equality of strings is important

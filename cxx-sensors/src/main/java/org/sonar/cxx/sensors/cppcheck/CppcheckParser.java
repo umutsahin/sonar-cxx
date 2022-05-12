@@ -30,6 +30,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.cxx.sensors.utils.EmptyReportException;
 import org.sonar.cxx.sensors.utils.StaxParser;
 import org.sonar.cxx.utils.CxxReportIssue;
+import org.sonar.cxx.utils.CxxReportLocation;
 
 public class CppcheckParser {
 
@@ -56,13 +57,13 @@ public class CppcheckParser {
   }
 
   public void parse(File report) throws javax.xml.stream.XMLStreamException {
-    var parser = new StaxParser(new StaxParser.XmlStreamHandler() {
+    StaxParser parser = new StaxParser(new StaxParser.XmlStreamHandler() {
       /**
        * {@inheritDoc}
        */
       @Override
       public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
-        var parsed = false;
+        boolean parsed = false;
 
         try {
           rootCursor.advance();
@@ -144,11 +145,11 @@ public class CppcheckParser {
             if (isLocationInProject) {
               issue.addLocation(file, line, null, info);
             } else {
-              var primaryLocation = issue.getLocations().get(0);
+              CxxReportLocation primaryLocation = issue.getLocations().get(0);
               String primaryFile = primaryLocation.getFile();
               String primaryLine = primaryLocation.getLine();
 
-              var extendedInfo = new StringBuilder(512);
+              StringBuilder extendedInfo = new StringBuilder(512);
               extendedInfo.append(makeRelativePath(file, primaryFile)).append(":").append(line).append(" ")
                 .append(info);
               issue.addLocation(primaryFile, primaryLine, null, extendedInfo.toString());

@@ -92,9 +92,9 @@ public class XunitReportParser implements XmlStreamHandler {
     String tcFilename = testCaseCursor.getAttrValue("filename");
     String name = parseTestCaseName(testCaseCursor);
     Double time = parseTime(testCaseCursor);
-    var status = "ok";
-    var stack = "";
-    var msg = "";
+    String status = "ok";
+    String stack = "";
+    String msg = "";
 
     // Googletest-reports mark the skipped tests with status="notrun"
     String statusattr = testCaseCursor.getAttrValue("status");
@@ -127,15 +127,15 @@ public class XunitReportParser implements XmlStreamHandler {
     }
 
     String filename = tcFilename != null ? tcFilename : tsFilename;
-    var file = getTestFile(filename);
+    TestFile file = getTestFile(filename);
     file.add(new TestCase(name, time.intValue(), status, stack, msg, classname, filename, tsName));
   }
 
   private TestFile getTestFile(String filename) {
-    var absolute = Optional.ofNullable(CxxUtils.resolveAntPath(baseDir, filename))
-      .map(p -> Paths.get(p));
+    Optional<Path> absolute = Optional.ofNullable(CxxUtils.resolveAntPath(baseDir, filename))
+                                      .map(p -> Paths.get(p));
 
-    var file = testFiles.get(absolute.orElse(null));
+    TestFile file = testFiles.get(absolute.orElse(null));
     if (file == null) {
       file = new TestFile(absolute.map(Object::toString).orElse(null));
       testFiles.put(absolute.orElse(null), file);
@@ -155,7 +155,7 @@ public class XunitReportParser implements XmlStreamHandler {
 
   private double parseTime(SMInputCursor testCaseCursor)
     throws XMLStreamException {
-    var time = 0.0;
+    double time = 0.0;
     try {
       String sTime = testCaseCursor.getAttrValue("time");
       if (sTime != null && !sTime.isEmpty()) {

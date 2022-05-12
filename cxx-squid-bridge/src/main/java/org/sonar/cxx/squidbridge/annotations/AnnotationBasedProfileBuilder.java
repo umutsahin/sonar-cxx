@@ -28,6 +28,7 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.ValidationMessages;
+import org.sonar.check.Rule;
 
 /**
  * Utility class to build an instance of {@link RulesProfile} based on a list of classes annotated
@@ -46,8 +47,8 @@ public class AnnotationBasedProfileBuilder {
 
   public RulesProfile build(String repositoryKey, String profileName, String language, Iterable<Class> annotatedClasses,
                             ValidationMessages messages) {
-    var profile = RulesProfile.create(profileName, language);
-    for (var ruleClass : annotatedClasses) {
+    RulesProfile profile = RulesProfile.create(profileName, language);
+    for (Class ruleClass : annotatedClasses) {
       addRule(ruleClass, profile, repositoryKey, messages);
     }
     return profile;
@@ -55,13 +56,13 @@ public class AnnotationBasedProfileBuilder {
 
   private void addRule(Class<?> ruleClass, RulesProfile profile, String repositoryKey, ValidationMessages messages) {
     if (AnnotationUtils.getAnnotation(ruleClass, ActivatedByDefault.class) != null) {
-      var ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
+      Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
       if (ruleAnnotation == null) {
         messages.addWarningText("Class " + ruleClass + " has no Rule annotation");
         return;
       }
       String ruleKey = ruleAnnotation.key();
-      var rule = ruleFinder.findByKey(repositoryKey, ruleKey);
+      org.sonar.api.rules.Rule rule = ruleFinder.findByKey(repositoryKey, ruleKey);
       if (rule == null) {
         messages.addWarningText("Rule not found: [repository=" + repositoryKey + ", key=" + ruleKey + "]");
       } else {

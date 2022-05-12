@@ -20,6 +20,7 @@
 package org.sonar.cxx.preprocessor;
 
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
@@ -61,8 +62,8 @@ public final class ExpressionEvaluator {
 
     // This function is only responsible for providing a string and a radix to BigInteger.
     // The lexer ensures that the number has a valid format.
-    var radix = 10;
-    var begin = 0;
+    int radix = 10;
+    int begin = 0;
     if (number.length() > 2) {
       if (number.charAt(0) == '0') {
         switch (number.charAt(1)) {
@@ -83,10 +84,10 @@ public final class ExpressionEvaluator {
       }
     }
 
-    var sb = new StringBuilder(number.length());
-    var suffix = false;
-    for (var index = begin; index < number.length() && !suffix; index++) {
-      var c = number.charAt(index);
+    StringBuilder sb = new StringBuilder(number.length());
+    boolean suffix = false;
+    for (int index = begin; index < number.length() && !suffix; index++) {
+      char c = number.charAt(index);
       switch (c) {
         case '0':
         case '1':
@@ -200,7 +201,7 @@ public final class ExpressionEvaluator {
   private BigInteger evalLeaf(AstNode exprAst) {
     // Evaluation of leafs
     //
-    var nodeType = exprAst.getType();
+    AstNodeType nodeType = exprAst.getType();
 
     if (nodeType.equals(CxxTokenType.NUMBER)) {
       return evalNumber(exprAst.getTokenValue());
@@ -233,7 +234,7 @@ public final class ExpressionEvaluator {
   private BigInteger evalOneChildAst(AstNode exprAst) {
     // Evaluation of booleans and 'pass-through's
     //
-    var nodeType = exprAst.getType();
+    AstNodeType nodeType = exprAst.getType();
     if (nodeType.equals(CppGrammarImpl.bool)) {
       return evalBool(exprAst.getTokenValue());
     }
@@ -244,7 +245,7 @@ public final class ExpressionEvaluator {
 
     // More complex expressions with more than one child
     //
-    var nodeType = exprAst.getType();
+    AstNodeType nodeType = exprAst.getType();
     if (nodeType.equals(CppGrammarImpl.unaryExpression)) {
       return evalUnaryExpression(exprAst);
     } else if (nodeType.equals(CppGrammarImpl.conditionalExpression)) {
@@ -286,7 +287,7 @@ public final class ExpressionEvaluator {
 
   // ////////////// logical expressions ///////////////////////////
   private BigInteger evalLogicalOrExpression(AstNode exprAst) {
-    var operand = exprAst.getFirstChild();
+    AstNode operand = exprAst.getFirstChild();
     boolean result = evalToBoolean(operand);
 
     while (!result && ((operand = getNextOperand(operand)) != null)) {
@@ -297,7 +298,7 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalLogicalAndExpression(AstNode exprAst) {
-    var operand = exprAst.getFirstChild();
+    AstNode operand = exprAst.getFirstChild();
     boolean result = evalToBoolean(operand);
 
     while (result && ((operand = getNextOperand(operand)) != null)) {
@@ -308,10 +309,10 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalEqualityExpression(AstNode exprAst) {
-    var lhs = exprAst.getFirstChild();
-    var operator = lhs.getNextSibling();
-    var rhs = operator.getNextSibling();
-    var operatorType = operator.getType();
+    AstNode lhs = exprAst.getFirstChild();
+    AstNode operator = lhs.getNextSibling();
+    AstNode rhs = operator.getNextSibling();
+    AstNodeType operatorType = operator.getType();
 
     boolean result;
     if (operatorType.equals(CppPunctuator.EQ)) {
@@ -338,10 +339,10 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalRelationalExpression(AstNode exprAst) {
-    var lhs = exprAst.getFirstChild();
-    var operator = lhs.getNextSibling();
-    var rhs = operator.getNextSibling();
-    var operatorType = operator.getType();
+    AstNode lhs = exprAst.getFirstChild();
+    AstNode operator = lhs.getNextSibling();
+    AstNode rhs = operator.getNextSibling();
+    AstNodeType operatorType = operator.getType();
 
     boolean result;
     if (operatorType.equals(CppPunctuator.LT)) {
@@ -380,7 +381,7 @@ public final class ExpressionEvaluator {
 
   // ///////////////// bitwise expressions ///////////////////////
   private BigInteger evalAndExpression(AstNode exprAst) {
-    var operand = exprAst.getFirstChild();
+    AstNode operand = exprAst.getFirstChild();
     BigInteger result = evalToInt(operand);
 
     while ((operand = getNextOperand(operand)) != null) {
@@ -391,7 +392,7 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalInclusiveOrExpression(AstNode exprAst) {
-    var operand = exprAst.getFirstChild();
+    AstNode operand = exprAst.getFirstChild();
     BigInteger result = evalToInt(operand);
 
     while ((operand = getNextOperand(operand)) != null) {
@@ -402,7 +403,7 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalExclusiveOrExpression(AstNode exprAst) {
-    var operand = exprAst.getFirstChild();
+    AstNode operand = exprAst.getFirstChild();
     BigInteger result = evalToInt(operand);
 
     while ((operand = getNextOperand(operand)) != null) {
@@ -416,9 +417,9 @@ public final class ExpressionEvaluator {
   private BigInteger evalUnaryExpression(AstNode exprAst) {
     // only 'unary-operator cast-expression' production is allowed in #if-context
 
-    var operator = exprAst.getFirstChild();
-    var operand = operator.getNextSibling();
-    var operatorType = operator.getFirstChild().getType();
+    AstNode operator = exprAst.getFirstChild();
+    AstNode operand = operator.getNextSibling();
+    AstNodeType operatorType = operator.getFirstChild().getType();
 
     if (operatorType.equals(CppPunctuator.PLUS)) {
       return evalToInt(operand);
@@ -436,12 +437,12 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalShiftExpression(AstNode exprAst) {
-    var rhs = exprAst.getFirstChild();
+    AstNode rhs = exprAst.getFirstChild();
     AstNode operator;
     BigInteger result = evalToInt(rhs);
 
     while ((operator = rhs.getNextSibling()) != null) {
-      var operatorType = operator.getType();
+      AstNodeType operatorType = operator.getType();
       rhs = operator.getNextSibling();
 
       if (operatorType.equals(CppPunctuator.BW_LSHIFT)) {
@@ -457,12 +458,12 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalAdditiveExpression(AstNode exprAst) {
-    var rhs = exprAst.getFirstChild();
+    AstNode rhs = exprAst.getFirstChild();
     AstNode operator;
     BigInteger result = evalToInt(rhs);
 
     while ((operator = rhs.getNextSibling()) != null) {
-      var operatorType = operator.getType();
+      AstNodeType operatorType = operator.getType();
       rhs = operator.getNextSibling();
 
       if (operatorType.equals(CppPunctuator.PLUS)) {
@@ -478,12 +479,12 @@ public final class ExpressionEvaluator {
   }
 
   private BigInteger evalMultiplicativeExpression(AstNode exprAst) {
-    var rhs = exprAst.getFirstChild();
+    AstNode rhs = exprAst.getFirstChild();
     AstNode operator;
     BigInteger result = evalToInt(rhs);
 
     while ((operator = rhs.getNextSibling()) != null) {
-      var operatorType = operator.getType();
+      AstNodeType operatorType = operator.getType();
       rhs = operator.getNextSibling();
 
       if (operatorType.equals(CppPunctuator.MUL)) {
@@ -502,17 +503,17 @@ public final class ExpressionEvaluator {
 
   private BigInteger evalConditionalExpression(AstNode exprAst) {
     if (exprAst.getNumberOfChildren() == 5) {
-      var decisionOperand = exprAst.getFirstChild();
-      var operator = decisionOperand.getNextSibling();
-      var trueCaseOperand = operator.getNextSibling();
+      AstNode decisionOperand = exprAst.getFirstChild();
+      AstNode operator = decisionOperand.getNextSibling();
+      AstNode trueCaseOperand = operator.getNextSibling();
       operator = trueCaseOperand.getNextSibling();
-      var falseCaseOperand = operator.getNextSibling();
+      AstNode falseCaseOperand = operator.getNextSibling();
       return evalToBoolean(decisionOperand) ? evalToInt(trueCaseOperand) : evalToInt(falseCaseOperand);
     } else {
-      var decisionOperand = exprAst.getFirstChild();
-      var operator = decisionOperand.getNextSibling();
+      AstNode decisionOperand = exprAst.getFirstChild();
+      AstNode operator = decisionOperand.getNextSibling();
       operator = operator.getNextSibling();
-      var falseCaseOperand = operator.getNextSibling();
+      AstNode falseCaseOperand = operator.getNextSibling();
       BigInteger decision = evalToInt(decisionOperand);
       return decision.compareTo(BigInteger.ZERO) != 0 ? decision : evalToInt(falseCaseOperand);
     }
@@ -520,12 +521,12 @@ public final class ExpressionEvaluator {
 
   private BigInteger evalPrimaryExpression(AstNode exprAst) {
     // case "( expression )"
-    var caseNode = exprAst.getFirstChild();
+    AstNode caseNode = exprAst.getFirstChild();
     return evalToInt(caseNode.getNextSibling());
   }
 
   private BigInteger evalDefinedExpression(AstNode exprAst) {
-    var child = exprAst.getFirstChild();
+    AstNode child = exprAst.getFirstChild();
 
     if (exprAst.getNumberOfChildren() != 2) {
       child = child.getNextSibling();

@@ -39,7 +39,7 @@ class ValgrindReportParser {
    * @exception XMLStreamException javax.xml.stream.XMLStreamException
    */
   public Set<ValgrindError> parse(File report) throws XMLStreamException {
-    var streamHandler = new ValgrindReportStreamHandler();
+    ValgrindReportStreamHandler streamHandler = new ValgrindReportStreamHandler();
     new StaxParser(streamHandler).parse(report);
     return streamHandler.valgrindErrors;
   }
@@ -49,7 +49,7 @@ class ValgrindReportParser {
     private final Set<ValgrindError> valgrindErrors = new HashSet<>();
 
     private static ValgrindStack parseStackTag(SMInputCursor child) throws XMLStreamException {
-      var stack = new ValgrindStack();
+      ValgrindStack stack = new ValgrindStack();
       SMInputCursor frameCursor = child.childElementCursor("frame");
       while (frameCursor.getNext() != null) {
 
@@ -90,8 +90,8 @@ class ValgrindReportParser {
 
       String kind = null;
       String text = null;
-      var details = new ArrayList<String>();
-      var stacks = new ArrayList<ValgrindStack>();
+      ArrayList<String> details = new ArrayList<String>();
+      ArrayList<ValgrindStack> stacks = new ArrayList<ValgrindStack>();
       while (child.getNext() != null) {
         String tagName = child.getLocalName();
         if ("kind".equalsIgnoreCase(tagName)) {
@@ -108,7 +108,7 @@ class ValgrindReportParser {
       }
 
       if (text == null || kind == null || stacks.isEmpty()) {
-        var msg = "Valgrind error is incomplete: we require all of 'kind', '*what.text' and 'stack'";
+        String msg = "Valgrind error is incomplete: we require all of 'kind', '*what.text' and 'stack'";
         child.throwStreamException(msg);
       }
 

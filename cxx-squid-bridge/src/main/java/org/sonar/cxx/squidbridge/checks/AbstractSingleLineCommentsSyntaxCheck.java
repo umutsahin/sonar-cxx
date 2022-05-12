@@ -26,6 +26,7 @@ package org.sonar.cxx.squidbridge.checks;
 import com.sonar.sslr.api.AstAndTokenVisitor;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractSingleLineCommentsSyntaxCheck<G extends Grammar> extends SquidCheck<G> implements
@@ -35,7 +36,7 @@ public abstract class AbstractSingleLineCommentsSyntaxCheck<G extends Grammar> e
 
   @Override
   public void visitToken(Token token) {
-    for (var trivia : token.getTrivia()) {
+    for (Trivia trivia : token.getTrivia()) {
       if (trivia.isComment() && trivia.getToken().getLine() < token.getLine()) {
         String comment = trivia.getToken().getOriginalValue();
 

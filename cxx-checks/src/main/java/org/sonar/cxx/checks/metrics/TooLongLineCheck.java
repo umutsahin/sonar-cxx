@@ -65,8 +65,8 @@ public class TooLongLineCheck extends SquidCheck<Grammar> {
 
   @Override
   public void visitFile(AstNode astNode) {
-    var nr = 0;
-    for (var line : getContext().getInputFileLines()) {
+    int nr = 0;
+    for (String line : getContext().getInputFileLines()) {
       ++nr;
       long length = line.chars().filter(c -> c == '\t').count();
       length = line.length() + length * (tabWidth - 1);

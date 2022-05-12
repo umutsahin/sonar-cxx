@@ -58,7 +58,7 @@ public class VisualStudioTestResultsFileParserTest {
 
   @Test
   public void valid() throws Exception {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new VisualStudioTestResultsFileParser().accept(new File(REPORT_PATH + "valid.trx"), results);
 
     assertThat(results.tests()).isEqualTo(31);
@@ -71,7 +71,7 @@ public class VisualStudioTestResultsFileParserTest {
 
   @Test
   public void valid_missing_attributes() throws Exception {
-    var results = new UnitTestResults();
+    UnitTestResults results = new UnitTestResults();
     new VisualStudioTestResultsFileParser().accept(new File(REPORT_PATH + "valid_missing_attributes.trx"), results);
 
     assertThat(results.tests()).isEqualTo(3);

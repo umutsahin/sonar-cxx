@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.check.Rule;
 import org.sonar.cxx.squidbridge.SquidAstVisitorContext;
 import org.sonar.cxx.squidbridge.api.SourceFile;
 import org.sonar.cxx.squidbridge.checks.SquidCheck;
@@ -85,7 +86,7 @@ public class MultiLocatitionSquidCheck<G extends Grammar> extends SquidCheck<G> 
    * @see org.sonar.check.Rule
    */
   protected String getRuleKey() {
-    var ruleAnnotation = AnnotationUtils.getAnnotation(this, org.sonar.check.Rule.class);
+    Rule ruleAnnotation = AnnotationUtils.getAnnotation(this, org.sonar.check.Rule.class);
     if (ruleAnnotation != null && ruleAnnotation.key() != null) {
       return ruleAnnotation.key();
     }

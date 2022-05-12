@@ -358,7 +358,7 @@ public enum CxxGrammarImpl implements GrammarRuleKey {
   cudaKernel;
 
   public static Grammar create(CxxSquidConfiguration squidConfig) {
-    var b = LexerfulGrammarBuilder.create();
+    LexerfulGrammarBuilder b = LexerfulGrammarBuilder.create();
 
     toplevel(b, squidConfig);
     expressions(b);

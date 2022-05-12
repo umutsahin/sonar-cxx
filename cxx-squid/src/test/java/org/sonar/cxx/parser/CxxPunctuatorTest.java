@@ -28,11 +28,11 @@ public class CxxPunctuatorTest {
 
   @Test
   public void test() {
-    var softly = new SoftAssertions();
+    SoftAssertions softly = new SoftAssertions();
     softly.assertThat(CxxPunctuator.values()).hasSize(50);
 
     AstNode astNode = mock(AstNode.class);
-    for (var punctuator : CxxPunctuator.values()) {
+    for (CxxPunctuator punctuator : CxxPunctuator.values()) {
       softly.assertThat(punctuator.hasToBeSkippedFromAst(astNode)).isFalse();
     }
     softly.assertAll();

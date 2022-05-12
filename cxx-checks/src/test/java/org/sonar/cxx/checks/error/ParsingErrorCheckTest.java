@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import static org.hamcrest.Matchers.containsString;
 import org.junit.Test;
 import org.sonar.cxx.CxxAstScanner;
+import org.sonar.cxx.checks.CxxFileTester;
 import org.sonar.cxx.checks.CxxFileTesterHelper;
 import org.sonar.cxx.config.CxxSquidConfiguration;
 import org.sonar.cxx.squidbridge.api.SourceFile;
@@ -34,11 +35,11 @@ public class ParsingErrorCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test_syntax_error_recognition() throws UnsupportedEncodingException, IOException {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.ERROR_RECOVERY_ENABLED,
                     "false");
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/parsingError1.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/parsingError1.cc", ".");
     SourceFile file = CxxAstScanner
       .scanSingleInputFileConfig(tester.asInputFile(), squidConfig, new ParsingErrorCheck());
 
@@ -50,11 +51,11 @@ public class ParsingErrorCheckTest {
   @Test
   @SuppressWarnings("squid:S2699") // ... verify contains the assertion
   public void test_syntax_error_pperror() throws UnsupportedEncodingException, IOException {
-    var squidConfig = new CxxSquidConfiguration();
+    CxxSquidConfiguration squidConfig = new CxxSquidConfiguration();
     squidConfig.add(CxxSquidConfiguration.SONAR_PROJECT_PROPERTIES, CxxSquidConfiguration.ERROR_RECOVERY_ENABLED,
                     "false");
 
-    var tester = CxxFileTesterHelper.create("src/test/resources/checks/parsingError2.cc", ".");
+    CxxFileTester tester = CxxFileTesterHelper.create("src/test/resources/checks/parsingError2.cc", ".");
     SourceFile file = CxxAstScanner
       .scanSingleInputFileConfig(tester.asInputFile(), squidConfig, new ParsingErrorCheck());
 

@@ -51,8 +51,8 @@ public class WildcardPatternFileProvider {
   }
 
   private static List<String> elementsTillFirstWildcard(List<String> elements) {
-    var result = new ArrayList<String>();
-    for (var element : elements) {
+    ArrayList<String> result = new ArrayList<String>();
+    for (String element : elements) {
       if (containsWildcard(element)) {
         break;
       }
@@ -62,7 +62,7 @@ public class WildcardPatternFileProvider {
   }
 
   private static void checkNoCurrentOrParentFolderAccess(List<String> elements) {
-    for (var element : elements) {
+    for (String element : elements) {
       if (isCurrentOrParentFolder(element)) {
         throw new IllegalArgumentException("Cannot contain '" + CURRENT_FOLDER + "' or '"
                                              + PARENT_FOLDER + "' after the first wildcard.");
@@ -82,7 +82,7 @@ public class WildcardPatternFileProvider {
   }
 
   private static Set<File> listFiles(File dir) {
-    var result = new HashSet<File>();
+    HashSet<File> result = new HashSet<File>();
     listFiles(result, dir);
     return result;
   }
@@ -92,7 +92,7 @@ public class WildcardPatternFileProvider {
     if (files != null) {
       result.addAll(Arrays.asList(files));
 
-      for (var file : files) {
+      for (File file : files) {
         if (file.isDirectory()) {
           listFiles(result, file);
         }
@@ -113,7 +113,7 @@ public class WildcardPatternFileProvider {
 
     List<String> elementsTillFirstWildcard = elementsTillFirstWildcard(elements);
     String pathTillFirstWildcardElement = toPath(elementsTillFirstWildcard);
-    var fileTillFirstWildcardElement = new File(pathTillFirstWildcardElement);
+    File fileTillFirstWildcardElement = new File(pathTillFirstWildcardElement);
 
     File absoluteFileTillFirstWildcardElement = fileTillFirstWildcardElement.isAbsolute()
                                                   ? fileTillFirstWildcardElement
@@ -126,10 +126,10 @@ public class WildcardPatternFileProvider {
     }
     checkNoCurrentOrParentFolderAccess(wildcardElements);
 
-    var wildcardPattern = WildcardPattern.create(toPath(wildcardElements), directorySeparator);
+    WildcardPattern wildcardPattern = WildcardPattern.create(toPath(wildcardElements), directorySeparator);
 
-    var result = new HashSet<File>();
-    for (var file : listFiles(absoluteFileTillFirstWildcardElement)) {
+    HashSet<File> result = new HashSet<File>();
+    for (File file : listFiles(absoluteFileTillFirstWildcardElement)) {
       String relativePath = relativize(absoluteFileTillFirstWildcardElement, file);
 
       if (wildcardPattern.match(relativePath)) {

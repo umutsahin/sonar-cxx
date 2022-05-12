@@ -85,13 +85,13 @@ public class CxxClangSASensor extends CxxIssuesReportSensor {
     NSObject[] path = ((NSArray) require(
       diagnostic.objectForKey("path"), "Missing mandatory entry 'path'")
       ).getArray();
-    for (var pathObject : path) {
-      var pathElement = new PathElement(pathObject);
+    for (NSObject pathObject : path) {
+      PathElement pathElement = new PathElement(pathObject);
       if (pathElement.getKind() != PathElementKind.EVENT) {
         continue;
       }
 
-      var event = new PathEvent(pathObject, sourceFiles);
+      PathEvent event = new PathEvent(pathObject, sourceFiles);
       issue.addFlowElement(
         event.getFilePath(), event.getLineNumber(), event.getColumnNumber(), event.getExtendedMessage()
       );
@@ -101,29 +101,29 @@ public class CxxClangSASensor extends CxxIssuesReportSensor {
   @Override
   protected void processReport(File report)  {
     try {
-      var f = new File(report.getPath());
+      File f = new File(report.getPath());
 
-      var rootDict = (NSDictionary) PropertyListParser.parse(f);
+      NSDictionary rootDict = (NSDictionary) PropertyListParser.parse(f);
 
       NSObject[] diagnostics = ((NSArray) require(rootDict.objectForKey("diagnostics"),
                                                   "Missing mandatory entry 'diagnostics'")).getArray();
       NSObject[] sourceFiles = ((NSArray) require(rootDict.objectForKey("files"),
                                                   "Missing mandatory entry 'files'")).getArray();
 
-      for (var diagnostic : diagnostics) {
-        var diag = (NSDictionary) diagnostic;
+      for (NSObject diagnostic : diagnostics) {
+        NSDictionary diag = (NSDictionary) diagnostic;
 
         String description = ((NSString) require(diag.get("description"),
                                                  "Missing mandatory entry 'diagnostics/description'")).getContent();
         String checkerName = ((NSString) require(diag.get("check_name"),
                                                  "Missing mandatory entry 'diagnostics/check_name'")).getContent();
-        var location = (NSDictionary) require(diag.get("location"),
+        NSDictionary location = (NSDictionary) require(diag.get("location"),
                                                        "Missing mandatory entry 'diagnostics/location'");
-        var line = ((NSNumber) require(location.get("line"),
+        int line = ((NSNumber) require(location.get("line"),
                                        "Missing mandatory entry 'diagnostics/location/line'")).intValue();
-        var column = ((NSNumber) require(location.get("col"),
-                                       "Missing mandatory entry 'diagnostics/location/col'")).intValue();
-        var fileIndex = ((NSNumber) require(location.get("file"),
+        int column = ((NSNumber) require(location.get("col"),
+                                         "Missing mandatory entry 'diagnostics/location/col'")).intValue();
+        int fileIndex = ((NSNumber) require(location.get("file"),
                                             "Missing mandatory entry 'diagnostics/location/file'")).intValue();
 
         if (fileIndex < 0 || fileIndex >= sourceFiles.length) {
@@ -131,7 +131,7 @@ public class CxxClangSASensor extends CxxIssuesReportSensor {
         }
         String filePath = ((NSString) sourceFiles[fileIndex]).getContent();
 
-        var issue = new CxxReportIssue(
+        CxxReportIssue issue = new CxxReportIssue(
           checkerName, filePath,
           Integer.toString(line), Integer.toString(column),
           description);
@@ -200,17 +200,17 @@ public class CxxClangSASensor extends CxxIssuesReportSensor {
     }
 
     public String getLineNumber() {
-      var lineNumber = ((NSNumber) require(getLocation().get("line"), "Missing mandatory entry 'line'")).intValue();
+      int lineNumber = ((NSNumber) require(getLocation().get("line"), "Missing mandatory entry 'line'")).intValue();
       return Integer.toString(lineNumber);
     }
 
     public String getColumnNumber() {
-      var columnNumber = ((NSNumber) require(getLocation().get("col"), "Missing mandatory entry 'col'")).intValue();
+      int columnNumber = ((NSNumber) require(getLocation().get("col"), "Missing mandatory entry 'col'")).intValue();
       return Integer.toString(columnNumber);
     }
 
     public String getFilePath() {
-      var fileIndex = ((NSNumber) require(getLocation().get("file"), "Missing mandatory entry 'file'")).intValue();
+      int fileIndex = ((NSNumber) require(getLocation().get("file"), "Missing mandatory entry 'file'")).intValue();
       if (fileIndex < 0 || fileIndex >= sourceFiles.length) {
         throw new IllegalArgumentException("Invalid file index");
       }

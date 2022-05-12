@@ -19,6 +19,7 @@
  */
 package org.sonar.cxx;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -171,10 +172,10 @@ public final class CxxMetrics {
 
   static {
     METRICS = new LinkedList<>();
-    for (var field : CxxMetrics.class.getFields()) {
+    for (Field field : CxxMetrics.class.getFields()) {
       if (!Modifier.isTransient(field.getModifiers()) && Metric.class.isAssignableFrom(field.getType())) {
         try {
-          var metric = (Metric) field.get(null);
+          Metric metric = (Metric) field.get(null);
           METRICS.add(metric);
         } catch (IllegalAccessException e) {
           throw new IllegalStateException("can not introspect " + CxxMetrics.class + " to get metrics", e);

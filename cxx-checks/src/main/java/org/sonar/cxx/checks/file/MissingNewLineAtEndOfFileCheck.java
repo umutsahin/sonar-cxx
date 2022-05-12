@@ -48,7 +48,7 @@ public class MissingNewLineAtEndOfFileCheck extends SquidCheck<Grammar> {
     if (content.isEmpty()) {
       return true;
     }
-    var lastChar = content.charAt(content.length() - 1);
+    char lastChar = content.charAt(content.length() - 1);
     return lastChar != '\n' && lastChar != '\r';
   }
 

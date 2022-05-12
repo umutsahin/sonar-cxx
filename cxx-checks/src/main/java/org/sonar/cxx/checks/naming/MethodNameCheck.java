@@ -64,7 +64,7 @@ public class MethodNameCheck extends SquidCheck<Grammar> {
   private static AstNode getMethodName(AstNode node) {
     AstNode result = null;
     if (isFunctionDefinition(node)) {
-      var declId = node.getFirstDescendant(CxxGrammarImpl.declaratorId);
+      AstNode declId = node.getFirstDescendant(CxxGrammarImpl.declaratorId);
       if (declId != null) {
         // method inside of class
         result = getInsideMemberDeclaration(declId);
@@ -81,13 +81,13 @@ public class MethodNameCheck extends SquidCheck<Grammar> {
   private static AstNode getInsideMemberDeclaration(AstNode declId) {
     AstNode result = null;
     if (declId.hasAncestor(CxxGrammarImpl.memberDeclaration)) {
-      var idNode = declId.getLastChild(IDENTIFIER);
+      AstNode idNode = declId.getLastChild(IDENTIFIER);
       if (idNode != null) {
-        var classSpecifier = declId.getFirstAncestor(CxxGrammarImpl.classSpecifier);
+        AstNode classSpecifier = declId.getFirstAncestor(CxxGrammarImpl.classSpecifier);
         if (classSpecifier != null) {
-          var classHeadName = classSpecifier.getFirstDescendant(CxxGrammarImpl.classHeadName);
+          AstNode classHeadName = classSpecifier.getFirstDescendant(CxxGrammarImpl.classHeadName);
           if (classHeadName != null) {
-            var className = classHeadName.getLastChild(CxxGrammarImpl.className);
+            AstNode className = classHeadName.getLastChild(CxxGrammarImpl.className);
             // if class name is equal to method name then it is a ctor or dtor
             if ((className != null) && !className.getTokenValue().equals(idNode.getTokenValue())) {
               result = idNode;
@@ -101,7 +101,7 @@ public class MethodNameCheck extends SquidCheck<Grammar> {
 
   private static Optional<AstNode> getMostNestedTypeName(AstNode nestedNameSpecifier) {
     Optional<AstNode> result = Optional.empty();
-    for (var child : nestedNameSpecifier.getChildren()) {
+    for (AstNode child : nestedNameSpecifier.getChildren()) {
       if ( // type name was recognized by parser (most probably the least nested type)
         child.is(CxxGrammarImpl.typeName)
           || // type name was recognized as template
@@ -116,12 +116,12 @@ public class MethodNameCheck extends SquidCheck<Grammar> {
 
   @CheckForNull
   private static AstNode getOutsideMemberDeclaration(AstNode declId) {
-    var qualifiedId = declId.getFirstDescendant(CxxGrammarImpl.qualifiedId);
+    AstNode qualifiedId = declId.getFirstDescendant(CxxGrammarImpl.qualifiedId);
     AstNode result = null;
     if (qualifiedId != null) {
-      var nestedNameSpecifier = qualifiedId.getFirstDescendant(CxxGrammarImpl.nestedNameSpecifier);
+      AstNode nestedNameSpecifier = qualifiedId.getFirstDescendant(CxxGrammarImpl.nestedNameSpecifier);
       if (nestedNameSpecifier != null) {
-        var idNode = qualifiedId.getLastChild(IDENTIFIER);
+        AstNode idNode = qualifiedId.getLastChild(IDENTIFIER);
         if (idNode != null) {
           Optional<AstNode> typeName = getMostNestedTypeName(nestedNameSpecifier);
           // if class name is equal to method name then it is a ctor or dtor

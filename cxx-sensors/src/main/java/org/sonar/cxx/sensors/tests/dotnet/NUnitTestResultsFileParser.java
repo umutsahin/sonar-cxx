@@ -64,11 +64,11 @@ public class NUnitTestResultsFileParser implements UnitTestResultsParser {
       Double executionTime = null;
 
       String tag;
-      var level = 0;
+      int level = 0;
       while ((tag = xmlParserHelper.nextStartOrEndTag()) != null) {
         if ("<test-suite>".equals(tag)) {
           level++;
-          var time = xmlParserHelper.getDoubleAttribute("time");
+          Double time = xmlParserHelper.getDoubleAttribute("time");
 
           if (level == 1 && time != null) {
             if (executionTime == null) {
@@ -85,7 +85,7 @@ public class NUnitTestResultsFileParser implements UnitTestResultsParser {
     }
 
     public void parse() {
-      try ( var xmlParserHelper = new XmlParserHelper(file)) {
+      try (XmlParserHelper xmlParserHelper = new XmlParserHelper(file)) {
         if (checkRootTag(xmlParserHelper)) {
           handleTestResultsTag(xmlParserHelper);
         }
@@ -95,15 +95,15 @@ public class NUnitTestResultsFileParser implements UnitTestResultsParser {
     }
 
     private void handleTestResultsTag(XmlParserHelper xmlParserHelper) {
-      var total = xmlParserHelper.getRequiredIntAttribute("total");
-      var errors = xmlParserHelper.getRequiredIntAttribute("errors");
-      var failures = xmlParserHelper.getRequiredIntAttribute("failures");
-      var inconclusive = xmlParserHelper.getRequiredIntAttribute("inconclusive");
-      var ignored = xmlParserHelper.getRequiredIntAttribute("ignored");
+      int total = xmlParserHelper.getRequiredIntAttribute("total");
+      int errors = xmlParserHelper.getRequiredIntAttribute("errors");
+      int failures = xmlParserHelper.getRequiredIntAttribute("failures");
+      int inconclusive = xmlParserHelper.getRequiredIntAttribute("inconclusive");
+      int ignored = xmlParserHelper.getRequiredIntAttribute("ignored");
 
-      var tests = total - inconclusive;
-      var passed = total - errors - failures - inconclusive;
-      var skipped = inconclusive + ignored;
+      int tests = total - inconclusive;
+      int passed = total - errors - failures - inconclusive;
+      int skipped = inconclusive + ignored;
 
       Double executionTime = readExecutionTimeFromDirectlyNestedTestSuiteTags(xmlParserHelper);
 

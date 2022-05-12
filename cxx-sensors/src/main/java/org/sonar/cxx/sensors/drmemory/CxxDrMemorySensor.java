@@ -51,8 +51,8 @@ public class CxxDrMemorySensor extends CxxIssuesReportSensor {
   private static final Logger LOG = Loggers.get(CxxDrMemorySensor.class);
 
   public static List<PropertyDefinition> properties() {
-    var category = "CXX External Analyzers";
-    var subcategory = "Dr. Memory";
+    String category = "CXX External Analyzers";
+    String subcategory = "Dr. Memory";
     return Collections.unmodifiableList(Arrays.asList(
       PropertyDefinition.builder(REPORT_PATH_KEY)
         .name("Dr. Memory Report(s)")
@@ -79,7 +79,7 @@ public class CxxDrMemorySensor extends CxxIssuesReportSensor {
   }
 
   private static String getFrameText(Location frame, int frameNr) {
-    var sb = new StringBuilder(512);
+    StringBuilder sb = new StringBuilder(512);
     sb.append("#").append(frameNr).append(" ").append(frame.getFile()).append(":").append(frame.getLine());
     return sb.toString();
   }
@@ -99,7 +99,7 @@ public class CxxDrMemorySensor extends CxxIssuesReportSensor {
 
   @CheckForNull
   private Location getLastOwnFrame(DrMemoryError error) {
-    for (var frame : error.getStackTrace()) {
+    for (Location frame : error.getStackTrace()) {
       if (frameIsInProject(frame)) {
         return frame;
       }
@@ -112,9 +112,9 @@ public class CxxDrMemorySensor extends CxxIssuesReportSensor {
     String reportEncoding = context.config().get(REPORT_ENCODING_DEF).orElse(DEFAULT_ENCODING_DEF);
     LOG.debug("Encoding='{}'", reportEncoding);
 
-    for (var error : DrMemoryParser.parse(report, reportEncoding)) {
+    for (DrMemoryError error : DrMemoryParser.parse(report, reportEncoding)) {
       if (error.getStackTrace().isEmpty()) {
-        var moduleIssue = new CxxReportIssue(error.getType().getId(), null, null, null, error.getMessage());
+        CxxReportIssue moduleIssue = new CxxReportIssue(error.getType().getId(), null, null, null, error.getMessage());
         saveUniqueViolation(moduleIssue);
       } else {
         Location lastOwnFrame = getLastOwnFrame(error);
@@ -122,13 +122,13 @@ public class CxxDrMemorySensor extends CxxIssuesReportSensor {
           LOG.warn("Cannot find a file to assign the DrMemory error '{}' to", error);
           continue;
         }
-        var fileIssue = new CxxReportIssue(error.getType().getId(),
-                                       lastOwnFrame.getFile(), lastOwnFrame.getLine().toString(), null,
-                                       error.getMessage());
+        CxxReportIssue fileIssue = new CxxReportIssue(error.getType().getId(),
+                                                      lastOwnFrame.getFile(), lastOwnFrame.getLine().toString(), null,
+                                                      error.getMessage());
 
         // add all frames as secondary locations
-        var frameNr = 0;
-        for (var frame : error.getStackTrace()) {
+        int frameNr = 0;
+        for (Location frame : error.getStackTrace()) {
           boolean frameIsInProject = frameIsInProject(frame);
           String mappedPath = (frameIsInProject) ? frame.getFile() : lastOwnFrame.getFile();
           Integer mappedLine = (frameIsInProject) ? frame.getLine() : lastOwnFrame.getLine();
